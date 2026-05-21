@@ -1,25 +1,30 @@
-import { ImageBackground, TouchableOpacity, View, Text } from "react-native";
+import React from "react";
+import {Pressable, Text, View} from "react-native";
+
 import { ArmyComposition } from "../../types/army_composition";
-import { ArmyCompositionCardStyles as styles } from "../../styles/army_composition_card.styles";
 
-export function ArmyCompositionCard({ item }: { item: ArmyComposition }) {
+import { armyCompositionCardStyles as styles } from "../../styles/armyCompositionCardStyles";
+
+type ArmyCompositionCardProps = {
+    armyComposition: ArmyComposition;
+};
+
+export default function ArmyCompositionCard ({ armyComposition, }: ArmyCompositionCardProps) {
   return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.85}>
-      <ImageBackground
-        source={{ uri: item.image }}
-        style={styles.cardImage}
-        imageStyle={styles.cardImageStyle}
-      >
-        <View style={styles.overlay}>
-          <Text style={styles.cardTitle}>{item.name}</Text>
-          <Text style={styles.cardSubtitle}>{item.army.name}</Text>
-          <Text style={styles.cardText}>{item.units.length} units</Text>
+    <Pressable style={styles.card}>
+      <Text style={styles.title}>
+        {armyComposition.name}
+      </Text>
 
-          <View style={styles.pointsBadge}>
-            <Text style={styles.pointsText}>{item.totalPoints} Points</Text>
-          </View>
-        </View>
-      </ImageBackground>
-    </TouchableOpacity>
-  );
+      <Text style={styles.subtitle}>
+        {armyComposition.army.armyRule}
+      </Text>
+
+      <View style={styles.pointsContainer}>
+        <Text style={styles.pointsText}>
+        {armyComposition.totalPoints} / 2000 Points
+        </Text>
+      </View>
+    </Pressable>
+  )
 }
