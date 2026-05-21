@@ -59,4 +59,9 @@ export const SelectArmyScreenStyles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
   },
+
+  errorText: {
+    color: "#ff6b6b",
+    marginTop: 6,
+  },
 });

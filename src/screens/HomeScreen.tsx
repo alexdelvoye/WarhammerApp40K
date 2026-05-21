@@ -19,7 +19,7 @@ export default function HomeScreen() {
   const navigation =
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
 
-  const renderArmyCompositions = ({ item }: { item: ArmyComposition }) => (
+  const renderArmyCompositionItem = ({ item }: { item: ArmyComposition }) => (
     <ArmyCompositionCard armyComposition={item} />
   );
 
@@ -30,7 +30,7 @@ export default function HomeScreen() {
       <FlatList
         data={armyCompositions}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={renderArmyCompositions}
+        renderItem={renderArmyCompositionItem}
         contentContainerStyle={homeScreenStyles.list}
       />
 
