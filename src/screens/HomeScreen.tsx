@@ -75,7 +75,7 @@ const MyFirstArmy: ArmyComposition = {
   army: AstraMilitarum,
   units: [cadianShockTroops, cadianCommandSquad],
   totalPoints: 130,
-  image: "${AstraMilitarum.image}",
+  image: AstraMilitarum.image,
 };
 
 export default function MainScreen() {
