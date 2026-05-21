@@ -10,5 +10,5 @@ export default function AddArmyCompositionButton ({ onPress }: addButtonProps) {
         <Pressable style={styles.button} onPress={onPress}>
             <Text style={styles.plusText}>+</Text>
         </Pressable>
-    )
-}
+    );
+};

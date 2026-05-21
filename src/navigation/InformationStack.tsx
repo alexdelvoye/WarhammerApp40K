@@ -1,12 +1,11 @@
+import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+
+import Header from "../screens/shared/Header";
 import GameRulesScreen from "../screens/GameRulesScreen";
-import ArmyRulesScreen from "../screens/ArmyRulesScreen";
-import AccountScreen from "../screens/AccountScreen";
 
 export type InformationStackParamList = {
   GameRules: undefined;
-  ArmyRule: undefined;
-  Account: undefined;
 };
 
 const Stack = createStackNavigator<InformationStackParamList>();
@@ -18,23 +17,9 @@ export default function InformationStack() {
         name="GameRules"
         component={GameRulesScreen}
         options={{
-          title: "Game Rules",
-        }}
-      />
-      <Stack.Screen
-        name="ArmyRule"
-        component={ArmyRulesScreen}
-        options={{
-          title: "Army Rules",
-        }}
-      />
-      <Stack.Screen
-        name="Account"
-        component={AccountScreen}
-        options={{
-          title: "Account",
+          header: () => <Header title="Game Rules" />,
         }}
       />
     </Stack.Navigator>
   );
-}
+};

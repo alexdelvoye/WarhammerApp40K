@@ -1,12 +1,11 @@
-import { View, Text } from "react-native";
 import React from "react";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const GameRulesScreen = () => {
+export default function GameRulesScreen() {
   return (
-    <View>
-      <Text>GameRulesScreen</Text>
-    </View>
+    <SafeAreaView>
+      <Text>Game Rules Screen</Text>
+    </SafeAreaView>
   );
 };
-
-export default GameRulesScreen;

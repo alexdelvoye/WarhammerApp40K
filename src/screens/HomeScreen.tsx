@@ -26,8 +26,8 @@ export default function HomeScreen() {
         )}
         contentContainerStyle={homeScreenStyles.list}
       />
-      
+
       <AddArmyCompositionButton onPress={() => console.log("Add army composition pressed")} />
     </SafeAreaView>
   );
-}
+};

@@ -26,5 +26,5 @@ export default function ArmyCompositionCard ({ armyComposition, }: ArmyCompositi
         </Text>
       </View>
     </Pressable>
-  )
-}
+  );
+};

@@ -15,4 +15,4 @@ export const armyCompositions: ArmyComposition[] = [
         totalPoints: 690,
         image:"",
     },
-]
+];
