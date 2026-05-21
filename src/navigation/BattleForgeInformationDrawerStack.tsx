@@ -9,7 +9,8 @@ export type BattleForgeInformationDrawerStackParamList = {
   InformationStack: undefined;
 };
 
-const Drawer = createDrawerNavigator<BattleForgeInformationDrawerStackParamList>();
+const Drawer =
+  createDrawerNavigator<BattleForgeInformationDrawerStackParamList>();
 
 export default function BattleForgeInformationDrawerStack() {
   return (
@@ -17,14 +18,14 @@ export default function BattleForgeInformationDrawerStack() {
       <Drawer.Screen
         name="BattleForgeStack"
         component={BattleForgeStack}
-        options={{ title: "Battle Forge"}}
+        options={{ title: "Battle Forge" }}
       />
 
       <Drawer.Screen
         name="InformationStack"
         component={InformationStack}
-        options={{ title: "Information"}}
+        options={{ title: "Information" }}
       />
     </Drawer.Navigator>
   );
-};
+}

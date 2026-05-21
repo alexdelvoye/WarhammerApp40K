@@ -8,4 +8,4 @@ export default function GameRulesScreen() {
       <Text>Game Rules Screen</Text>
     </SafeAreaView>
   );
-};
+}

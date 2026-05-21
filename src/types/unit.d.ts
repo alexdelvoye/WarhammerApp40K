@@ -1,4 +1,4 @@
-import { Weapon } from './weapon';
+import { Weapon } from "./weapon";
 
 export type Unit = {
   id: number;

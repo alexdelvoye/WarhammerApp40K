@@ -16,7 +16,10 @@ type HeaderProps = {
 };
 
 const Header = ({ title, canGoBack = false }: HeaderProps) => {
-  const navigation = useNavigation<DrawerNavigationProp<BattleForgeInformationDrawerStackParamList>>();
+  const navigation =
+    useNavigation<
+      DrawerNavigationProp<BattleForgeInformationDrawerStackParamList>
+    >();
 
   const handleMenuPress = () => {
     if (canGoBack && navigation.canGoBack()) {
@@ -33,22 +36,11 @@ const Header = ({ title, canGoBack = false }: HeaderProps) => {
         style={styles.container}
       >
         <View style={styles.header}>
-          <Pressable
-            style={styles.navigationButton}
-            onPress={handleMenuPress}
-          >
+          <Pressable style={styles.navigationButton} onPress={handleMenuPress}>
             {canGoBack ? (
-              <Ionicons
-                name="arrow-back"
-                size={24}
-                color="white"
-              />
+              <Ionicons name="arrow-back" size={24} color="white" />
             ) : (
-              <Ionicons
-                name="menu"
-                size={24}
-                color="white"
-              />
+              <Ionicons name="menu" size={24} color="white" />
             )}
           </Pressable>
 
@@ -57,9 +49,7 @@ const Header = ({ title, canGoBack = false }: HeaderProps) => {
             style={styles.icon}
           />
 
-          <Text style={styles.title}>
-            {title}
-          </Text>
+          <Text style={styles.title}>{title}</Text>
 
           <View style={styles.placeholder} />
         </View>
