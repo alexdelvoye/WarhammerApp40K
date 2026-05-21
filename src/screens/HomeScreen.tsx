@@ -9,6 +9,8 @@ import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
 import ArmyCompositionCard from "../components/cards/ArmyCompositionCard";
 import AddArmyCompositionButton from "../components/buttons/AddArmyCompositionButton";
 
+import { ArmyComposition } from "../types/army_composition";
+
 import { armyCompositions } from "../data/mockData";
 
 import { homeScreenStyles } from "../styles/homeScreenStyles";
@@ -17,6 +19,10 @@ export default function HomeScreen() {
   const navigation =
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
 
+  const renderArmyCompositions = ({ item }: { item: ArmyComposition }) => (
+    <ArmyCompositionCard armyComposition={item} />
+  );
+
   return (
     <SafeAreaView style={homeScreenStyles.container}>
       <Text style={homeScreenStyles.header}>BATTLE FORGE</Text>
@@ -24,9 +30,7 @@ export default function HomeScreen() {
       <FlatList
         data={armyCompositions}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ArmyCompositionCard armyComposition={item} />
-        )}
+        renderItem={renderArmyCompositions}
         contentContainerStyle={homeScreenStyles.list}
       />
 
