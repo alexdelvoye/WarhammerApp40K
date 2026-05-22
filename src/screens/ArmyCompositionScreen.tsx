@@ -3,6 +3,9 @@ import { Text, View } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
 import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
 
 import AddUnitButton from "../components/buttons/AddUnitButton";
@@ -15,6 +18,7 @@ type ArmyCompositionRouteProp = RouteProp<
 >;
 
 export default function ArmyCompositionScreen() {
+  const navigation = useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
   const route = useRoute<ArmyCompositionRouteProp>();
   const { armyComposition } = route.params;
 
@@ -46,7 +50,9 @@ export default function ArmyCompositionScreen() {
         </Text>
       </View>
 
-      <AddUnitButton onPress={() => console.log("Add unit pressed")} />
+      <AddUnitButton 
+        onPress={() => navigation.navigate("SelectUnit", { units: armyComposition.army.units })} 
+      />
     </SafeAreaView>
   );
 }
