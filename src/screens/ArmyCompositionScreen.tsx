@@ -75,8 +75,8 @@ export default function ArmyCompositionScreen() {
         />
       )}
 
-      <AddUnitButton 
-        onPress={() => navigation.navigate("SelectUnit", { units: armyComposition.army.units })} 
+      <AddUnitButton
+        onPress={() => navigation.navigate("SelectUnit", { units: armyComposition.army.units })}
       />
     </SafeAreaView>
   );

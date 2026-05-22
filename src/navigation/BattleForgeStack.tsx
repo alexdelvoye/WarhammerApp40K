@@ -43,9 +43,15 @@ export default function BattleForgeStack() {
       <Stack.Screen
         name="ArmyComposition"
         component={ArmyCompositionScreen}
-        options={{
-          header: () => <Header title="Army Composition" canGoBack={true} />,
-        }}
+        options={({ navigation }) => ({
+          header: () => (
+            <Header
+              title="Army Composition"
+              canGoBack={true}
+              onBackPress={() => navigation.navigate("Home")}
+            />
+          ),
+        })}
       />
 
       <Stack.Screen

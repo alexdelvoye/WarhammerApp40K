@@ -13,16 +13,19 @@ import { Ionicons } from "@expo/vector-icons";
 type HeaderProps = {
   title: string;
   canGoBack?: boolean;
+  onBackPress?: () => void;
 };
 
-const Header = ({ title, canGoBack = false }: HeaderProps) => {
+const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) => {
   const navigation =
     useNavigation<
       DrawerNavigationProp<BattleForgeInformationDrawerStackParamList>
     >();
 
   const handleMenuPress = () => {
-    if (canGoBack && navigation.canGoBack()) {
+    if (canGoBack && onBackPress) {
+      onBackPress();
+    } else if (canGoBack && navigation.canGoBack()) {
       navigation.goBack();
     } else {
       navigation.openDrawer();
