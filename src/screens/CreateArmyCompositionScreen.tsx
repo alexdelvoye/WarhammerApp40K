@@ -73,19 +73,21 @@ export default function CreateArmyCompositionScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.container}>
-        <Text style={styles.label}>Select Army</Text>
-
-        <FlatList
-          data={armies}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderArmyItem}
-        />
-
-        <Text style={styles.errorText}>{armySelectionError}</Text>
-
         <CreateArmyCompositionForm
           createArmyComposition={createArmyComposition}
-        />
+        >
+          <Text style={styles.label}>Select Army</Text>
+
+          <FlatList
+            style={styles.armyList}
+            data={armies}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderArmyItem}
+            keyboardShouldPersistTaps="handled"
+          />
+
+          <Text style={styles.errorText}>{armySelectionError}</Text>
+        </CreateArmyCompositionForm>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );

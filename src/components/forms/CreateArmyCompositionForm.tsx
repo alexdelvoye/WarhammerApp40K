@@ -7,13 +7,15 @@ import { CreateArmyCompositionScreenStyles as styles } from "../../styles/create
 
 type CreateArmyCompositionFormProps = {
   createArmyComposition: (armyCompositionName: string) => void;
+  children: React.ReactNode;
 };
 
 const CreateArmyCompositionForm = ({
   createArmyComposition,
+  children,
 }: CreateArmyCompositionFormProps) => {
   return (
-    <View>
+    <View style={styles.formContainer}>
       <Formik
         initialValues={{ armyCompositionName: "" }}
         validationSchema={createArmyCompositionValidationSchema}
@@ -22,7 +24,7 @@ const CreateArmyCompositionForm = ({
         }}
       >
         {(props) => (
-          <View>
+          <View style={styles.formContent}>
             <Text style={styles.label}>Army Name</Text>
 
             <TextInput
@@ -40,6 +42,8 @@ const CreateArmyCompositionForm = ({
                 ? props.errors.armyCompositionName
                 : ""}
             </Text>
+
+            {children}
 
             <Pressable
               style={styles.createButton}

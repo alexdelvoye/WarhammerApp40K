@@ -4,29 +4,43 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#111",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+
+  formContainer: {
+    flex: 1,
+  },
+
+  formContent: {
+    flex: 1,
   },
 
   label: {
     color: "white",
-    fontSize: 18,
+    fontSize: 22,
     marginBottom: 8,
-    marginTop: 16,
+    marginTop: 0,
   },
 
   input: {
     backgroundColor: "#1E1E1E",
     color: "white",
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 14,
+    padding: 14,
     borderWidth: 1,
     borderColor: "#333",
+    fontSize: 16,
+  },
+
+  armyList: {
+    flex: 1,
   },
 
   armyButton: {
     backgroundColor: "#1E1E1E",
-    padding: 16,
-    borderRadius: 12,
+    padding: 18,
+    borderRadius: 14,
     marginTop: 12,
     borderWidth: 1,
     borderColor: "#333",
@@ -38,19 +52,21 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
 
   armyText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 20,
   },
 
   armyRule: {
     color: "#B0B0B0",
-    marginTop: 4,
+    marginTop: 6,
+    fontSize: 15,
   },
 
   createButton: {
     backgroundColor: "#D9D9D9",
     padding: 18,
-    borderRadius: 12,
-    marginTop: 32,
+    borderRadius: 14,
+    marginTop: 12,
+    marginBottom: 20,
     alignItems: "center",
   },
 
@@ -62,6 +78,7 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
 
   errorText: {
     color: "#ff6b6b",
-    marginTop: 6,
+    marginTop: 4,
+    minHeight: 16,
   },
 });

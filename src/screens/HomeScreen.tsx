@@ -25,7 +25,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={homeScreenStyles.container}>
-      <Text style={homeScreenStyles.header}>BATTLE FORGE</Text>
+      <Text style={homeScreenStyles.header}>ARMIES</Text>
 
       <FlatList
         data={armyCompositions}
