@@ -2,21 +2,18 @@ import React, { useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import uuid from "react-native-uuid";
 
 import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
-
-import { useAppDispatch } from "../store/hooks";
-import { armyCompositionUnitsUpdated } from "../features/armyCompositions/armyCompositionSlice";
 
 import AddUnitButton from "../components/buttons/AddUnitButton";
 import SelectUnitModal from "../components/modals/SelectUnitModal";
 
 import { ArmyCompositionScreenStyles as styles } from "../styles/armyCompositionScreenStyles";
 
-import { Unit } from "../types/unit";
 import { SelectedUnit } from "../types/selected_unit";
 import UnitCard from "../components/cards/UnitCard";
+
+import { useArmyCompositionUnits } from "../hooks/useArmyCompositionUnits";
 
 type ArmyCompositionRouteProp = RouteProp<
   BattleForgeStackParamList,
@@ -29,21 +26,8 @@ export default function ArmyCompositionScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const dispatch = useAppDispatch();
-
-  const [selectedUnits, setSelectedUnits] = useState<SelectedUnit[]>(
-    armyComposition.units.map((unit) => ({
-      ...unit,
-      armyCompositionUnitId: uuid.v4().toString(),
-    })),
-  );
-
-  const totalPoints = selectedUnits.reduce(
-    (totalPoints, unit) => totalPoints + unit.points,
-    0,
-  );
-
-  const isOverPointLimit = totalPoints > 2000;
+  const { selectedUnits, totalPoints, isOverPointLimit, addUnit, removeUnit } =
+    useArmyCompositionUnits(armyComposition);
 
   const renderSelectedUnitItem = ({ item }: { item: SelectedUnit }) => (
     <UnitCard
@@ -52,47 +36,6 @@ export default function ArmyCompositionScreen() {
       onPress={() => removeUnit(item.armyCompositionUnitId)}
     />
   );
-
-  const addUnit = (unit: Unit) => {
-    const selectedUnit: SelectedUnit = {
-      ...unit,
-      armyCompositionUnitId: uuid.v4().toString(),
-    };
-
-    const updatedUnits = [...selectedUnits, selectedUnit];
-
-    setSelectedUnits((currentUnits) => [...currentUnits, selectedUnit]);
-
-    dispatch(
-      armyCompositionUnitsUpdated({
-        armyCompositionId: armyComposition.id,
-        units: updatedUnits,
-        totalPoints: updatedUnits.reduce(
-          (totalPoints, unit) => totalPoints + unit.points,
-          0,
-        ),
-      }),
-    );
-  };
-
-  const removeUnit = (armyCompositionUnitId: string) => {
-    const updatedUnits = selectedUnits.filter(
-      (unit) => unit.armyCompositionUnitId !== armyCompositionUnitId,
-    );
-
-    setSelectedUnits(updatedUnits);
-
-    dispatch(
-      armyCompositionUnitsUpdated({
-        armyCompositionId: armyComposition.id,
-        units: updatedUnits,
-        totalPoints: updatedUnits.reduce(
-          (totalPoints, unit) => totalPoints + unit.points,
-          0,
-        ),
-      }),
-    );
-  };
 
   return (
     <SafeAreaView style={styles.container}>
