@@ -4,7 +4,7 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#111",
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 8,
   },
 
@@ -18,30 +18,35 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
 
   label: {
     color: "white",
-    fontSize: 22,
-    marginBottom: 8,
+    fontSize: 18,
+    marginBottom: 6,
     marginTop: 0,
   },
 
   input: {
     backgroundColor: "#1E1E1E",
     color: "white",
-    borderRadius: 14,
-    padding: 14,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderWidth: 1,
     borderColor: "#333",
-    fontSize: 16,
+    fontSize: 15,
   },
 
   armyList: {
     flex: 1,
   },
 
+  armyListContent: {
+    paddingBottom: 8,
+  },
+
   armyButton: {
     backgroundColor: "#1E1E1E",
-    padding: 18,
-    borderRadius: 14,
-    marginTop: 12,
+    padding: 12,
+    borderRadius: 10,
+    marginTop: 8,
     borderWidth: 1,
     borderColor: "#333",
   },
@@ -52,33 +57,36 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
 
   armyText: {
     color: "white",
-    fontSize: 20,
+    fontSize: 17,
+    fontWeight: "bold",
   },
 
   armyRule: {
     color: "#B0B0B0",
-    marginTop: 6,
-    fontSize: 15,
+    marginTop: 4,
+    fontSize: 13,
   },
 
   createButton: {
     backgroundColor: "#D9D9D9",
-    padding: 18,
-    borderRadius: 14,
-    marginTop: 12,
-    marginBottom: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    marginTop: 8,
+    marginBottom: 12,
     alignItems: "center",
   },
 
   createButtonText: {
     color: "black",
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 16,
   },
 
   errorText: {
     color: "#ff6b6b",
     marginTop: 4,
-    minHeight: 16,
+    minHeight: 14,
+    fontSize: 12,
   },
 });

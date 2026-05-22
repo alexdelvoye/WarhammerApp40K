@@ -80,13 +80,17 @@ export default function ArmyCompositionScreen() {
         </View>
       ) : (
         <FlatList
+          style={styles.unitList}
           data={selectedUnits}
+          contentContainerStyle={styles.unitListContent}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderSelectedUnitItem}
         />
       )}
 
-      <AddUnitButton onPress={() => setModalVisible(true)} />
+      <View style={styles.addButtonContainer}>
+        <AddUnitButton onPress={() => setModalVisible(true)} />
+      </View>
 
       <SelectUnitModal
         visible={modalVisible}

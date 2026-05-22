@@ -80,6 +80,7 @@ export default function CreateArmyCompositionScreen() {
 
           <FlatList
             style={styles.armyList}
+            contentContainerStyle={styles.armyListContent}
             data={armies}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderArmyItem}

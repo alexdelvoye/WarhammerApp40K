@@ -4,54 +4,69 @@ export const ArmyCompositionScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#111",
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
 
   summaryCard: {
     backgroundColor: "#1E1E1E",
-    borderRadius: 14,
-    padding: 18,
+    borderRadius: 10,
+    padding: 12,
     borderWidth: 1,
     borderColor: "#333",
+    marginBottom: 10,
   },
 
   title: {
     color: "white",
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginBottom: 5,
   },
 
   subtitle: {
     color: "#B0B0B0",
-    fontSize: 18,
-    marginBottom: 4,
+    fontSize: 15,
+    marginBottom: 2,
   },
 
   rule: {
     color: "#B0B0B0",
-    fontSize: 16,
-    marginBottom: 16,
+    fontSize: 14,
+    marginBottom: 10,
   },
 
   pointsBox: {
     backgroundColor: "#D9D9D9",
     alignSelf: "flex-start",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
   },
 
   pointsText: {
     color: "black",
+    fontSize: 13,
     fontWeight: "bold",
   },
 
   sectionTitle: {
     color: "white",
-    fontSize: 24,
-    marginTop: 24,
-    marginBottom: 12,
+    fontSize: 20,
+    marginBottom: 8,
+  },
+
+  unitList: {
+    flex: 1,
+  },
+
+  unitListContent: {
+    paddingBottom: 8,
+  },
+
+  addButtonContainer: {
+    paddingTop: 8,
+    paddingBottom: 12,
   },
 
   emptyCard: {

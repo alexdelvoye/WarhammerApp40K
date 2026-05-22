@@ -3,9 +3,9 @@ import { StyleSheet } from "react-native";
 export const UnitCardStyles = StyleSheet.create({
   card: {
     backgroundColor: "#1E1E1E",
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 8,
     borderWidth: 1,
     borderColor: "#333",
     flexDirection: "row",
@@ -18,37 +18,37 @@ export const UnitCardStyles = StyleSheet.create({
 
   name: {
     color: "white",
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: "bold",
-    marginBottom: 6,
+    marginBottom: 4,
   },
 
   stats: {
     color: "#B0B0B0",
-    fontSize: 14,
-    marginBottom: 6,
+    fontSize: 13,
+    marginBottom: 4,
   },
 
   points: {
     color: "#D9D9D9",
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "bold",
   },
 
   button: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: "#D9D9D9",
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 12,
+    marginLeft: 10,
   },
 
   buttonText: {
     color: "black",
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: "bold",
-    lineHeight: 30,
+    lineHeight: 26,
   },
 });
