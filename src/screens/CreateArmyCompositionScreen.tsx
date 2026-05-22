@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import {
   FlatList,
   Keyboard,
@@ -7,8 +6,9 @@ import {
   Text,
   TouchableWithoutFeedback,
 } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import uuid from "react-native-uuid";
 
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -57,7 +57,7 @@ export default function CreateArmyCompositionScreen() {
     }
 
     const newArmyComposition: ArmyComposition = {
-      id: Date.now(),
+      id: uuid.v4().toString(),
       name: compositionName,
       army: selectedArmy,
       units: [],

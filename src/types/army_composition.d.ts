@@ -2,7 +2,7 @@ import { Army } from "./army";
 import { Unit } from "./unit";
 
 export type ArmyComposition = {
-  id: number;
+  id: string;
   name: string;
   army: Army;
   units: Unit[];

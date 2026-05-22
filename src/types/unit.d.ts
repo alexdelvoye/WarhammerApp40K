@@ -1,7 +1,7 @@
 import { Weapon } from "./weapon";
 
 export type Unit = {
-  id: number;
+  id: string;
   name: string;
   movement: number;
   toughness: number;

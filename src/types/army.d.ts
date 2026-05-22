@@ -1,7 +1,7 @@
 import { Unit } from "./unit";
 
 export type Army = {
-  id: number;
+  id: string;
   name: string;
   armyRule: string;
   units: Unit[];

@@ -2,13 +2,13 @@ import { Army } from "../types/army";
 
 export const armies: Army[] = [
   {
-    id: 1,
+    id: "1",
     name: "Imperial Knights",
     armyRule: "Code Chivalric",
     image: "",
     units: [
       {
-        id: 1,
+        id: "1",
         name: "Knight Paladin",
         movement: 10,
         toughness: 12,
@@ -22,7 +22,7 @@ export const armies: Army[] = [
         image: "",
       },
       {
-        id: 2,
+        id: "2",
         name: "Knight Errant",
         movement: 10,
         toughness: 12,
@@ -36,7 +36,7 @@ export const armies: Army[] = [
         image: "",
       },
       {
-        id: 3,
+        id: "3",
         name: "Armiger Warglaive",
         movement: 12,
         toughness: 10,
@@ -53,13 +53,13 @@ export const armies: Army[] = [
   },
 
   {
-    id: 2,
+    id: "2",
     name: "Ultramarines",
     armyRule: "Oath of Moment",
     image: "",
     units: [
       {
-        id: 4,
+        id: "4",
         name: "Intercessor Squad",
         movement: 6,
         toughness: 4,
@@ -73,7 +73,7 @@ export const armies: Army[] = [
         image: "",
       },
       {
-        id: 5,
+        id: "5",
         name: "Terminator Squad",
         movement: 5,
         toughness: 5,
@@ -87,7 +87,7 @@ export const armies: Army[] = [
         image: "",
       },
       {
-        id: 6,
+        id: "6",
         name: "Redemptor Dreadnought",
         movement: 8,
         toughness: 10,
@@ -104,13 +104,13 @@ export const armies: Army[] = [
   },
 
   {
-    id: 3,
+    id: "3",
     name: "Necrons",
     armyRule: "Reanimation Protocols",
     image: "",
     units: [
       {
-        id: 7,
+        id: "7",
         name: "Necron Warriors",
         movement: 5,
         toughness: 4,
@@ -124,7 +124,7 @@ export const armies: Army[] = [
         image: "",
       },
       {
-        id: 8,
+        id: "8",
         name: "Lychguard",
         movement: 5,
         toughness: 5,
@@ -138,7 +138,7 @@ export const armies: Army[] = [
         image: "",
       },
       {
-        id: 9,
+        id: "9",
         name: "Doomsday Ark",
         movement: 8,
         toughness: 9,

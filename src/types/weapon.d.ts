@@ -1,5 +1,5 @@
 export type Weapon = {
-  id: number;
+  id: string;
   name: string;
   range: number;
   attacks: number;
