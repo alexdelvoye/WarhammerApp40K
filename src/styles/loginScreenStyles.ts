@@ -44,4 +44,11 @@ export const LoginScreenStyles = StyleSheet.create({
     marginTop: 6,
     minHeight: 18,
   },
+
+  registerText: {
+    color: "#D9D9D9",
+    marginTop: 20,
+    textAlign: "center",
+    fontSize: 16,
+  },
 });
