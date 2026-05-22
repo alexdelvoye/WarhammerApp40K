@@ -11,6 +11,6 @@ const AddArmyCompositionButton = ({ onPress }: addButtonProps) => {
       <Text style={styles.plusText}>+</Text>
     </Pressable>
   );
-}
+};
 
 export default AddArmyCompositionButton;

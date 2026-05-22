@@ -56,6 +56,6 @@ const CreateArmyCompositionForm = ({
       </Formik>
     </View>
   );
-}
+};
 
 export default CreateArmyCompositionForm;

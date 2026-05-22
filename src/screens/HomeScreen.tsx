@@ -22,7 +22,9 @@ export default function HomeScreen() {
   const renderArmyCompositionItem = ({ item }: { item: ArmyComposition }) => (
     <ArmyCompositionCard
       armyComposition={item}
-      onPress={() => navigation.navigate("ArmyComposition", { armyComposition: item })}
+      onPress={() =>
+        navigation.navigate("ArmyComposition", { armyComposition: item })
+      }
     />
   );
 

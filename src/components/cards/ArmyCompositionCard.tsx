@@ -10,7 +10,10 @@ type ArmyCompositionCardProps = {
   onPress: () => void;
 };
 
-const ArmyCompositionCard = ({ armyComposition, onPress }: ArmyCompositionCardProps) => {
+const ArmyCompositionCard = ({
+  armyComposition,
+  onPress,
+}: ArmyCompositionCardProps) => {
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <Text style={styles.title}>{armyComposition.name}</Text>
@@ -24,6 +27,6 @@ const ArmyCompositionCard = ({ armyComposition, onPress }: ArmyCompositionCardPr
       </View>
     </Pressable>
   );
-}
+};
 
 export default ArmyCompositionCard;

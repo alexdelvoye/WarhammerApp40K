@@ -5,16 +5,13 @@ import Header from "../screens/shared/Header";
 import HomeScreen from "../screens/HomeScreen";
 import ArmyCompositionScreen from "../screens/ArmyCompositionScreen";
 import CreateArmyCompositionScreen from "../screens/CreateArmyCompositionScreen";
-import SelectUnitScreen from "../screens/SelectUnitScreen";
 
 import { ArmyComposition } from "../types/army_composition";
-import { Unit } from "../types/unit";
 
 export type BattleForgeStackParamList = {
   Home: undefined;
   CreateArmyComposition: undefined;
   ArmyComposition: { armyComposition: ArmyComposition };
-  SelectUnit: { units: Unit[]; };
 };
 
 const Stack = createStackNavigator<BattleForgeStackParamList>();
@@ -52,15 +49,6 @@ export default function BattleForgeStack() {
             />
           ),
         })}
-      />
-
-      <Stack.Screen
-        name="SelectUnit"
-        component={SelectUnitScreen}
-        options={{
-          presentation: "modal",
-          header: () => <Header title="Select Unit" canGoBack={true} />,
-        }}
       />
     </Stack.Navigator>
   );
