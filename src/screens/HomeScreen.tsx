@@ -35,7 +35,7 @@ export default function HomeScreen() {
       />
 
       <AddArmyCompositionButton
-        onPress={() => navigation.navigate("SelectArmy")}
+        onPress={() => navigation.navigate("CreateArmyComposition")}
       />
     </SafeAreaView>
   );

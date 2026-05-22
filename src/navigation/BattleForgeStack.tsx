@@ -3,11 +3,15 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import Header from "../screens/shared/Header";
 import HomeScreen from "../screens/HomeScreen";
-import SelectArmyScreen from "../screens/SelectArmyScreen";
+import ArmyCompositionScreen from "../screens/ArmyCompositionScreen";
+import CreateArmyCompositionScreen from "../screens/CreateArmyCompositionScreen";
+
+import { ArmyComposition } from "../types/army_composition";
 
 export type BattleForgeStackParamList = {
   Home: undefined;
-  SelectArmy: undefined;
+  CreateArmyComposition: undefined;
+  ArmyComposition: { armyComposition: ArmyComposition };
 };
 
 const Stack = createStackNavigator<BattleForgeStackParamList>();
@@ -24,10 +28,20 @@ export default function BattleForgeStack() {
       />
 
       <Stack.Screen
-        name="SelectArmy"
-        component={SelectArmyScreen}
+        name="CreateArmyComposition"
+        component={CreateArmyCompositionScreen}
         options={{
-          header: () => <Header title="Select Army" canGoBack={true} />,
+          header: () => (
+            <Header title="Create Army Composition" canGoBack={true} />
+          ),
+        }}
+      />
+
+      <Stack.Screen
+        name="ArmyComposition"
+        component={ArmyCompositionScreen}
+        options={{
+          header: () => <Header title="Army Composition" canGoBack={true} />,
         }}
       />
     </Stack.Navigator>

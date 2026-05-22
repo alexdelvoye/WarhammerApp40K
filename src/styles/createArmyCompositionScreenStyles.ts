@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const SelectArmyScreenStyles = StyleSheet.create({
+export const CreateArmyCompositionScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#111",
