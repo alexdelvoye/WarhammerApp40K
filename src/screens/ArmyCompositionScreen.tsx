@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import uuid from "react-native-uuid";
 
 import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
 
@@ -11,6 +12,7 @@ import SelectUnitModal from "../components/modals/SelectUnitModal";
 import { ArmyCompositionScreenStyles as styles } from "../styles/armyCompositionScreenStyles";
 
 import { Unit } from "../types/unit";
+import { SelectedUnit } from "../types/selected_unit";
 import UnitCard from "../components/cards/UnitCard";
 
 type ArmyCompositionRouteProp = RouteProp<
@@ -24,8 +26,11 @@ export default function ArmyCompositionScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [selectedUnits, setSelectedUnits] = useState<Unit[]>(
-    armyComposition.units,
+  const [selectedUnits, setSelectedUnits] = useState<SelectedUnit[]>(
+    armyComposition.units.map((unit) => ({
+      ...unit,
+      armyCompositionUnitId: uuid.v4().toString(),
+    })),
   );
 
   const totalPoints = selectedUnits.reduce(
@@ -35,20 +40,27 @@ export default function ArmyCompositionScreen() {
 
   const isOverPointLimit = totalPoints > 2000;
 
-  const renderSelectedUnitItem = ({ item }: { item: Unit }) => (
+  const renderSelectedUnitItem = ({ item }: { item: SelectedUnit }) => (
     <UnitCard
       unit={item}
       buttonText="-"
       onPress={() => {
         setSelectedUnits((currentUnits) =>
-          currentUnits.filter((unit) => unit.id !== item.id),
+          currentUnits.filter(
+            (unit) => unit.armyCompositionUnitId !== item.armyCompositionUnitId,
+          ),
         );
       }}
     />
   );
 
   const addUnit = (unit: Unit) => {
-    setSelectedUnits((currentUnits) => [...currentUnits, unit]);
+    const selectedUnit: SelectedUnit = {
+      ...unit,
+      armyCompositionUnitId: uuid.v4().toString(),
+    };
+
+    setSelectedUnits((currentUnits) => [...currentUnits, selectedUnit]);
   };
 
   return (
@@ -83,7 +95,7 @@ export default function ArmyCompositionScreen() {
           style={styles.unitList}
           data={selectedUnits}
           contentContainerStyle={styles.unitListContent}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.armyCompositionUnitId.toString()}
           renderItem={renderSelectedUnitItem}
         />
       )}
