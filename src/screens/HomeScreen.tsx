@@ -11,13 +11,16 @@ import AddArmyCompositionButton from "../components/buttons/AddArmyCompositionBu
 
 import { ArmyComposition } from "../types/army_composition";
 
-import { armyCompositions } from "../data/mockData";
+import { useAppSelector } from "../store/hooks";
+import { selectArmyCompositions } from "../features/armyCompositions/armyCompositionSlice";
 
 import { HomeScreenStyles as styles } from "../styles/homeScreenStyles";
 
 export default function HomeScreen() {
   const navigation =
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
+
+  const armyCompositions = useAppSelector(selectArmyCompositions);
 
   const renderArmyCompositionItem = ({ item }: { item: ArmyComposition }) => (
     <ArmyCompositionCard

@@ -18,6 +18,9 @@ import { ArmyComposition } from "../types/army_composition";
 
 import { armies } from "../data/mockArmies";
 
+import { useAppDispatch } from "../store/hooks";
+import { armyCompositionAdded } from "../features/armyCompositions/armyCompositionSlice";
+
 import CreateArmyCompositionForm from "../components/forms/CreateArmyCompositionForm";
 
 import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
@@ -30,6 +33,8 @@ export default function CreateArmyCompositionScreen() {
 
   const [selectedArmy, setSelectedArmy] = useState<Army | null>(null);
   const [armySelectionError, setArmySelectionError] = useState("");
+
+  const dispatch = useAppDispatch();
 
   const renderArmyItem = ({ item }: { item: Army }) => {
     const isSelected = selectedArmy?.id === item.id;
@@ -64,6 +69,8 @@ export default function CreateArmyCompositionScreen() {
       totalPoints: 0,
       image: selectedArmy.image,
     };
+
+    dispatch(armyCompositionAdded(newArmyComposition));
 
     navigation.navigate("ArmyComposition", {
       armyComposition: newArmyComposition,
