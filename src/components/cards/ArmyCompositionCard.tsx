@@ -7,13 +7,15 @@ import { armyCompositionCardStyles as styles } from "../../styles/armyCompositio
 
 type ArmyCompositionCardProps = {
   armyComposition: ArmyComposition;
+  onPress: () => void;
 };
 
 export default function ArmyCompositionCard({
   armyComposition,
+  onPress
 }: ArmyCompositionCardProps) {
   return (
-    <Pressable style={styles.card}>
+    <Pressable style={styles.card} onPress={onPress}>
       <Text style={styles.title}>{armyComposition.name}</Text>
 
       <Text style={styles.subtitle}>{armyComposition.army.armyRule}</Text>

@@ -20,7 +20,10 @@ export default function HomeScreen() {
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
 
   const renderArmyCompositionItem = ({ item }: { item: ArmyComposition }) => (
-    <ArmyCompositionCard armyComposition={item} />
+    <ArmyCompositionCard
+      armyComposition={item}
+      onPress={() => navigation.navigate("ArmyComposition", { armyComposition: item })}
+    />
   );
 
   return (
