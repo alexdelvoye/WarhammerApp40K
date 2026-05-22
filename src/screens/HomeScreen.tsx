@@ -13,7 +13,7 @@ import { ArmyComposition } from "../types/army_composition";
 
 import { armyCompositions } from "../data/mockData";
 
-import { homeScreenStyles } from "../styles/homeScreenStyles";
+import { HomeScreenStyles as styles } from "../styles/homeScreenStyles";
 
 export default function HomeScreen() {
   const navigation =
@@ -27,14 +27,14 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={homeScreenStyles.container}>
-      <Text style={homeScreenStyles.header}>ARMIES</Text>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>ARMIES</Text>
 
       <FlatList
         data={armyCompositions}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderArmyCompositionItem}
-        contentContainerStyle={homeScreenStyles.list}
+        contentContainerStyle={styles.list}
       />
 
       <AddArmyCompositionButton

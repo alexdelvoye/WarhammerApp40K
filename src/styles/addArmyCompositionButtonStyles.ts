@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const addArmyCompositionButtonStyles = StyleSheet.create({
+export const AddArmyCompositionButtonStyles = StyleSheet.create({
   button: {
     position: "absolute",
     right: 24,

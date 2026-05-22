@@ -4,6 +4,9 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
+
+import AddUnitButton from "../components/buttons/AddUnitButton";
+
 import { ArmyCompositionScreenStyles as styles } from "../styles/armyCompositionScreenStyles";
 
 type ArmyCompositionRouteProp = RouteProp<
@@ -42,6 +45,8 @@ export default function ArmyCompositionScreen() {
           No units added yet.
         </Text>
       </View>
+
+      <AddUnitButton onPress={() => console.log("Add unit pressed")} />
     </SafeAreaView>
   );
 }

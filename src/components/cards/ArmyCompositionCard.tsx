@@ -3,17 +3,14 @@ import { Pressable, Text, View } from "react-native";
 
 import { ArmyComposition } from "../../types/army_composition";
 
-import { armyCompositionCardStyles as styles } from "../../styles/armyCompositionCardStyles";
+import { ArmyCompositionCardStyles as styles } from "../../styles/armyCompositionCardStyles";
 
 type ArmyCompositionCardProps = {
   armyComposition: ArmyComposition;
   onPress: () => void;
 };
 
-export default function ArmyCompositionCard({
-  armyComposition,
-  onPress
-}: ArmyCompositionCardProps) {
+const ArmyCompositionCard = ({ armyComposition, onPress }: ArmyCompositionCardProps) => {
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <Text style={styles.title}>{armyComposition.name}</Text>
@@ -28,3 +25,5 @@ export default function ArmyCompositionCard({
     </Pressable>
   );
 }
+
+export default ArmyCompositionCard;

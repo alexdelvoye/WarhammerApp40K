@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const armyCompositionCardStyles = StyleSheet.create({
+export const ArmyCompositionCardStyles = StyleSheet.create({
   card: {
     backgroundColor: "#1E1E1E",
     borderRadius: 12,
