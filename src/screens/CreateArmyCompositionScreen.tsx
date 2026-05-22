@@ -83,7 +83,6 @@ export default function CreateArmyCompositionScreen() {
             data={armies}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderArmyItem}
-            keyboardShouldPersistTaps="handled"
           />
 
           <Text style={styles.errorText}>{armySelectionError}</Text>
