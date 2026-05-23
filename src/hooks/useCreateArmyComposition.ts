@@ -43,7 +43,6 @@ export function useCreateArmyComposition(
       army: selectedArmy,
       units: [],
       totalPoints: 0,
-      image: selectedArmy.image,
     };
 
     dispatch(armyCompositionAdded(newArmyComposition));

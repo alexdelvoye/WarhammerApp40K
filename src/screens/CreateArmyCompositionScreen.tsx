@@ -23,6 +23,9 @@ import { CreateArmyCompositionScreenStyles as styles } from "../styles/createArm
 
 import { useCreateArmyComposition } from "../hooks/useCreateArmyComposition";
 
+import { database } from "../config/firebase";
+import { seedArmies } from "../services/firestoreService";
+
 export default function CreateArmyCompositionScreen() {
   const navigation =
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
@@ -66,6 +69,21 @@ export default function CreateArmyCompositionScreen() {
           />
 
           <Text style={styles.errorText}>{armySelectionError}</Text>
+
+          {/* <Pressable
+            style={styles.createButton}
+            onPress={async () => {
+              try {
+                console.log("Seeding armies...");
+                await seedArmies(database, armies);
+                console.log("Armies seeded successfully");
+              } catch (error) {
+                console.log("Seed error:", error);
+              }
+            }}
+          >
+            <Text style={styles.createButtonText}>Seed Armies</Text>
+          </Pressable> */}
         </CreateArmyCompositionForm>
       </SafeAreaView>
     </TouchableWithoutFeedback>

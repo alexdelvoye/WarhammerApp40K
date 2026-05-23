@@ -1,5 +1,3 @@
-import { Weapon } from "./weapon";
-
 export type Unit = {
   id: string;
   name: string;
@@ -9,8 +7,6 @@ export type Unit = {
   wounds: number;
   leadership: number;
   objectControl: number;
-  weapons: Weapon[];
   ability: string;
   points: number;
-  image: string;
 };

@@ -26,7 +26,8 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
     try {
       setFirebaseError("");
       await register(auth, email, password);
-    } catch {
+    } catch (error) {
+      console.log(error);
       setFirebaseError("Registration failed");
     }
   };

@@ -5,5 +5,4 @@ export type Army = {
   name: string;
   armyRule: string;
   units: Unit[];
-  image: string;
 };

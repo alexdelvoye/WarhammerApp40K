@@ -7,5 +7,4 @@ export type ArmyComposition = {
   army: Army;
   units: Unit[];
   totalPoints: number;
-  image: string;
 };
