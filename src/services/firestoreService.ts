@@ -8,6 +8,7 @@ import {
 
 import { ArmyComposition } from "../types/army_composition";
 import { Army } from "../types/army";
+import { SelectedUnit } from "../types/selected_unit";
 
 export const saveArmyComposition = (
   database: Firestore,
@@ -33,10 +34,27 @@ export const getArmyCompositions = async (
   });
 };
 
-export const seedArmies = (database: Firestore, armies: Army[]) => {
-  armies.forEach((army) => {
-    setDoc(doc(database, "armies", army.id), army);
-  });
+export const updateArmyCompositionUnits = (
+  database: Firestore,
+  userId: string,
+  armyCompositionId: string,
+  units: SelectedUnit[],
+  totalPoints: number,
+) => {
+  return setDoc(
+    doc(database, "users", userId, "armyCompositions", armyCompositionId),
+    {
+      units,
+      totalPoints,
+    },
+    { merge: true },
+  );
+};
+
+export const seedArmies = async (database: Firestore, armies: Army[]) => {
+  for (const army of armies) {
+    await setDoc(doc(database, "armies", army.id), army);
+  }
 };
 
 export const getArmies = async (database: Firestore): Promise<Army[]> => {

@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Keyboard,
@@ -13,7 +14,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 
 import { Army } from "../types/army";
 
-import { armies } from "../data/mockArmies";
+//import { armies } from "../data/mockArmies";
 
 import CreateArmyCompositionForm from "../components/forms/CreateArmyCompositionForm";
 
@@ -24,11 +25,14 @@ import { CreateArmyCompositionScreenStyles as styles } from "../styles/createArm
 import { useCreateArmyComposition } from "../hooks/useCreateArmyComposition";
 
 import { database } from "../config/firebase";
-import { seedArmies } from "../services/firestoreService";
+import { getArmies } from "../services/firestoreService";
+//import { seedArmies } from "../services/firestoreService";
 
 export default function CreateArmyCompositionScreen() {
   const navigation =
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
+
+  const [armies, setArmies] = useState<Army[]>([]);
 
   const {
     selectedArmy,
@@ -52,6 +56,15 @@ export default function CreateArmyCompositionScreen() {
     );
   };
 
+  useEffect(() => {
+    const loadArmies = async () => {
+      const loadArmies = await getArmies(database);
+      setArmies(loadArmies);
+    };
+
+    loadArmies();
+  }, []);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.container}>
@@ -72,10 +85,12 @@ export default function CreateArmyCompositionScreen() {
 
           {/* <Pressable
             style={styles.createButton}
-            onPress={async () => {
+            onPress={() => async {
               try {
                 console.log("Seeding armies...");
+
                 await seedArmies(database, armies);
+
                 console.log("Armies seeded successfully");
               } catch (error) {
                 console.log("Seed error:", error);
