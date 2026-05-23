@@ -13,10 +13,17 @@ export default function InformationHomeScreen() {
     useNavigation<StackNavigationProp<InformationStackParamList>>();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
       <Text style={styles.title}>Information</Text>
 
       <View style={styles.cardContainer}>
+        <Pressable
+          style={styles.card}
+          onPress={() => navigation.navigate("Profile")}
+        >
+          <Text style={styles.cardText}>Profile</Text>
+        </Pressable>
+
         <Pressable
           style={styles.card}
           onPress={() => navigation.navigate("GameRules")}
@@ -29,13 +36,6 @@ export default function InformationHomeScreen() {
           onPress={() => navigation.navigate("ArmyRules")}
         >
           <Text style={styles.cardText}>Army Rules</Text>
-        </Pressable>
-
-        <Pressable
-          style={styles.card}
-          onPress={() => navigation.navigate("Profile")}
-        >
-          <Text style={styles.cardText}>Profile</Text>
         </Pressable>
       </View>
     </SafeAreaView>

@@ -55,7 +55,10 @@ export default function CreateArmyCompositionScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={styles.container}
+        edges={["left", "right", "bottom"]}
+      >
         <CreateArmyCompositionForm
           createArmyComposition={createArmyComposition}
         >

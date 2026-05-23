@@ -38,7 +38,7 @@ export default function ArmyCompositionScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
       <View style={styles.summaryCard}>
         <Text style={styles.title}>{armyComposition.name}</Text>
 

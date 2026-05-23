@@ -36,11 +36,9 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
               onBlur={props.handleBlur("newEmail")}
             />
 
-            <Text style={styles.errorText}>
-              {props.touched.newEmail && props.errors.newEmail
-                ? props.errors.newEmail
-                : ""}
-            </Text>
+            {props.touched.newEmail && props.errors.newEmail && (
+              <Text style={styles.errorText}>{props.errors.newEmail}</Text>
+            )}
 
             <TextInput
               style={styles.input}
@@ -52,11 +50,11 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
               onBlur={props.handleBlur("currentPassword")}
             />
 
-            <Text style={styles.errorText}>
-              {props.touched.currentPassword && props.errors.currentPassword
-                ? props.errors.currentPassword
-                : ""}
-            </Text>
+            {props.touched.currentPassword && props.errors.currentPassword && (
+              <Text style={styles.errorText}>
+                {props.errors.currentPassword}
+              </Text>
+            )}
 
             <Pressable
               style={styles.button}

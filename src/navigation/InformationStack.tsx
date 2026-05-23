@@ -29,10 +29,18 @@ export default function InformationStack() {
       />
 
       <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          header: () => <Header title="Profile" canGoBack={true} />,
+        }}
+      />
+
+      <Stack.Screen
         name="GameRules"
         component={GameRulesScreen}
         options={{
-          header: () => <Header title="Game Rules" />,
+          header: () => <Header title="Game Rules" canGoBack={true} />,
         }}
       />
 
@@ -40,15 +48,7 @@ export default function InformationStack() {
         name="ArmyRules"
         component={ArmyRulesScreen}
         options={{
-          header: () => <Header title="Army Rules" canGoBack />,
-        }}
-      />
-
-      <Stack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          header: () => <Header title="Profile" canGoBack={true} />,
+          header: () => <Header title="Army Rules" canGoBack={true} />,
         }}
       />
     </Stack.Navigator>

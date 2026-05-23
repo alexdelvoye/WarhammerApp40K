@@ -49,11 +49,11 @@ export default function ProfileScreen() {
     try {
       await updateUserEmail(currentUser, currentPassword, newEmail);
 
-      setUpdateMessage("Email updated successfully");
+      setUpdateMessage("Verification email sent.");
     } catch (error) {
       console.log(error);
 
-      setUpdateMessage("Failed to update email");
+      setUpdateMessage("Failed to update email.");
     }
   };
 
@@ -68,17 +68,20 @@ export default function ProfileScreen() {
     try {
       await updateUserPassword(currentUser, currentPassword, newPassword);
 
-      setUpdateMessage("Password updated successfully");
+      setUpdateMessage("Password updated successfully.");
     } catch (error) {
       console.log(error);
 
-      setUpdateMessage("Failed to update password");
+      setUpdateMessage("Failed to update password.");
     }
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={styles.container}
+        edges={["left", "right", "bottom"]}
+      >
         <ScrollView keyboardShouldPersistTaps="handled">
           <Text style={styles.title}>Profile</Text>
 

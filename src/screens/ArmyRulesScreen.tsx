@@ -24,7 +24,7 @@ export default function ArmyRulesScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
       <Text style={styles.title}>Army Rule</Text>
 
       <FlatList

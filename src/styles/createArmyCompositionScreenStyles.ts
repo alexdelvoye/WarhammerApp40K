@@ -5,7 +5,7 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#111",
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 4,
   },
 
   formContainer: {

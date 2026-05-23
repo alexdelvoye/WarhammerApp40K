@@ -37,11 +37,11 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
               onBlur={props.handleBlur("currentPassword")}
             />
 
-            <Text style={styles.errorText}>
-              {props.touched.currentPassword && props.errors.currentPassword
-                ? props.errors.currentPassword
-                : ""}
-            </Text>
+            {props.touched.currentPassword && props.errors.currentPassword && (
+              <Text style={styles.errorText}>
+                {props.errors.currentPassword}
+              </Text>
+            )}
 
             <TextInput
               style={styles.input}
@@ -53,11 +53,9 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
               onBlur={props.handleBlur("newPassword")}
             />
 
-            <Text style={styles.errorText}>
-              {props.touched.newPassword && props.errors.newPassword
-                ? props.errors.newPassword
-                : ""}
-            </Text>
+            {props.touched.newPassword && props.errors.newPassword && (
+              <Text style={styles.errorText}>{props.errors.newPassword}</Text>
+            )}
 
             <TextInput
               style={styles.input}
@@ -69,12 +67,12 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
               onBlur={props.handleBlur("confirmNewPassword")}
             />
 
-            <Text style={styles.errorText}>
-              {props.touched.confirmNewPassword &&
-              props.errors.confirmNewPassword
-                ? props.errors.confirmNewPassword
-                : ""}
-            </Text>
+            {props.touched.confirmNewPassword &&
+              props.errors.confirmNewPassword && (
+                <Text style={styles.errorText}>
+                  {props.errors.confirmNewPassword}
+                </Text>
+              )}
 
             <Pressable
               style={styles.button}

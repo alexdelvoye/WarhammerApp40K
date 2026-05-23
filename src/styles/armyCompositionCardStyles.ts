@@ -3,14 +3,14 @@ import { StyleSheet } from "react-native";
 export const ArmyCompositionCardStyles = StyleSheet.create({
   container: {
     position: "relative",
-    marginBottom: 16,
+    marginBottom: 10,
   },
 
   card: {
     backgroundColor: "#1E1E1E",
-    borderRadius: 12,
-    padding: 20,
-    paddingRight: 64,
+    borderRadius: 10,
+    padding: 12,
+    paddingRight: 60,
     borderWidth: 1,
     borderColor: "#333",
   },
@@ -28,28 +28,29 @@ export const ArmyCompositionCardStyles = StyleSheet.create({
 
   title: {
     color: "white",
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginBottom: 5,
   },
 
   subtitle: {
     color: "#B0B0B0",
-    fontSize: 16,
-    marginBottom: 4,
+    fontSize: 14,
+    marginBottom: 2,
   },
 
   pointsContainer: {
-    marginTop: 16,
+    marginTop: 10,
     backgroundColor: "#F5F5F5",
     alignSelf: "flex-start",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
   },
 
   pointsText: {
     color: "black",
+    fontSize: 13,
     fontWeight: "bold",
   },
 });

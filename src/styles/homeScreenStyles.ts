@@ -8,13 +8,15 @@ export const HomeScreenStyles = StyleSheet.create({
 
   header: {
     color: "white",
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: "bold",
-    marginTop: 20,
-    marginHorizontal: 20,
+    marginTop: 4,
+    marginHorizontal: 16,
+    marginBottom: 8,
   },
 
   list: {
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
 });

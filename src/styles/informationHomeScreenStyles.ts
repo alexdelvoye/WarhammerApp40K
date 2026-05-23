@@ -4,31 +4,33 @@ export const InformationHomeScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#111",
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 16,
   },
 
   title: {
     color: "white",
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 24,
+    marginBottom: 12,
   },
 
   cardContainer: {
-    gap: 16,
+    gap: 10,
   },
 
   card: {
     backgroundColor: "#1E1E1E",
-    borderRadius: 14,
-    padding: 22,
+    borderRadius: 10,
+    padding: 12,
     borderWidth: 1,
     borderColor: "#333",
   },
 
   cardText: {
     color: "white",
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
   },
 });

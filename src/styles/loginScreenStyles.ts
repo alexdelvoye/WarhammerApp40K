@@ -4,7 +4,7 @@ export const LoginScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#111",
-    padding: 20,
+    padding: 16,
     justifyContent: "center",
   },
 
@@ -18,8 +18,9 @@ export const LoginScreenStyles = StyleSheet.create({
   input: {
     backgroundColor: "#1E1E1E",
     color: "white",
-    borderRadius: 14,
-    padding: 16,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderWidth: 1,
     borderColor: "#333",
     fontSize: 16,
@@ -27,15 +28,16 @@ export const LoginScreenStyles = StyleSheet.create({
 
   button: {
     backgroundColor: "#D9D9D9",
-    padding: 18,
-    borderRadius: 14,
-    marginTop: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    marginTop: 12,
     alignItems: "center",
   },
 
   buttonText: {
     color: "black",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
 

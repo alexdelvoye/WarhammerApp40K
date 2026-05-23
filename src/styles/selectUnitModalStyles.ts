@@ -4,7 +4,9 @@ export const SelectUnitModalStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#111",
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
   },
 
   closeText: {
@@ -16,7 +18,7 @@ export const SelectUnitModalStyles = StyleSheet.create({
 
   pointsText: {
     color: "white",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 16,
   },

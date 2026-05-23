@@ -5,7 +5,7 @@ import {
   signOut,
   EmailAuthProvider,
   reauthenticateWithCredential,
-  updateEmail,
+  verifyBeforeUpdateEmail,
   updatePassword,
   User,
 } from "firebase/auth";
@@ -35,7 +35,7 @@ export const updateUserEmail = async (
 
   await reauthenticateWithCredential(user, credential);
 
-  return updateEmail(user, newEmail);
+  await verifyBeforeUpdateEmail(user, newEmail);
 };
 
 export const updateUserPassword = async (

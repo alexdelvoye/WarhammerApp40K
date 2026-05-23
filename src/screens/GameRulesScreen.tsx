@@ -6,7 +6,7 @@ import { GameRulesScreenStyles as styles } from "../styles/gameRulesScreenStyles
 
 export default function GameRulesScreen() {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
       <ScrollView>
         <Text style={styles.title}>Game Rules</Text>
 

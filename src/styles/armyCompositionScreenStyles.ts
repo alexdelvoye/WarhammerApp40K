@@ -5,7 +5,7 @@ export const ArmyCompositionScreenStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#111",
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 4,
   },
 
   summaryCard: {
@@ -71,8 +71,8 @@ export const ArmyCompositionScreenStyles = StyleSheet.create({
 
   emptyCard: {
     backgroundColor: "#1E1E1E",
-    borderRadius: 14,
-    padding: 18,
+    borderRadius: 10,
+    padding: 12,
     borderWidth: 1,
     borderColor: "#333",
   },
