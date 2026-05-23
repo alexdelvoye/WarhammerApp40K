@@ -2,8 +2,8 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import Header from "../screens/shared/Header";
-import GameRulesScreen from "../screens/GameRulesScreen";
 
+import GameRulesScreen from "../screens/GameRulesScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
 export type InformationStackParamList = {
