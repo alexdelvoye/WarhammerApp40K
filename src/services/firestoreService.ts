@@ -5,11 +5,28 @@ import {
   getDocs,
   setDoc,
   deleteDoc,
+  onSnapshot,
 } from "firebase/firestore";
 
 import { ArmyComposition } from "../types/army_composition";
 import { Army } from "../types/army";
 import { SelectedUnit } from "../types/selected_unit";
+
+export const subscribeToArmyCompositions = (
+  database: Firestore,
+  userId: string,
+  onArmyCompositionsChanged: (armyCompositions: ArmyComposition[]) => void,
+) => {
+  return onSnapshot(
+    collection(database, "users", userId, "armyCompositions"),
+    (querySnapshot) => {
+      const armyCompositions = querySnapshot.docs.map((document) => {
+        return document.data() as ArmyComposition;
+      });
+      onArmyCompositionsChanged(armyCompositions);
+    },
+  );
+};
 
 export const saveArmyComposition = (
   database: Firestore,
@@ -20,19 +37,6 @@ export const saveArmyComposition = (
     doc(database, "users", userId, "armyCompositions", armyComposition.id),
     armyComposition,
   );
-};
-
-export const getArmyCompositions = async (
-  database: Firestore,
-  userId: string,
-): Promise<ArmyComposition[]> => {
-  const querySnapshot = await getDocs(
-    collection(database, "users", userId, "armyCompositions"),
-  );
-
-  return querySnapshot.docs.map((document) => {
-    return document.data() as ArmyComposition;
-  });
 };
 
 export const updateArmyCompositionUnits = (

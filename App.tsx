@@ -12,7 +12,7 @@ import { store, persistor } from "./src/store/store";
 import { AuthProvider } from "./src/contexts/AuthContext";
 import { useAuth } from "./src/hooks/useAuth";
 
-import { useLoadArmyCompositions } from "./src/hooks/useLoadArmieCompositions";
+import { useLoadArmyCompositions } from "./src/hooks/useLoadArmyCompositions";
 
 import BattleForgeInformationDrawerStack from "./src/navigation/BattleForgeInformationDrawerStack";
 import AuthStack from "./src/navigation/AuthStack";

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { database } from "../config/firebase";
 import { armyCompositionsLoaded } from "../features/armyCompositions/armyCompositionSlice";
-import { getArmyCompositions } from "../services/firestoreService";
+import { subscribeToArmyCompositions } from "../services/firestoreService";
 
 import { useAppDispatch } from "../store/hooks";
 
@@ -13,19 +13,18 @@ export function useLoadArmyCompositions() {
   const { currentUser } = useAuth();
 
   useEffect(() => {
-    const loadArmyCompositions = async () => {
-      if (!currentUser) {
-        return;
-      }
+    if (!currentUser) {
+      return;
+    }
 
-      const armyCompositions = await getArmyCompositions(
-        database,
-        currentUser.uid,
-      );
+    const unsubscribe = subscribeToArmyCompositions(
+      database,
+      currentUser.uid,
+      (armyCompositions) => {
+        dispatch(armyCompositionsLoaded(armyCompositions));
+      },
+    );
 
-      dispatch(armyCompositionsLoaded(armyCompositions));
-    };
-
-    loadArmyCompositions();
+    return unsubscribe;
   }, [currentUser, dispatch]);
 }
