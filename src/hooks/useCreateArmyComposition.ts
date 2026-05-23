@@ -2,6 +2,10 @@ import { useState } from "react";
 import { StackNavigationProp } from "@react-navigation/stack";
 import uuid from "react-native-uuid";
 
+import { database } from "../config/firebase";
+import { useAuth } from "./useAuth";
+import { saveArmyComposition } from "../services/firestoreService";
+
 import { armyCompositionAdded } from "../features/armyCompositions/armyCompositionSlice";
 import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
 import { useAppDispatch } from "../store/hooks";
@@ -15,16 +19,21 @@ export function useCreateArmyComposition(
   const [armySelectionError, setArmySelectionError] = useState("");
 
   const dispatch = useAppDispatch();
+  const { currentUser } = useAuth();
 
   const selectArmy = (army: Army) => {
     setSelectedArmy(army);
     setArmySelectionError("");
   };
 
-  const createArmyComposition = (compositionName: string) => {
+  const createArmyComposition = async (compositionName: string) => {
     if (!selectedArmy) {
       setArmySelectionError("Please select an army");
+      return;
+    }
 
+    if (!currentUser) {
+      setArmySelectionError("You must be logged in");
       return;
     }
 
@@ -38,6 +47,8 @@ export function useCreateArmyComposition(
     };
 
     dispatch(armyCompositionAdded(newArmyComposition));
+
+    await saveArmyComposition(database, currentUser.uid, newArmyComposition);
 
     navigation.navigate("ArmyComposition", {
       armyComposition: newArmyComposition,

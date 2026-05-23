@@ -1,4 +1,10 @@
-import { Firestore, collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  Firestore,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
 
 import { ArmyComposition } from "../types/army_composition";
 
@@ -7,8 +13,8 @@ export const saveArmyComposition = (
   userId: string,
   armyComposition: ArmyComposition,
 ) => {
-  return addDoc(
-    collection(database, "users", userId, "armyCompositions"),
+  return setDoc(
+    doc(database, "users", userId, "armyCompositions", armyComposition.id),
     armyComposition,
   );
 };
@@ -16,10 +22,12 @@ export const saveArmyComposition = (
 export const getArmyCompositions = async (
   database: Firestore,
   userId: string,
-) => {
+): Promise<ArmyComposition[]> => {
   const querySnapshot = await getDocs(
     collection(database, "users", userId, "armyCompositions"),
   );
 
-  return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  return querySnapshot.docs.map((document) => {
+    return document.data() as ArmyComposition;
+  });
 };
