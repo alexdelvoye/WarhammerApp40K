@@ -41,6 +41,9 @@ export const HeaderStyles = StyleSheet.create({
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
+    textShadowColor: "black",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 
   placeholder: {

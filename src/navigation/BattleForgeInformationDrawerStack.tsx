@@ -14,7 +14,22 @@ const Drawer =
 
 export default function BattleForgeInformationDrawerStack() {
   return (
-    <Drawer.Navigator screenOptions={{ headerShown: false }}>
+    <Drawer.Navigator
+      screenOptions={{
+        headerShown: false,
+        drawerStyle: {
+          backgroundColor: "#111",
+        },
+        drawerActiveBackgroundColor: "#1E1E1E",
+        drawerActiveTintColor: "white",
+        drawerInactiveTintColor: "#B0B0B0",
+        drawerLabelStyle: {
+          fontSize: 16,
+          fontWeight: "bold",
+        },
+        overlayColor: "rgba(0, 0, 0, 0.55)",
+      }}
+    >
       <Drawer.Screen
         name="BattleForgeStack"
         component={BattleForgeStack}

@@ -1,6 +1,6 @@
 import "react-native-gesture-handler";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -14,16 +14,27 @@ import { useAuth } from "./src/hooks/useAuth";
 
 import { useLoadArmyCompositions } from "./src/hooks/useLoadArmyCompositions";
 
+import SplashScreen from "./src/screens/SplashScreen";
+
 import BattleForgeInformationDrawerStack from "./src/navigation/BattleForgeInformationDrawerStack";
 import AuthStack from "./src/navigation/AuthStack";
 
 const AppContent = () => {
   const { currentUser, loading } = useAuth();
+  const [showSplashScreen, setShowSplashScreen] = useState(true);
 
   useLoadArmyCompositions();
 
-  if (loading) {
-    return null;
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplashScreen(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading || showSplashScreen) {
+    return <SplashScreen />;
   }
 
   return (
