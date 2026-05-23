@@ -3,12 +3,18 @@ import uuid from "react-native-uuid";
 
 import { armyCompositionUnitsUpdated } from "../features/armyCompositions/armyCompositionSlice";
 import { useAppDispatch } from "../store/hooks";
+
+import { database } from "../config/firebase";
+import { useAuth } from "./useAuth";
+import { updateArmyCompositionUnits } from "../services/firestoreService";
+
 import { ArmyComposition } from "../types/army_composition";
 import { SelectedUnit } from "../types/selected_unit";
 import { Unit } from "../types/unit";
 
 export function useArmyCompositionUnits(armyComposition: ArmyComposition) {
   const dispatch = useAppDispatch();
+  const { currentUser } = useAuth();
 
   const [selectedUnits, setSelectedUnits] = useState<SelectedUnit[]>(
     armyComposition.units.map((unit) => ({
@@ -18,11 +24,36 @@ export function useArmyCompositionUnits(armyComposition: ArmyComposition) {
   );
 
   const totalPoints = selectedUnits.reduce(
-    (totalPoints, unit) => totalPoints + unit.points,
+    (total, unit) => total + unit.points,
     0,
   );
 
-  const addUnit = (unit: Unit) => {
+  const saveUpdatedUnits = async (
+    updatedUnits: SelectedUnit[],
+    updatedTotalPoints: number,
+  ) => {
+    setSelectedUnits(updatedUnits);
+
+    dispatch(
+      armyCompositionUnitsUpdated({
+        armyCompositionId: armyComposition.id,
+        units: updatedUnits,
+        totalPoints: updatedTotalPoints,
+      }),
+    );
+
+    if (currentUser) {
+      await updateArmyCompositionUnits(
+        database,
+        currentUser.uid,
+        armyComposition.id,
+        updatedUnits,
+        updatedTotalPoints,
+      );
+    }
+  };
+
+  const addUnit = async (unit: Unit) => {
     const selectedUnit: SelectedUnit = {
       ...unit,
       armyCompositionUnitId: uuid.v4().toString(),
@@ -30,37 +61,25 @@ export function useArmyCompositionUnits(armyComposition: ArmyComposition) {
 
     const updatedUnits = [...selectedUnits, selectedUnit];
 
-    setSelectedUnits((currentUnits) => [...currentUnits, selectedUnit]);
-
-    dispatch(
-      armyCompositionUnitsUpdated({
-        armyCompositionId: armyComposition.id,
-        units: updatedUnits,
-        totalPoints: updatedUnits.reduce(
-          (totalPoints, unit) => totalPoints + unit.points,
-          0,
-        ),
-      }),
+    const updatedTotalPoints = updatedUnits.reduce(
+      (total, unit) => total + unit.points,
+      0,
     );
+
+    await saveUpdatedUnits(updatedUnits, updatedTotalPoints);
   };
 
-  const removeUnit = (armyCompositionUnitId: string) => {
+  const removeUnit = async (armyCompositionUnitId: string) => {
     const updatedUnits = selectedUnits.filter(
       (unit) => unit.armyCompositionUnitId !== armyCompositionUnitId,
     );
 
-    setSelectedUnits(updatedUnits);
-
-    dispatch(
-      armyCompositionUnitsUpdated({
-        armyCompositionId: armyComposition.id,
-        units: updatedUnits,
-        totalPoints: updatedUnits.reduce(
-          (totalPoints, unit) => totalPoints + unit.points,
-          0,
-        ),
-      }),
+    const updatedTotalPoints = updatedUnits.reduce(
+      (total, unit) => total + unit.points,
+      0,
     );
+
+    await saveUpdatedUnits(updatedUnits, updatedTotalPoints);
   };
 
   return {

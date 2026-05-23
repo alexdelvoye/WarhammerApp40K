@@ -7,7 +7,7 @@ import { SelectedUnit } from "../../types/selected_unit";
 const initialState: ArmyComposition[] = [];
 
 export const armyCompositionSlice = createSlice({
-  name: "armyCompostions",
+  name: "armyCompositions",
   initialState,
   reducers: {
     armyCompositionAdded(state, action: { payload: ArmyComposition }) {
@@ -34,13 +34,20 @@ export const armyCompositionSlice = createSlice({
         armyComposition.totalPoints = action.payload.totalPoints;
       }
     },
+
+    armyCompositionDeleted(state, action: { payload: string }) {
+      return state.filter((composition) => composition.id !== action.payload);
+    },
   },
 });
 
 export const selectArmyCompositions = (state: RootState) =>
   state.armyCompositions;
 
-export const { armyCompositionAdded, armyCompositionUnitsUpdated } =
-  armyCompositionSlice.actions;
+export const {
+  armyCompositionAdded,
+  armyCompositionUnitsUpdated,
+  armyCompositionDeleted,
+} = armyCompositionSlice.actions;
 
 export default armyCompositionSlice.reducer;

@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect, useState } from "react";
 import {
   FlatList,
   Keyboard,
@@ -23,16 +22,14 @@ import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
 import { CreateArmyCompositionScreenStyles as styles } from "../styles/createArmyCompositionScreenStyles";
 
 import { useCreateArmyComposition } from "../hooks/useCreateArmyComposition";
-
-import { database } from "../config/firebase";
-import { getArmies } from "../services/firestoreService";
+import { useArmies } from "../hooks/useArmies";
 //import { seedArmies } from "../services/firestoreService";
 
 export default function CreateArmyCompositionScreen() {
   const navigation =
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
 
-  const [armies, setArmies] = useState<Army[]>([]);
+  const { armies } = useArmies();
 
   const {
     selectedArmy,
@@ -55,15 +52,6 @@ export default function CreateArmyCompositionScreen() {
       </Pressable>
     );
   };
-
-  useEffect(() => {
-    const loadArmies = async () => {
-      const loadArmies = await getArmies(database);
-      setArmies(loadArmies);
-    };
-
-    loadArmies();
-  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

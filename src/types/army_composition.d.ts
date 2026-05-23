@@ -1,10 +1,10 @@
 import { Army } from "./army";
-import { Unit } from "./unit";
+import { SelectedUnit } from "./selected_unit";
 
 export type ArmyComposition = {
   id: string;
   name: string;
   army: Army;
-  units: Unit[];
+  units: SelectedUnit[];
   totalPoints: number;
 };

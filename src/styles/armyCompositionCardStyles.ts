@@ -1,13 +1,29 @@
 import { StyleSheet } from "react-native";
 
 export const ArmyCompositionCardStyles = StyleSheet.create({
+  container: {
+    position: "relative",
+    marginBottom: 16,
+  },
+
   card: {
     backgroundColor: "#1E1E1E",
     borderRadius: 12,
     padding: 20,
-    marginBottom: 16,
+    paddingRight: 64,
     borderWidth: 1,
     borderColor: "#333",
+  },
+
+  deleteButton: {
+    position: "absolute",
+    right: 16,
+    top: "50%",
+    transform: [{ translateY: -22 }],
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   title: {

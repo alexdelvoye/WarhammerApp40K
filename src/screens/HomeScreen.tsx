@@ -1,6 +1,7 @@
 import React from "react";
 import { FlatList, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
@@ -11,8 +12,7 @@ import AddArmyCompositionButton from "../components/buttons/AddArmyCompositionBu
 
 import { ArmyComposition } from "../types/army_composition";
 
-import { useAppSelector } from "../store/hooks";
-import { selectArmyCompositions } from "../features/armyCompositions/armyCompositionSlice";
+import { useArmyCompositions } from "../hooks/useArmyCompositions";
 
 import { HomeScreenStyles as styles } from "../styles/homeScreenStyles";
 
@@ -20,16 +20,21 @@ export default function HomeScreen() {
   const navigation =
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
 
-  const armyCompositions = useAppSelector(selectArmyCompositions);
+  const { armyCompositions, deleteComposition } = useArmyCompositions();
 
-  const renderArmyCompositionItem = ({ item }: { item: ArmyComposition }) => (
-    <ArmyCompositionCard
-      armyComposition={item}
-      onPress={() =>
-        navigation.navigate("ArmyComposition", { armyComposition: item })
-      }
-    />
-  );
+  const renderArmyCompositionItem = ({ item }: { item: ArmyComposition }) => {
+    return (
+      <ArmyCompositionCard
+        armyComposition={item}
+        onPress={() =>
+          navigation.navigate("ArmyComposition", {
+            armyComposition: item,
+          })
+        }
+        onDelete={() => deleteComposition(item.id)}
+      />
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>

@@ -4,6 +4,7 @@ import {
   doc,
   getDocs,
   setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
 import { ArmyComposition } from "../types/army_composition";
@@ -48,6 +49,16 @@ export const updateArmyCompositionUnits = (
       totalPoints,
     },
     { merge: true },
+  );
+};
+
+export const deleteArmyComposition = (
+  database: Firestore,
+  userId: string,
+  armyCompositionId: string,
+) => {
+  return deleteDoc(
+    doc(database, "users", userId, "armyCompositions", armyCompositionId),
   );
 };
 
