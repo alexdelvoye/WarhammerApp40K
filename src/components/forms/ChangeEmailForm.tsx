@@ -28,22 +28,6 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
           <View>
             <TextInput
               style={styles.input}
-              placeholder="Current password"
-              placeholderTextColor="#777"
-              secureTextEntry
-              value={props.values.currentPassword}
-              onChangeText={props.handleChange("currentPassword")}
-              onBlur={props.handleBlur("currentPassword")}
-            />
-
-            <Text style={styles.errorText}>
-              {props.touched.currentPassword && props.errors.currentPassword
-                ? props.errors.currentPassword
-                : ""}
-            </Text>
-
-            <TextInput
-              style={styles.input}
               placeholder="New email"
               placeholderTextColor="#777"
               autoCapitalize="none"
@@ -55,6 +39,22 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
             <Text style={styles.errorText}>
               {props.touched.newEmail && props.errors.newEmail
                 ? props.errors.newEmail
+                : ""}
+            </Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Current password"
+              placeholderTextColor="#777"
+              secureTextEntry
+              value={props.values.currentPassword}
+              onChangeText={props.handleChange("currentPassword")}
+              onBlur={props.handleBlur("currentPassword")}
+            />
+
+            <Text style={styles.errorText}>
+              {props.touched.currentPassword && props.errors.currentPassword
+                ? props.errors.currentPassword
                 : ""}
             </Text>
 
