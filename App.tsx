@@ -13,6 +13,7 @@ import { AuthProvider } from "./src/contexts/AuthContext";
 import { useAuth } from "./src/hooks/useAuth";
 
 import { useLoadArmyCompositions } from "./src/hooks/useLoadArmyCompositions";
+import { useLoadFonts } from "./src/hooks/useLoadFonts";
 
 import SplashScreen from "./src/screens/SplashScreen";
 
@@ -21,6 +22,8 @@ import AuthStack from "./src/navigation/AuthStack";
 
 const AppContent = () => {
   const { currentUser, loading } = useAuth();
+  const [fontsLoaded] = useLoadFonts();
+
   const [showSplashScreen, setShowSplashScreen] = useState(true);
 
   useLoadArmyCompositions();
@@ -33,7 +36,7 @@ const AppContent = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  if (loading || showSplashScreen) {
+  if (loading || showSplashScreen || !fontsLoaded) {
     return <SplashScreen />;
   }
 

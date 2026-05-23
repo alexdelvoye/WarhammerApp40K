@@ -39,11 +39,11 @@ export const HeaderStyles = StyleSheet.create({
   title: {
     flex: 1,
     color: "white",
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 30,
+    fontFamily: "MedievalSharp",
     textShadowColor: "black",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 3,
   },
 
   placeholder: {
