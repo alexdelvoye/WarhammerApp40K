@@ -12,11 +12,15 @@ import { store, persistor } from "./src/store/store";
 import { AuthProvider } from "./src/contexts/AuthContext";
 import { useAuth } from "./src/hooks/useAuth";
 
+import { useLoadArmyCompositions } from "./src/hooks/useLoadArmieCompositions";
+
 import BattleForgeInformationDrawerStack from "./src/navigation/BattleForgeInformationDrawerStack";
 import AuthStack from "./src/navigation/AuthStack";
 
 const AppContent = () => {
   const { currentUser, loading } = useAuth();
+
+  useLoadArmyCompositions();
 
   if (loading) {
     return null;

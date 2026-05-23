@@ -10,6 +10,14 @@ export const armyCompositionSlice = createSlice({
   name: "armyCompositions",
   initialState,
   reducers: {
+    armyCompositionsLoaded(_state, action: { payload: ArmyComposition[] }) {
+      return action.payload;
+    },
+
+    armyCompositionsCleared() {
+      return [];
+    },
+
     armyCompositionAdded(state, action: { payload: ArmyComposition }) {
       state.push(action.payload);
     },
@@ -45,6 +53,8 @@ export const selectArmyCompositions = (state: RootState) =>
   state.armyCompositions;
 
 export const {
+  armyCompositionsLoaded,
+  armyCompositionsCleared,
   armyCompositionAdded,
   armyCompositionUnitsUpdated,
   armyCompositionDeleted,
