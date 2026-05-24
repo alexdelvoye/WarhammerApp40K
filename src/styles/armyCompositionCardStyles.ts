@@ -53,4 +53,8 @@ export const ArmyCompositionCardStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "bold",
   },
+
+  pointsTextError: {
+    color: "#ff6b6b",
+  },
 });

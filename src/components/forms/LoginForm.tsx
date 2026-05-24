@@ -5,13 +5,19 @@ import { Formik } from "formik";
 
 import { loginValidationSchema } from "../../validation/loginValidationSchema";
 
+import { useTheme } from "../../hooks/useTheme";
+
 import { LoginScreenStyles as styles } from "../../styles/loginScreenStyles";
+import { themeColors } from "../../styles/themeColors";
 
 type LoginFormProps = {
   handleLogin: (email: string, password: string) => void;
 };
 
 const LoginForm = ({ handleLogin }: LoginFormProps) => {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
+
   return (
     <View>
       <Formik
@@ -24,9 +30,16 @@ const LoginForm = ({ handleLogin }: LoginFormProps) => {
         {(props) => (
           <View>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="email"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               value={props.values.email}
               onChangeText={props.handleChange("email")}
               onBlur={props.handleBlur("email")}
@@ -40,9 +53,16 @@ const LoginForm = ({ handleLogin }: LoginFormProps) => {
             </Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Password"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               value={props.values.password}
               onChangeText={props.handleChange("password")}
               onBlur={props.handleBlur("password")}
@@ -56,10 +76,12 @@ const LoginForm = ({ handleLogin }: LoginFormProps) => {
             </Text>
 
             <Pressable
-              style={styles.button}
+              style={[styles.button, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}
             >
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={[styles.buttonText, { color: colors.buttonText }]}>
+                Login
+              </Text>
             </Pressable>
           </View>
         )}

@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, Text } from "react-native";
+import { FlatList, ImageBackground, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useNavigation } from "@react-navigation/native";
@@ -37,19 +37,27 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
-      <Text style={styles.header}>ARMIES</Text>
+    <ImageBackground
+      source={require("../assets/images/screen_background.png")}
+      style={styles.background}
+    >
+      <SafeAreaView
+        style={styles.container}
+        edges={["left", "right", "bottom"]}
+      >
+        <Text style={styles.header}>ARMIES</Text>
 
-      <FlatList
-        data={armyCompositions}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderArmyCompositionItem}
-        contentContainerStyle={styles.list}
-      />
+        <FlatList
+          data={armyCompositions}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderArmyCompositionItem}
+          contentContainerStyle={styles.list}
+        />
 
-      <AddArmyCompositionButton
-        onPress={() => navigation.navigate("CreateArmyComposition")}
-      />
-    </SafeAreaView>
+        <AddArmyCompositionButton
+          onPress={() => navigation.navigate("CreateArmyComposition")}
+        />
+      </SafeAreaView>
+    </ImageBackground>
   );
 }

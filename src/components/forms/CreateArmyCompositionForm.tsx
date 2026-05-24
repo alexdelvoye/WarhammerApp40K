@@ -3,7 +3,11 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import { Formik } from "formik";
 
 import { createArmyCompositionValidationSchema } from "../../validation/createArmyCompositionValidationSchema";
+
+import { useTheme } from "../../hooks/useTheme";
+
 import { CreateArmyCompositionScreenStyles as styles } from "../../styles/createArmyCompositionScreenStyles";
+import { themeColors } from "../../styles/themeColors";
 
 type CreateArmyCompositionFormProps = {
   createArmyComposition: (armyCompositionName: string) => void;
@@ -14,6 +18,9 @@ const CreateArmyCompositionForm = ({
   createArmyComposition,
   children,
 }: CreateArmyCompositionFormProps) => {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
+
   return (
     <View style={styles.formContainer}>
       <Formik
@@ -28,9 +35,16 @@ const CreateArmyCompositionForm = ({
             <Text style={styles.label}>Army Name</Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Enter army name"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               onChangeText={props.handleChange("armyCompositionName")}
               value={props.values.armyCompositionName}
               onBlur={props.handleBlur("armyCompositionName")}
@@ -46,10 +60,14 @@ const CreateArmyCompositionForm = ({
             {children}
 
             <Pressable
-              style={styles.createButton}
+              style={[styles.createButton, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}
             >
-              <Text style={styles.createButtonText}>Create Army</Text>
+              <Text
+                style={[styles.createButtonText, { color: colors.buttonText }]}
+              >
+                Create Army
+              </Text>
             </Pressable>
           </View>
         )}

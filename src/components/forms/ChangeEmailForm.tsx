@@ -3,13 +3,20 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { Formik } from "formik";
 
 import { changeEmailValidationSchema } from "../../validation/changeEmailValidationSchema";
+
+import { useTheme } from "../../hooks/useTheme";
+
 import { ProfileScreenStyles as styles } from "../../styles/profileScreenStyles";
+import { themeColors } from "../../styles/themeColors";
 
 type ChangeEmailFormProps = {
   changeEmail: (currentPassword: string, newEmail: string) => void;
 };
 
 const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
+
   return (
     <View style={styles.formContainer}>
       <Text style={styles.sectionTitle}>Change Email</Text>
@@ -27,9 +34,16 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
         {(props) => (
           <View>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="New email"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               autoCapitalize="none"
               value={props.values.newEmail}
               onChangeText={props.handleChange("newEmail")}
@@ -41,9 +55,16 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
             )}
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Current password"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               secureTextEntry
               value={props.values.currentPassword}
               onChangeText={props.handleChange("currentPassword")}
@@ -57,10 +78,12 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
             )}
 
             <Pressable
-              style={styles.button}
+              style={[styles.button, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}
             >
-              <Text style={styles.buttonText}>Update Email</Text>
+              <Text style={[styles.buttonText, { color: colors.buttonText }]}>
+                Update Email
+              </Text>
             </Pressable>
           </View>
         )}

@@ -1,14 +1,13 @@
 import React from "react";
-import { View, Text, Pressable, Image, ImageBackground } from "react-native";
+import { Image, ImageBackground, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/core";
-
-import { HeaderStyles as styles } from "../../styles/headerStyles";
-
 import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { Ionicons } from "@expo/vector-icons";
+
 import { BattleForgeInformationDrawerStackParamList } from "../../navigation/BattleForgeInformationDrawerStack";
 
-import { Ionicons } from "@expo/vector-icons";
+import { HeaderStyles as styles } from "../../styles/headerStyles";
 
 type HeaderProps = {
   title: string;
@@ -33,7 +32,7 @@ const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <ImageBackground
         source={require("../../assets/images/header_background.png")}
         style={styles.container}

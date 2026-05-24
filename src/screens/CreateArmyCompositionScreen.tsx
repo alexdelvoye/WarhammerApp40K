@@ -1,6 +1,7 @@
 import React from "react";
 import {
   FlatList,
+  ImageBackground,
   Keyboard,
   Pressable,
   Text,
@@ -11,18 +12,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
-import { Army } from "../types/army";
-
 //import { armies } from "../data/mockArmies";
 
 import CreateArmyCompositionForm from "../components/forms/CreateArmyCompositionForm";
 
 import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
 
-import { CreateArmyCompositionScreenStyles as styles } from "../styles/createArmyCompositionScreenStyles";
+import { Army } from "../types/army";
 
-import { useCreateArmyComposition } from "../hooks/useCreateArmyComposition";
 import { useArmies } from "../hooks/useArmies";
+import { useCreateArmyComposition } from "../hooks/useCreateArmyComposition";
+import { useTheme } from "../hooks/useTheme";
+
+import { CreateArmyCompositionScreenStyles as styles } from "../styles/createArmyCompositionScreenStyles";
+import { themeColors } from "../styles/themeColors";
 //import { seedArmies } from "../services/firestoreService";
 
 export default function CreateArmyCompositionScreen() {
@@ -30,6 +33,9 @@ export default function CreateArmyCompositionScreen() {
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
 
   const { armies } = useArmies();
+
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
 
   const {
     selectedArmy,
@@ -43,38 +49,50 @@ export default function CreateArmyCompositionScreen() {
 
     return (
       <Pressable
-        style={[styles.armyButton, isSelected && styles.selectedArmyButton]}
+        style={[
+          styles.armyButton,
+          { backgroundColor: colors.card, borderColor: colors.border },
+          isSelected && { borderColor: colors.text },
+        ]}
         onPress={() => selectArmy(item)}
       >
-        <Text style={styles.armyText}>{item.name}</Text>
+        <Text style={[styles.armyText, { color: colors.text }]}>
+          {item.name}
+        </Text>
 
-        <Text style={styles.armyRule}>{item.armyRule}</Text>
+        <Text style={[styles.armyRule, { color: colors.subText }]}>
+          {item.armyRule}
+        </Text>
       </Pressable>
     );
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView
-        style={styles.container}
-        edges={["left", "right", "bottom"]}
+      <ImageBackground
+        source={require("../assets/images/screen_background.png")}
+        style={styles.background}
       >
-        <CreateArmyCompositionForm
-          createArmyComposition={createArmyComposition}
+        <SafeAreaView
+          style={styles.container}
+          edges={["left", "right", "bottom"]}
         >
-          <Text style={styles.label}>Select Army</Text>
+          <CreateArmyCompositionForm
+            createArmyComposition={createArmyComposition}
+          >
+            <Text style={styles.label}>Select Army</Text>
 
-          <FlatList
-            style={styles.armyList}
-            contentContainerStyle={styles.armyListContent}
-            data={armies}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderArmyItem}
-          />
+            <FlatList
+              style={styles.armyList}
+              contentContainerStyle={styles.armyListContent}
+              data={armies}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderArmyItem}
+            />
 
-          <Text style={styles.errorText}>{armySelectionError}</Text>
+            <Text style={styles.errorText}>{armySelectionError}</Text>
 
-          {/* <Pressable
+            {/* <Pressable
             style={styles.createButton}
             onPress={() => async {
               try {
@@ -90,8 +108,9 @@ export default function CreateArmyCompositionScreen() {
           >
             <Text style={styles.createButtonText}>Seed Armies</Text>
           </Pressable> */}
-        </CreateArmyCompositionForm>
-      </SafeAreaView>
+          </CreateArmyCompositionForm>
+        </SafeAreaView>
+      </ImageBackground>
     </TouchableWithoutFeedback>
   );
 }

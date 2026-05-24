@@ -3,13 +3,20 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { Formik } from "formik";
 
 import { changePasswordValidationSchema } from "../../validation/changePasswordValidationSchema";
+
+import { useTheme } from "../../hooks/useTheme";
+
 import { ProfileScreenStyles as styles } from "../../styles/profileScreenStyles";
+import { themeColors } from "../../styles/themeColors";
 
 type ChangePasswordFormProps = {
   changePassword: (currentPassword: string, newPassword: string) => void;
 };
 
 const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
+
   return (
     <View style={styles.formContainer}>
       <Text style={styles.sectionTitle}>Change Password</Text>
@@ -28,9 +35,16 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
         {(props) => (
           <View>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Current password"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               secureTextEntry
               value={props.values.currentPassword}
               onChangeText={props.handleChange("currentPassword")}
@@ -44,9 +58,16 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
             )}
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="New password"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               secureTextEntry
               value={props.values.newPassword}
               onChangeText={props.handleChange("newPassword")}
@@ -58,9 +79,16 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
             )}
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Confirm new password"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               secureTextEntry
               value={props.values.confirmNewPassword}
               onChangeText={props.handleChange("confirmNewPassword")}
@@ -75,10 +103,12 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
               )}
 
             <Pressable
-              style={styles.button}
+              style={[styles.button, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}
             >
-              <Text style={styles.buttonText}>Update Password</Text>
+              <Text style={[styles.buttonText, { color: colors.buttonText }]}>
+                Update Password
+              </Text>
             </Pressable>
           </View>
         )}

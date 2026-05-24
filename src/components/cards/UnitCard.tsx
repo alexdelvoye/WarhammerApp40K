@@ -3,7 +3,10 @@ import { Pressable, Text, View } from "react-native";
 
 import { Unit } from "../../types/unit";
 
+import { useTheme } from "../../hooks/useTheme";
+
 import { UnitCardStyles as styles } from "../../styles/unitCardStyles";
+import { themeColors } from "../../styles/themeColors";
 
 type UnitCardProps = {
   unit: Unit;
@@ -12,20 +15,35 @@ type UnitCardProps = {
 };
 
 const UnitCard = ({ unit, buttonText, onPress }: UnitCardProps) => {
-  return (
-    <View style={styles.card}>
-      <View style={styles.container}>
-        <Text style={styles.name}>{unit.name}</Text>
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
 
-        <Text style={styles.stats}>
+  return (
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: colors.card, borderColor: colors.border },
+      ]}
+    >
+      <View style={styles.container}>
+        <Text style={[styles.name, { color: colors.text }]}>{unit.name}</Text>
+
+        <Text style={[styles.stats, { color: colors.subText }]}>
           {`M ${unit.movement}" | T ${unit.toughness} | Sv ${unit.save}+ | W ${unit.wounds}`}
         </Text>
 
-        <Text style={styles.points}>{unit.points} Points</Text>
+        <Text style={[styles.points, { color: colors.subText }]}>
+          {unit.points} Points
+        </Text>
       </View>
 
-      <Pressable style={styles.button} onPress={onPress}>
-        <Text style={styles.buttonText}>{buttonText}</Text>
+      <Pressable
+        style={[styles.button, { backgroundColor: colors.button }]}
+        onPress={onPress}
+      >
+        <Text style={[styles.buttonText, { color: colors.buttonText }]}>
+          {buttonText}
+        </Text>
       </Pressable>
     </View>
   );

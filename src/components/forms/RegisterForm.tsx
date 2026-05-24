@@ -5,13 +5,19 @@ import { Formik } from "formik";
 
 import { registerValidationSchema } from "../../validation/registerValidationSchema";
 
+import { useTheme } from "../../hooks/useTheme";
+
 import { RegisterScreenStyles as styles } from "../../styles/registerScreenStyles";
+import { themeColors } from "../../styles/themeColors";
 
 type RegisterFormProps = {
   handleRegister: (email: string, password: string) => void;
 };
 
 const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
+
   return (
     <View>
       <Formik
@@ -28,9 +34,16 @@ const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
         {(props) => (
           <View>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Email"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               value={props.values.email}
               onChangeText={props.handleChange("email")}
               onBlur={props.handleBlur("email")}
@@ -44,9 +57,16 @@ const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
             </Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Password"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               value={props.values.password}
               onChangeText={props.handleChange("password")}
               onBlur={props.handleBlur("password")}
@@ -60,9 +80,16 @@ const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
             </Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Confirm password"
-              placeholderTextColor="#777"
+              placeholderTextColor={colors.subText}
               value={props.values.confirmPassword}
               onChangeText={props.handleChange("confirmPassword")}
               onBlur={props.handleBlur("confirmPassword")}
@@ -76,10 +103,12 @@ const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
             </Text>
 
             <Pressable
-              style={styles.button}
+              style={[styles.button, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}
             >
-              <Text style={styles.buttonText}>Register</Text>
+              <Text style={[styles.buttonText, { color: colors.buttonText }]}>
+                Register
+              </Text>
             </Pressable>
           </View>
         )}

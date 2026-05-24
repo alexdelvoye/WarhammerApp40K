@@ -1,16 +1,16 @@
 import { useState } from "react";
 import uuid from "react-native-uuid";
 
+import { database } from "../config/firebase";
+import { updateArmyCompositionUnits } from "../services/firestoreService";
 import { armyCompositionUnitsUpdated } from "../features/armyCompositions/armyCompositionSlice";
 import { useAppDispatch } from "../store/hooks";
-
-import { database } from "../config/firebase";
-import { useAuth } from "./useAuth";
-import { updateArmyCompositionUnits } from "../services/firestoreService";
 
 import { ArmyComposition } from "../types/army_composition";
 import { SelectedUnit } from "../types/selected_unit";
 import { Unit } from "../types/unit";
+
+import { useAuth } from "./useAuth";
 
 export function useArmyCompositionUnits(armyComposition: ArmyComposition) {
   const dispatch = useAppDispatch();

@@ -2,11 +2,12 @@ import { StyleSheet } from "react-native";
 
 export const HeaderStyles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "#111",
+    backgroundColor: "transparent",
   },
 
   container: {
     width: "100%",
+    height: 90,
   },
 
   header: {
@@ -21,12 +22,6 @@ export const HeaderStyles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     alignItems: "center",
-  },
-
-  navigationText: {
-    color: "white",
-    fontSize: 32,
-    fontWeight: "bold",
   },
 
   icon: {

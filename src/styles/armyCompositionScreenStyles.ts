@@ -1,11 +1,15 @@
 import { StyleSheet } from "react-native";
 
 export const ArmyCompositionScreenStyles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
+
   container: {
     flex: 1,
-    backgroundColor: "#111",
+    backgroundColor: "transparent",
     paddingHorizontal: 16,
-    paddingTop: 4,
+    paddingTop: 16,
   },
 
   summaryCard: {

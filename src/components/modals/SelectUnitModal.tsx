@@ -3,9 +3,13 @@ import { FlatList, Modal, Pressable, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Unit } from "../../types/unit";
+
+import { useTheme } from "../../hooks/useTheme";
+
 import UnitCard from "../cards/UnitCard";
 
 import { SelectUnitModalStyles as styles } from "../../styles/selectUnitModalStyles";
+import { themeColors } from "../../styles/themeColors";
 
 type SelectUnitModalProps = {
   visible: boolean;
@@ -24,6 +28,9 @@ const SelectUnitModal = ({
   onClose,
   onAddUnit,
 }: SelectUnitModalProps) => {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
+
   const renderUnitItem = ({ item }: { item: Unit }) => {
     return (
       <UnitCard unit={item} buttonText="+" onPress={() => onAddUnit(item)} />
@@ -34,14 +41,17 @@ const SelectUnitModal = ({
 
   return (
     <Modal visible={visible} animationType="slide">
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <Pressable onPress={onClose}>
-          <Text style={styles.closeText}>Close</Text>
+          <Text style={[styles.closeText, { color: colors.text }]}>Close</Text>
         </Pressable>
 
         <Text
           style={[
             styles.pointsText,
+            { color: colors.text },
             isOverPointLimit && styles.pointsTextError,
           ]}
         >

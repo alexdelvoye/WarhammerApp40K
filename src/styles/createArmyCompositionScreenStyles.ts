@@ -1,11 +1,15 @@
 import { StyleSheet } from "react-native";
 
 export const CreateArmyCompositionScreenStyles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
+
   container: {
     flex: 1,
-    backgroundColor: "#111",
+    backgroundColor: "transparent",
     paddingHorizontal: 16,
-    paddingTop: 4,
+    paddingTop: 16,
   },
 
   formContainer: {
@@ -49,10 +53,6 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
     marginTop: 8,
     borderWidth: 1,
     borderColor: "#333",
-  },
-
-  selectedArmyButton: {
-    borderColor: "#FFFFFF",
   },
 
   armyText: {

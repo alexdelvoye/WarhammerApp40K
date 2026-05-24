@@ -11,16 +11,16 @@ export const SelectUnitModalStyles = StyleSheet.create({
 
   closeText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 12,
   },
 
   pointsText: {
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 12,
   },
 
   pointsTextError: {

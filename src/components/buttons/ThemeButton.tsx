@@ -1,17 +1,15 @@
 import React from "react";
 import { Pressable, Text } from "react-native";
 
-import { useTheme } from "../../hooks/useTheme";
-
-import { AddUnitButtonStyles as styles } from "../../styles/addUnitButtonStyles";
+import { ThemeButtonStyles as styles } from "../../styles/themeButtonStyles";
 import { themeColors } from "../../styles/themeColors";
 
-type AddUnitButtonProps = {
+type ThemeButtonProps = {
+  theme: "dark" | "light";
   onPress: () => void;
 };
 
-const AddUnitButton = ({ onPress }: AddUnitButtonProps) => {
-  const { theme } = useTheme();
+const ThemeButton = ({ theme, onPress }: ThemeButtonProps) => {
   const colors = themeColors[theme];
 
   return (
@@ -20,10 +18,10 @@ const AddUnitButton = ({ onPress }: AddUnitButtonProps) => {
       onPress={onPress}
     >
       <Text style={[styles.buttonText, { color: colors.buttonText }]}>
-        Add Unit
+        Switch to {theme === "dark" ? "Light" : "Dark"} Theme
       </Text>
     </Pressable>
   );
 };
 
-export default AddUnitButton;
+export default ThemeButton;

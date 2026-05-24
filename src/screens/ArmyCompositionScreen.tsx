@@ -1,19 +1,21 @@
 import React, { useState } from "react";
-import { FlatList, Text, View } from "react-native";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { FlatList, ImageBackground, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
 import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
 
 import AddUnitButton from "../components/buttons/AddUnitButton";
+import UnitCard from "../components/cards/UnitCard";
 import SelectUnitModal from "../components/modals/SelectUnitModal";
 
-import { ArmyCompositionScreenStyles as styles } from "../styles/armyCompositionScreenStyles";
-
 import { SelectedUnit } from "../types/selected_unit";
-import UnitCard from "../components/cards/UnitCard";
 
 import { useArmyCompositionUnits } from "../hooks/useArmyCompositionUnits";
+import { useTheme } from "../hooks/useTheme";
+
+import { ArmyCompositionScreenStyles as styles } from "../styles/armyCompositionScreenStyles";
+import { themeColors } from "../styles/themeColors";
 
 type ArmyCompositionRouteProp = RouteProp<
   BattleForgeStackParamList,
@@ -25,6 +27,9 @@ export default function ArmyCompositionScreen() {
   const { armyComposition } = route.params;
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
 
   const { selectedUnits, totalPoints, isOverPointLimit, addUnit, removeUnit } =
     useArmyCompositionUnits(armyComposition);
@@ -38,54 +43,81 @@ export default function ArmyCompositionScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
-      <View style={styles.summaryCard}>
-        <Text style={styles.title}>{armyComposition.name}</Text>
+    <ImageBackground
+      source={require("../assets/images/screen_background.png")}
+      style={styles.background}
+    >
+      <SafeAreaView
+        style={styles.container}
+        edges={["left", "right", "bottom"]}
+      >
+        <View
+          style={[
+            styles.summaryCard,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
+        >
+          <Text style={[styles.title, { color: colors.text }]}>
+            {armyComposition.name}
+          </Text>
 
-        <Text style={styles.subtitle}>{armyComposition.army.name}</Text>
+          <Text style={[styles.subtitle, { color: colors.subText }]}>
+            {armyComposition.army.name}
+          </Text>
 
-        <Text style={styles.rule}>{armyComposition.army.armyRule}</Text>
+          <Text style={[styles.rule, { color: colors.subText }]}>
+            {armyComposition.army.armyRule}
+          </Text>
 
-        <View style={styles.pointsBox}>
-          <Text
+          <View style={[styles.pointsBox, { backgroundColor: colors.button }]}>
+            <Text
+              style={[
+                styles.pointsText,
+                { color: colors.buttonText },
+                isOverPointLimit && styles.pointsTextError,
+              ]}
+            >
+              {totalPoints}/2000 Points
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.sectionTitle}>Units</Text>
+
+        {selectedUnits.length === 0 ? (
+          <View
             style={[
-              styles.pointsText,
-              isOverPointLimit && styles.pointsTextError,
+              styles.emptyCard,
+              { backgroundColor: colors.card, borderColor: colors.border },
             ]}
           >
-            {totalPoints}/2000 Points
-          </Text>
-        </View>
-      </View>
+            <Text style={[styles.emptyText, { color: colors.subText }]}>
+              No units added yet.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            style={styles.unitList}
+            data={selectedUnits}
+            contentContainerStyle={styles.unitListContent}
+            keyExtractor={(item) => item.armyCompositionUnitId.toString()}
+            renderItem={renderSelectedUnitItem}
+          />
+        )}
 
-      <Text style={styles.sectionTitle}>Units</Text>
-
-      {selectedUnits.length === 0 ? (
-        <View style={styles.emptyCard}>
-          <Text style={styles.emptyText}>No units added yet.</Text>
+        <View style={styles.addButtonContainer}>
+          <AddUnitButton onPress={() => setModalVisible(true)} />
         </View>
-      ) : (
-        <FlatList
-          style={styles.unitList}
-          data={selectedUnits}
-          contentContainerStyle={styles.unitListContent}
-          keyExtractor={(item) => item.armyCompositionUnitId.toString()}
-          renderItem={renderSelectedUnitItem}
+
+        <SelectUnitModal
+          visible={modalVisible}
+          units={armyComposition.army.units}
+          totalPoints={totalPoints}
+          maxPoints={2000}
+          onClose={() => setModalVisible(false)}
+          onAddUnit={addUnit}
         />
-      )}
-
-      <View style={styles.addButtonContainer}>
-        <AddUnitButton onPress={() => setModalVisible(true)} />
-      </View>
-
-      <SelectUnitModal
-        visible={modalVisible}
-        units={armyComposition.army.units}
-        totalPoints={totalPoints}
-        maxPoints={2000}
-        onClose={() => setModalVisible(false)}
-        onAddUnit={addUnit}
-      />
-    </SafeAreaView>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }

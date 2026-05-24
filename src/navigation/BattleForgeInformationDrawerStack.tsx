@@ -4,6 +4,10 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import BattleForgeStack from "./BattleForgeStack";
 import InformationStack from "./InformationStack";
 
+import { useTheme } from "../hooks/useTheme";
+
+import { themeColors } from "../styles/themeColors";
+
 export type BattleForgeInformationDrawerStackParamList = {
   BattleForgeStack: undefined;
   InformationStack: undefined;
@@ -13,16 +17,19 @@ const Drawer =
   createDrawerNavigator<BattleForgeInformationDrawerStackParamList>();
 
 export default function BattleForgeInformationDrawerStack() {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
+
   return (
     <Drawer.Navigator
       screenOptions={{
         headerShown: false,
         drawerStyle: {
-          backgroundColor: "#111",
+          backgroundColor: colors.background,
         },
-        drawerActiveBackgroundColor: "#1E1E1E",
-        drawerActiveTintColor: "white",
-        drawerInactiveTintColor: "#B0B0B0",
+        drawerActiveBackgroundColor: colors.card,
+        drawerActiveTintColor: colors.text,
+        drawerInactiveTintColor: colors.subText,
         drawerLabelStyle: {
           fontSize: 16,
           fontWeight: "bold",

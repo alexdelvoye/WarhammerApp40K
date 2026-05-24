@@ -3,14 +3,16 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import uuid from "react-native-uuid";
 
 import { database } from "../config/firebase";
-import { useAuth } from "./useAuth";
 import { saveArmyComposition } from "../services/firestoreService";
-
 import { armyCompositionAdded } from "../features/armyCompositions/armyCompositionSlice";
-import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
 import { useAppDispatch } from "../store/hooks";
+
+import { BattleForgeStackParamList } from "../navigation/BattleForgeStack";
+
 import { Army } from "../types/army";
 import { ArmyComposition } from "../types/army_composition";
+
+import { useAuth } from "./useAuth";
 
 export function useCreateArmyComposition(
   navigation: StackNavigationProp<BattleForgeStackParamList>,

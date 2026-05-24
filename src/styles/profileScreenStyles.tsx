@@ -1,11 +1,15 @@
 import { StyleSheet } from "react-native";
 
 export const ProfileScreenStyles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
+
   container: {
     flex: 1,
-    backgroundColor: "#111",
+    backgroundColor: "transparent",
     paddingHorizontal: 16,
-    paddingTop: 4,
+    paddingTop: 16,
     paddingBottom: 16,
   },
 
@@ -18,8 +22,8 @@ export const ProfileScreenStyles = StyleSheet.create({
 
   label: {
     color: "#B0B0B0",
-    fontSize: 16,
-    marginBottom: 8,
+    fontSize: 14,
+    marginBottom: 4,
   },
 
   email: {
@@ -33,7 +37,7 @@ export const ProfileScreenStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
-    marginTop: 12,
+    marginTop: 10,
   },
 
   formContainer: {

@@ -10,15 +10,16 @@ import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./src/store/store";
 
 import { AuthProvider } from "./src/contexts/AuthContext";
-import { useAuth } from "./src/hooks/useAuth";
+import { ThemeProvider } from "./src/contexts/ThemeContext";
 
+import { useAuth } from "./src/hooks/useAuth";
 import { useLoadArmyCompositions } from "./src/hooks/useLoadArmyCompositions";
 import { useLoadFonts } from "./src/hooks/useLoadFonts";
 
-import SplashScreen from "./src/screens/SplashScreen";
-
-import BattleForgeInformationDrawerStack from "./src/navigation/BattleForgeInformationDrawerStack";
 import AuthStack from "./src/navigation/AuthStack";
+import BattleForgeInformationDrawerStack from "./src/navigation/BattleForgeInformationDrawerStack";
+
+import SplashScreen from "./src/screens/SplashScreen";
 
 const AppContent = () => {
   const { currentUser, loading } = useAuth();
@@ -53,7 +54,9 @@ export default function App() {
       <PersistGate loading={null} persistor={persistor}>
         <SafeAreaProvider>
           <AuthProvider>
-            <AppContent />
+            <ThemeProvider>
+              <AppContent />
+            </ThemeProvider>
           </AuthProvider>
         </SafeAreaProvider>
       </PersistGate>

@@ -8,14 +8,14 @@ type AuthContextType = {
   loading: boolean;
 };
 
+type AuthProviderProps = {
+  children: ReactNode;
+};
+
 export const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   loading: true,
 });
-
-type AuthProviderProps = {
-  children: ReactNode;
-};
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);

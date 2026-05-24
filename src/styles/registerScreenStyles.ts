@@ -1,18 +1,22 @@
 import { StyleSheet } from "react-native";
 
 export const RegisterScreenStyles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
+
   container: {
     flex: 1,
-    backgroundColor: "#111",
+    backgroundColor: "transparent",
     padding: 16,
     justifyContent: "center",
   },
 
   title: {
     color: "white",
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 24,
+    marginBottom: 16,
   },
 
   input: {
@@ -49,7 +53,7 @@ export const RegisterScreenStyles = StyleSheet.create({
 
   loginText: {
     color: "#D9D9D9",
-    marginTop: 20,
+    marginTop: 16,
     textAlign: "center",
     fontSize: 16,
   },

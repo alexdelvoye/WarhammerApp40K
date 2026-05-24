@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   Keyboard,
+  ImageBackground,
   ScrollView,
   Text,
   TouchableWithoutFeedback,
@@ -8,25 +9,29 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { auth } from "../config/firebase";
-import { useAuth } from "../hooks/useAuth";
 import {
   logout,
   updateUserEmail,
   updateUserPassword,
 } from "../services/authService";
 
-import { useAppDispatch } from "../store/hooks";
 import { armyCompositionsCleared } from "../features/armyCompositions/armyCompositionSlice";
+import { useAppDispatch } from "../store/hooks";
+
+import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
 
 import LogoutButton from "../components/buttons/LogoutButton";
+import ThemeButton from "../components/buttons/ThemeButton";
+import ChangeEmailForm from "../components/forms/ChangeEmailForm";
+import ChangePasswordForm from "../components/forms/ChangePasswordForm";
 
 import { ProfileScreenStyles as styles } from "../styles/profileScreenStyles";
 
-import ChangePasswordForm from "../components/forms/ChangePasswordForm";
-import ChangeEmailForm from "../components/forms/ChangeEmailForm";
-
 export default function ProfileScreen() {
   const { currentUser } = useAuth();
+
+  const { theme, toggleTheme } = useTheme();
 
   const dispatch = useAppDispatch();
 
@@ -50,9 +55,7 @@ export default function ProfileScreen() {
       await updateUserEmail(currentUser, currentPassword, newEmail);
 
       setUpdateMessage("Verification email sent.");
-    } catch (error) {
-      console.log(error);
-
+    } catch {
       setUpdateMessage("Failed to update email.");
     }
   };
@@ -69,35 +72,44 @@ export default function ProfileScreen() {
       await updateUserPassword(currentUser, currentPassword, newPassword);
 
       setUpdateMessage("Password updated successfully.");
-    } catch (error) {
-      console.log(error);
-
+    } catch {
       setUpdateMessage("Failed to update password.");
     }
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView
-        style={styles.container}
-        edges={["left", "right", "bottom"]}
+      <ImageBackground
+        source={require("../assets/images/screen_background.png")}
+        style={styles.background}
       >
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <Text style={styles.title}>Profile</Text>
+        <SafeAreaView
+          style={styles.container}
+          edges={["left", "right", "bottom"]}
+        >
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <Text style={styles.title}>Profile</Text>
 
-          <Text style={styles.label}>Logged in as:</Text>
+            <Text style={styles.label}>Logged in as:</Text>
 
-          <Text style={styles.email}>{currentUser?.email}</Text>
+            <Text style={styles.email}>{currentUser?.email}</Text>
 
-          <Text style={styles.errorText}>{updateMessage}</Text>
+            <Text style={styles.label}>Current theme:</Text>
 
-          <ChangeEmailForm changeEmail={handleChangeEmail} />
+            <Text style={styles.email}>{theme}</Text>
 
-          <ChangePasswordForm changePassword={handleChangePassword} />
+            <ThemeButton theme={theme} onPress={toggleTheme} />
 
-          <LogoutButton onPress={handleLogout} />
-        </ScrollView>
-      </SafeAreaView>
+            <Text style={styles.errorText}>{updateMessage}</Text>
+
+            <ChangeEmailForm changeEmail={handleChangeEmail} />
+
+            <ChangePasswordForm changePassword={handleChangePassword} />
+
+            <LogoutButton onPress={handleLogout} />
+          </ScrollView>
+        </SafeAreaView>
+      </ImageBackground>
     </TouchableWithoutFeedback>
   );
 }
