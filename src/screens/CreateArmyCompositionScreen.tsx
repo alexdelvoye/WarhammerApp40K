@@ -6,6 +6,8 @@ import {
   Pressable,
   Text,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -69,30 +71,34 @@ export default function CreateArmyCompositionScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ImageBackground
-        source={require("../assets/images/screen_background.png")}
-        style={styles.background}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <SafeAreaView
-          style={styles.container}
-          edges={["left", "right", "bottom"]}
+        <ImageBackground
+          source={require("../assets/images/screen_background.png")}
+          style={styles.background}
         >
-          <CreateArmyCompositionForm
-            createArmyComposition={createArmyComposition}
+          <SafeAreaView
+            style={styles.container}
+            edges={["left", "right", "bottom"]}
           >
-            <Text style={styles.label}>Select Army</Text>
+            <CreateArmyCompositionForm
+              createArmyComposition={createArmyComposition}
+            >
+              <Text style={styles.label}>Select Army</Text>
 
-            <FlatList
-              style={styles.armyList}
-              contentContainerStyle={styles.armyListContent}
-              data={armies}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderArmyItem}
-            />
+              <FlatList
+                style={styles.armyList}
+                contentContainerStyle={styles.armyListContent}
+                data={armies}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={renderArmyItem}
+              />
 
-            <Text style={styles.errorText}>{armySelectionError}</Text>
+              <Text style={styles.errorText}>{armySelectionError}</Text>
 
-            {/* <Pressable
+              {/* <Pressable
             style={styles.createButton}
             onPress={() => async {
               try {
@@ -108,9 +114,10 @@ export default function CreateArmyCompositionScreen() {
           >
             <Text style={styles.createButtonText}>Seed Armies</Text>
           </Pressable> */}
-          </CreateArmyCompositionForm>
-        </SafeAreaView>
-      </ImageBackground>
+            </CreateArmyCompositionForm>
+          </SafeAreaView>
+        </ImageBackground>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }

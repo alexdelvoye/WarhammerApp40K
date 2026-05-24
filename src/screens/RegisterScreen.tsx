@@ -5,6 +5,8 @@ import {
   Pressable,
   Text,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -41,24 +43,29 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ImageBackground
-        source={require("../assets/images/screen_background.png")}
-        style={[styles.background, { backgroundColor: colors.background }]}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <SafeAreaView style={styles.container}>
-          <Text style={styles.title}>Register</Text>
+        <ImageBackground
+          source={require("../assets/images/screen_background.png")}
+          style={[styles.background, { backgroundColor: colors.background }]}
+        >
+          <SafeAreaView style={styles.container}>
+            <Text style={styles.title}>Register</Text>
 
-          <RegisterForm handleRegister={handleRegister} />
+            <RegisterForm handleRegister={handleRegister} />
 
-          <Text style={styles.errorText}>{firebaseError}</Text>
+            <Text style={styles.errorText}>{firebaseError}</Text>
 
-          <Pressable onPress={() => navigation.navigate("Login")}>
-            <Text style={styles.loginText}>
-              Already have an account? Login here
-            </Text>
-          </Pressable>
-        </SafeAreaView>
-      </ImageBackground>
+            <Pressable onPress={() => navigation.navigate("Login")}>
+              <Text style={styles.loginText}>
+                Already have an account? Login here
+              </Text>
+            </Pressable>
+          </SafeAreaView>
+        </ImageBackground>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }

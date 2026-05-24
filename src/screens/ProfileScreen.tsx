@@ -5,6 +5,8 @@ import {
   ScrollView,
   Text,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -79,37 +81,44 @@ export default function ProfileScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ImageBackground
-        source={require("../assets/images/screen_background.png")}
-        style={styles.background}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <SafeAreaView
-          style={styles.container}
-          edges={["left", "right", "bottom"]}
+        <ImageBackground
+          source={require("../assets/images/screen_background.png")}
+          style={styles.background}
         >
-          <ScrollView keyboardShouldPersistTaps="handled">
-            <Text style={styles.title}>Profile</Text>
+          <SafeAreaView
+            style={styles.container}
+            edges={["left", "right", "bottom"]}
+          >
+            <ScrollView keyboardShouldPersistTaps="handled">
+              <Text style={styles.title}>Profile</Text>
 
-            <Text style={styles.label}>Logged in as:</Text>
+              <Text style={styles.label}>Logged in as:</Text>
 
-            <Text style={styles.email}>{currentUser?.email}</Text>
+              <Text style={styles.email}>{currentUser?.email}</Text>
 
-            <Text style={styles.label}>Current theme:</Text>
+              <Text style={styles.label}>Current theme:</Text>
 
-            <Text style={styles.email}>{theme}</Text>
+              <Text style={styles.email}>{theme}</Text>
 
-            <ThemeButton theme={theme} onPress={toggleTheme} />
+              <ThemeButton theme={theme} onPress={toggleTheme} />
 
-            <Text style={styles.errorText}>{updateMessage}</Text>
+              {updateMessage && (
+                <Text style={styles.errorText}>{updateMessage}</Text>
+              )}
 
-            <ChangeEmailForm changeEmail={handleChangeEmail} />
+              <ChangeEmailForm changeEmail={handleChangeEmail} />
 
-            <ChangePasswordForm changePassword={handleChangePassword} />
+              <ChangePasswordForm changePassword={handleChangePassword} />
 
-            <LogoutButton onPress={handleLogout} />
-          </ScrollView>
-        </SafeAreaView>
-      </ImageBackground>
+              <LogoutButton onPress={handleLogout} />
+            </ScrollView>
+          </SafeAreaView>
+        </ImageBackground>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
