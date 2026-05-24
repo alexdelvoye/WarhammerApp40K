@@ -26,7 +26,7 @@ export default function GameRulesScreen() {
         edges={["left", "right", "bottom"]}
       >
         <ScrollView>
-          <Text style={styles.title}>Game Rules</Text>
+          <Text style={styles.title}>GAME RULES</Text>
 
           <View style={cardStyle}>
             <Text style={[styles.cardTitle, { color: colors.text }]}>

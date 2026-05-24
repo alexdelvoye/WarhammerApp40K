@@ -27,7 +27,7 @@ export default function InformationHomeScreen() {
         style={styles.container}
         edges={["left", "right", "bottom"]}
       >
-        <Text style={styles.title}>Information</Text>
+        <Text style={styles.title}>INFORMATION</Text>
 
         <View style={styles.cardContainer}>
           <Pressable

@@ -99,7 +99,7 @@ export default function ProfileScreen() {
             edges={["left", "right", "bottom"]}
           >
             <ScrollView keyboardShouldPersistTaps="handled">
-              <Text style={styles.title}>Profile</Text>
+              <Text style={styles.title}>PROFILE</Text>
 
               <Text style={styles.label}>Logged in as:</Text>
 
