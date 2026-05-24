@@ -48,7 +48,7 @@ export default function ArmyRulesScreen() {
         style={styles.container}
         edges={["left", "right", "bottom"]}
       >
-        <Text style={styles.title}>Army Rule</Text>
+        <Text style={styles.title}>Army Rules</Text>
 
         <FlatList
           data={armies}
