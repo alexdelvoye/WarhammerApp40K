@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import {
   ImageBackground,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   Text,
   TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -44,7 +44,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.keyboardAvoidingView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ImageBackground

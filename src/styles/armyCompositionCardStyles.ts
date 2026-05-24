@@ -9,10 +9,12 @@ export const ArmyCompositionCardStyles = StyleSheet.create({
   card: {
     backgroundColor: "#1E1E1E",
     borderRadius: 10,
-    padding: 12,
+    padding: 0,
     paddingRight: 60,
     borderWidth: 1,
     borderColor: "#333",
+    overflow: "hidden",
+    minHeight: 150,
   },
 
   deleteButton: {
@@ -56,5 +58,20 @@ export const ArmyCompositionCardStyles = StyleSheet.create({
 
   pointsTextError: {
     color: "#ff6b6b",
+  },
+
+  imageBackground: {
+    flex: 1,
+  },
+
+  image: {
+    borderRadius: 10,
+  },
+
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    padding: 12,
+    borderRadius: 10,
   },
 });

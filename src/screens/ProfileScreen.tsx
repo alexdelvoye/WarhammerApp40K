@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import {
-  Keyboard,
   ImageBackground,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -82,7 +82,7 @@ export default function ProfileScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.keyboardAvoidingView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ImageBackground

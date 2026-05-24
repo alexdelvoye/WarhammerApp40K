@@ -5,6 +5,10 @@ export const ProfileScreenStyles = StyleSheet.create({
     flex: 1,
   },
 
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+
   container: {
     flex: 1,
     backgroundColor: "transparent",

@@ -1,8 +1,9 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, ImageBackground } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { ArmyComposition } from "../../types/army_composition";
+import { armyImages } from "../../utils/armyImages";
 
 import { useTheme } from "../../hooks/useTheme";
 
@@ -12,7 +13,7 @@ import { themeColors } from "../../styles/themeColors";
 type ArmyCompositionCardProps = {
   armyComposition: ArmyComposition;
   onPress: () => void;
-  onDelete?: () => void;
+  onDelete: () => void;
 };
 
 const ArmyCompositionCard = ({
@@ -33,28 +34,36 @@ const ArmyCompositionCard = ({
         ]}
         onPress={onPress}
       >
-        <Text style={[styles.title, { color: colors.text }]}>
-          {armyComposition.name}
-        </Text>
-
-        <Text style={[styles.subtitle, { color: colors.subText }]}>
-          {armyComposition.army.armyRule}
-        </Text>
-
-        <View
-          style={[styles.pointsContainer, { backgroundColor: colors.button }]}
+        <ImageBackground
+          source={armyImages[armyComposition.army.imageKey]}
+          style={styles.imageBackground}
+          imageStyle={styles.image}
         >
-          <Text
-            style={[
-              styles.pointsText,
-              { color: colors.buttonText },
-              isOverPointLimit && styles.pointsTextError,
-            ]}
-          >
-            {armyComposition.totalPoints} / 2000 Points
-          </Text>
-        </View>
+          <View style={styles.overlay}>
+            <Text style={styles.title}>{armyComposition.name}</Text>
+
+            <Text style={styles.subtitle}>{armyComposition.army.armyRule}</Text>
+
+            <View
+              style={[
+                styles.pointsContainer,
+                { backgroundColor: colors.button },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.pointsText,
+                  { color: colors.buttonText },
+                  isOverPointLimit && styles.pointsTextError,
+                ]}
+              >
+                {armyComposition.totalPoints} / 2000 Points
+              </Text>
+            </View>
+          </View>
+        </ImageBackground>
       </Pressable>
+
       {onDelete && (
         <Pressable style={styles.deleteButton} onPress={onDelete}>
           {({ pressed }) => (

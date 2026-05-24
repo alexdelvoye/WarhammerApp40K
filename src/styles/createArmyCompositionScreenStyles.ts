@@ -5,6 +5,10 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
     flex: 1,
   },
 
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+
   container: {
     flex: 1,
     backgroundColor: "transparent",
@@ -47,12 +51,26 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
   },
 
   armyButton: {
-    backgroundColor: "#1E1E1E",
-    padding: 12,
     borderRadius: 10,
     marginTop: 8,
     borderWidth: 1,
     borderColor: "#333",
+    overflow: "hidden",
+  },
+
+  armyImageBackground: {
+    minHeight: 95,
+  },
+
+  armyImage: {
+    borderRadius: 10,
+  },
+
+  armyOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    padding: 12,
+    justifyContent: "center",
   },
 
   armyText: {
@@ -62,7 +80,7 @@ export const CreateArmyCompositionScreenStyles = StyleSheet.create({
   },
 
   armyRule: {
-    color: "#B0B0B0",
+    color: "#D9D9D9",
     marginTop: 4,
     fontSize: 13,
   },

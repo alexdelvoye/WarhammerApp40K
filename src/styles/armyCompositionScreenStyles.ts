@@ -13,12 +13,20 @@ export const ArmyCompositionScreenStyles = StyleSheet.create({
   },
 
   summaryCard: {
-    backgroundColor: "#1E1E1E",
     borderRadius: 10,
-    padding: 12,
     borderWidth: 1,
     borderColor: "#333",
     marginBottom: 10,
+    overflow: "hidden",
+  },
+
+  summaryCardImage: {
+    borderRadius: 10,
+  },
+
+  summaryOverlay: {
+    backgroundColor: "rgba(0,0,0,0.55)",
+    padding: 12,
   },
 
   title: {

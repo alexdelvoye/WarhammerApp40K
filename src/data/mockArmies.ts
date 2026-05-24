@@ -5,6 +5,7 @@ export const armies: Army[] = [
     id: "1",
     name: "Imperial Knights",
     armyRule: "Code Chivalric",
+    imageKey: "imperialKnights",
     units: [
       {
         id: "1",
@@ -109,6 +110,7 @@ export const armies: Army[] = [
     id: "2",
     name: "Ultramarines",
     armyRule: "Oath of Moment",
+    imageKey: "ultramarines",
     units: [
       {
         id: "4",
@@ -213,6 +215,7 @@ export const armies: Army[] = [
     id: "3",
     name: "Necrons",
     armyRule: "Reanimation Protocols",
+    imageKey: "necrons",
     units: [
       {
         id: "7",
