@@ -22,6 +22,7 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
       <Text style={styles.sectionTitle}>Change Password</Text>
 
       <Formik
+        // The validation schema checks password rules and matching confirmation.
         initialValues={{
           currentPassword: "",
           newPassword: "",
@@ -29,6 +30,7 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
         }}
         validationSchema={changePasswordValidationSchema}
         onSubmit={(values) => {
+          // Only current and new password are needed by Firebase.
           changePassword(values.currentPassword, values.newPassword);
         }}
       >

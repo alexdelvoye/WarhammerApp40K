@@ -35,6 +35,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   const handleRegister = async (email: string, password: string) => {
     try {
       setFirebaseError("");
+      // Creating the Firebase user also logs them in automatically.
       await register(auth, email, password);
     } catch {
       setFirebaseError("Registration failed");
@@ -43,6 +44,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      {/* KeyboardAvoidingView prevents the keyboard from covering the register form. */}
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}

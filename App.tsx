@@ -22,14 +22,17 @@ import BattleForgeInformationDrawerStack from "./src/navigation/BattleForgeInfor
 import SplashScreen from "./src/screens/SplashScreen";
 
 const AppContent = () => {
+  // Auth state decides which part of the app should be visible.
   const { currentUser, loading } = useAuth();
   const [fontsLoaded] = useLoadFonts();
 
   const [showSplashScreen, setShowSplashScreen] = useState(true);
 
+  // Keeps the Redux army list synchronized with Firestore while a user is logged in.
   useLoadArmyCompositions();
 
   useEffect(() => {
+    // The splash screen is shown briefly so loading does not feel abrupt.
     const timer = setTimeout(() => {
       setShowSplashScreen(false);
     }, 2000);
@@ -38,11 +41,13 @@ const AppContent = () => {
   }, []);
 
   if (loading || showSplashScreen || !fontsLoaded) {
+    // The app waits here until authentication, fonts, and the short splash delay are finished.
     return <SplashScreen />;
   }
 
   return (
     <NavigationContainer>
+      {/* Logged-in users see the app; visitors only see authentication screens. */}
       {currentUser ? <BattleForgeInformationDrawerStack /> : <AuthStack />}
     </NavigationContainer>
   );
@@ -50,9 +55,12 @@ const AppContent = () => {
 
 export default function App() {
   return (
+    // Provider makes the Redux store available to every screen and component.
     <Provider store={store}>
+      {/* PersistGate reloads saved Redux data before rendering the app UI. */}
       <PersistGate loading={null} persistor={persistor}>
         <SafeAreaProvider>
+          {/* Context providers expose authentication and theme state globally. */}
           <AuthProvider>
             <ThemeProvider>
               <AppContent />

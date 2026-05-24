@@ -22,6 +22,7 @@ const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) => {
     >();
 
   const handleMenuPress = () => {
+    // The same button acts as Back on detail screens and Menu on top-level screens.
     if (canGoBack && onBackPress) {
       onBackPress();
     } else if (canGoBack && navigation.canGoBack()) {
@@ -33,6 +34,7 @@ const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) => {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      {/* The header uses an image background, so title/icons stay white for readability. */}
       <ImageBackground
         source={require("../../assets/images/header_background.png")}
         style={styles.container}

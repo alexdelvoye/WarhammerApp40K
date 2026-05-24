@@ -34,6 +34,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const handleLogin = async (email: string, password: string) => {
     try {
       setFirebaseError("");
+      // Firebase handles password verification and updates AuthContext on success.
       await login(auth, email, password);
     } catch {
       setFirebaseError("Login failed");
@@ -42,6 +43,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      {/* KeyboardAvoidingView keeps form fields visible while typing on mobile. */}
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}

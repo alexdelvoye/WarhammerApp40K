@@ -32,15 +32,18 @@ const SelectUnitModal = ({
   const colors = themeColors[theme];
 
   const renderUnitItem = ({ item }: { item: Unit }) => {
+    // In the modal, the same UnitCard uses a plus button to add units.
     return (
       <UnitCard unit={item} buttonText="+" onPress={() => onAddUnit(item)} />
     );
   };
 
+  // Shows red points text when the composition is above the allowed limit.
   const isOverPointLimit = totalPoints > maxPoints;
 
   return (
     <Modal visible={visible} animationType="slide">
+      {/* Modal uses its own SafeAreaView because it is displayed as a separate screen layer. */}
       <SafeAreaView
         style={[styles.container, { backgroundColor: colors.background }]}
       >
@@ -58,6 +61,7 @@ const SelectUnitModal = ({
           {totalPoints}/{maxPoints} Points
         </Text>
 
+        {/* The modal receives units from the selected army, so only valid units are shown. */}
         <FlatList
           data={units}
           renderItem={renderUnitItem}

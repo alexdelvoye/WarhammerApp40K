@@ -15,6 +15,7 @@ export function useArmyCompositions() {
   const armyCompositions = useAppSelector(selectArmyCompositions);
 
   const deleteComposition = async (id: string) => {
+    // Optimistic update: remove it from the screen first, then delete it remotely.
     dispatch(armyCompositionDeleted(id));
 
     if (currentUser) {

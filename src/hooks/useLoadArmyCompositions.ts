@@ -13,9 +13,11 @@ export function useLoadArmyCompositions() {
 
   useEffect(() => {
     if (!currentUser) {
+      // No logged-in user means there is no personal Firestore path to listen to.
       return;
     }
 
+    // Subscribe once for the current user and push every Firestore update into Redux.
     const unsubscribe = subscribeToArmyCompositions(
       database,
       currentUser.uid,
@@ -24,6 +26,7 @@ export function useLoadArmyCompositions() {
       },
     );
 
+    // When the user changes or the component unmounts, stop listening to Firestore.
     return unsubscribe;
   }, [currentUser, dispatch]);
 }

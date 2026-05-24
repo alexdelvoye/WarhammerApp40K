@@ -24,22 +24,26 @@ export function useCreateArmyComposition(
   const { currentUser } = useAuth();
 
   const selectArmy = (army: Army) => {
+    // Selecting an army also clears the validation message for this choice.
     setSelectedArmy(army);
     setArmySelectionError("");
   };
 
   const createArmyComposition = async (compositionName: string) => {
+    // A composition cannot exist without a faction/army.
     if (!selectedArmy) {
       setArmySelectionError("Please select an army");
       return;
     }
 
+    // Firestore data is stored under the current user's id.
     if (!currentUser) {
       setArmySelectionError("You must be logged in");
       return;
     }
 
     const newArmyComposition: ArmyComposition = {
+      // uuid creates a unique id because new compositions do not have one yet.
       id: uuid.v4().toString(),
       name: compositionName,
       army: selectedArmy,
@@ -47,10 +51,12 @@ export function useCreateArmyComposition(
       totalPoints: 0,
     };
 
+    // Add locally first so the app feels fast, then save to Firestore.
     dispatch(armyCompositionAdded(newArmyComposition));
 
     await saveArmyComposition(database, currentUser.uid, newArmyComposition);
 
+    // After creation, open the detail screen for the new composition.
     navigation.navigate("ArmyComposition", {
       armyComposition: newArmyComposition,
     });

@@ -20,6 +20,7 @@ const Stack = createStackNavigator<InformationStackParamList>();
 export default function InformationStack() {
   return (
     <Stack.Navigator screenOptions={{}}>
+      {/* This stack groups the non-army informational screens under one drawer tab. */}
       <Stack.Screen
         name="InformationHome"
         component={InformationHomeScreen}

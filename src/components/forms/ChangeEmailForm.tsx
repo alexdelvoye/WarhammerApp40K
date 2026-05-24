@@ -22,12 +22,14 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
       <Text style={styles.sectionTitle}>Change Email</Text>
 
       <Formik
+        // Formik manages both text fields and validates them with the schema.
         initialValues={{
           currentPassword: "",
           newEmail: "",
         }}
         validationSchema={changeEmailValidationSchema}
         onSubmit={(values) => {
+          // The parent screen handles the Firebase call, keeping this form reusable.
           changeEmail(values.currentPassword, values.newEmail);
         }}
       >
@@ -50,6 +52,7 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
               onBlur={props.handleBlur("newEmail")}
             />
 
+            {/* Validation errors are only shown after the user has touched the field. */}
             {props.touched.newEmail && props.errors.newEmail && (
               <Text style={styles.errorText}>{props.errors.newEmail}</Text>
             )}

@@ -35,9 +35,11 @@ import { CreateArmyCompositionScreenStyles as styles } from "../styles/createArm
 import { themeColors } from "../styles/themeColors";
 
 export default function CreateArmyCompositionScreen() {
+  // Typed navigation prevents mistakes in screen names and route parameters.
   const navigation =
     useNavigation<StackNavigationProp<BattleForgeStackParamList>>();
 
+  // Loads the available factions/armies from Firestore.
   const { armies } = useArmies();
 
   const { theme } = useTheme();
@@ -53,6 +55,7 @@ export default function CreateArmyCompositionScreen() {
   const renderArmyItem = ({ item }: { item: Army }) => {
     const isSelected = selectedArmy?.id === item.id;
 
+    // The selected army is highlighted with a different border.
     return (
       <Pressable
         style={[
@@ -67,6 +70,7 @@ export default function CreateArmyCompositionScreen() {
           style={styles.armyImageBackground}
           imageStyle={styles.armyImage}
         >
+          {/* The overlay places readable text on top of the faction image. */}
           <View style={styles.armyOverlay}>
             <Text style={styles.armyText}>{item.name}</Text>
 
@@ -91,11 +95,13 @@ export default function CreateArmyCompositionScreen() {
             style={styles.container}
             edges={["left", "right", "bottom"]}
           >
+            {/* The form owns the name input and submit button; this screen adds army selection inside it. */}
             <CreateArmyCompositionForm
               createArmyComposition={createArmyComposition}
             >
               <Text style={styles.label}>Select Army</Text>
 
+              {/* These armies come from Firestore, with images linked by imageKey. */}
               <FlatList
                 style={styles.armyList}
                 contentContainerStyle={styles.armyListContent}
@@ -106,6 +112,7 @@ export default function CreateArmyCompositionScreen() {
 
               <Text style={styles.errorText}>{armySelectionError}</Text>
 
+              {/* Temporary helper for reseeding Firestore if the shared army data is lost. */}
               {/* <Pressable
                 style={styles.createButton}
                 onPress={async () => {

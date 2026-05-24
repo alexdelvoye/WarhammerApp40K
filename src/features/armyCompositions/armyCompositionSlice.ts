@@ -10,14 +10,17 @@ export const armyCompositionSlice = createSlice({
   name: "armyCompositions",
   initialState,
   reducers: {
+    // Replaces the local Redux list with the latest Firestore snapshot.
     armyCompositionsLoaded(_state, action: { payload: ArmyComposition[] }) {
       return action.payload;
     },
 
+    // Used on logout so the next user never sees the previous user's armies.
     armyCompositionsCleared() {
       return [];
     },
 
+    // Immer lets Redux Toolkit write this as a push, while keeping state immutable internally.
     armyCompositionAdded(state, action: { payload: ArmyComposition }) {
       state.push(action.payload);
     },
@@ -32,6 +35,7 @@ export const armyCompositionSlice = createSlice({
         };
       },
     ) {
+      // Find the composition that changed, then update only its units and point total.
       const armyComposition = state.find(
         (armyComposition) =>
           armyComposition.id === action.payload.armyCompositionId,
@@ -44,11 +48,13 @@ export const armyCompositionSlice = createSlice({
     },
 
     armyCompositionDeleted(state, action: { payload: string }) {
+      // Return a new list without the composition whose id was deleted.
       return state.filter((composition) => composition.id !== action.payload);
     },
   },
 });
 
+// Selector gives components one reusable way to read compositions from Redux.
 export const selectArmyCompositions = (state: RootState) =>
   state.armyCompositions;
 

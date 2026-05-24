@@ -25,6 +25,7 @@ type ArmyCompositionRouteProp = RouteProp<
 >;
 
 export default function ArmyCompositionScreen() {
+  // The Home screen passes the selected composition through navigation params.
   const route = useRoute<ArmyCompositionRouteProp>();
   const { armyComposition } = route.params;
 
@@ -33,10 +34,12 @@ export default function ArmyCompositionScreen() {
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
+  // This hook owns all logic for adding/removing units and recalculating points.
   const { selectedUnits, totalPoints, isOverPointLimit, addUnit, removeUnit } =
     useArmyCompositionUnits(armyComposition);
 
   const renderSelectedUnitItem = ({ item }: { item: SelectedUnit }) => (
+    // The minus button removes this exact selected unit from the composition.
     <UnitCard
       unit={item}
       buttonText="-"
@@ -58,22 +61,18 @@ export default function ArmyCompositionScreen() {
           style={[styles.summaryCard, { borderColor: colors.border }]}
           imageStyle={styles.summaryCardImage}
         >
+          {/* Overlay keeps text readable on top of the army image. */}
           <View style={styles.summaryOverlay}>
-            <Text style={[styles.title, { color: colors.text }]}>
-              {armyComposition.name}
-            </Text>
+            <Text style={styles.title}>{armyComposition.name}</Text>
 
-            <Text style={[styles.subtitle, { color: colors.subText }]}>
-              {armyComposition.army.name}
-            </Text>
+            <Text style={styles.subtitle}>{armyComposition.army.name}</Text>
 
-            <Text style={[styles.rule, { color: colors.subText }]}>
-              {armyComposition.army.armyRule}
-            </Text>
+            <Text style={styles.rule}>{armyComposition.army.armyRule}</Text>
 
             <View
               style={[styles.pointsBox, { backgroundColor: colors.button }]}
             >
+              {/* If the list is above 2000 points, the text turns red as a warning. */}
               <Text
                 style={[
                   styles.pointsText,
@@ -90,6 +89,7 @@ export default function ArmyCompositionScreen() {
         <Text style={styles.sectionTitle}>Units</Text>
 
         {selectedUnits.length === 0 ? (
+          // Empty state explains why no unit cards are shown yet.
           <View
             style={[
               styles.emptyCard,
@@ -111,6 +111,7 @@ export default function ArmyCompositionScreen() {
         )}
 
         <View style={styles.addButtonContainer}>
+          {/* Opens the modal where the user chooses a unit to add. */}
           <AddUnitButton onPress={() => setModalVisible(true)} />
         </View>
 
@@ -120,6 +121,7 @@ export default function ArmyCompositionScreen() {
           totalPoints={totalPoints}
           maxPoints={2000}
           onClose={() => setModalVisible(false)}
+          // The modal calls this when a unit is chosen.
           onAddUnit={addUnit}
         />
       </SafeAreaView>

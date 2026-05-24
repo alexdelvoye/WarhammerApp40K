@@ -31,8 +31,10 @@ import ChangePasswordForm from "../components/forms/ChangePasswordForm";
 import { ProfileScreenStyles as styles } from "../styles/profileScreenStyles";
 
 export default function ProfileScreen() {
+  // currentUser comes from Firebase authentication through AuthContext.
   const { currentUser } = useAuth();
 
+  // Theme is stored globally so every screen can use the same light/dark choice.
   const { theme, toggleTheme } = useTheme();
 
   const dispatch = useAppDispatch();
@@ -40,6 +42,7 @@ export default function ProfileScreen() {
   const [updateMessage, setUpdateMessage] = useState("");
 
   const handleLogout = async () => {
+    // Clear local army data before signing out, so another user starts clean.
     dispatch(armyCompositionsCleared());
 
     await logout(auth);
@@ -54,6 +57,7 @@ export default function ProfileScreen() {
     }
 
     try {
+      // Firebase asks for the current password before changing sensitive account data.
       await updateUserEmail(currentUser, currentPassword, newEmail);
 
       setUpdateMessage("Verification email sent.");
@@ -71,6 +75,7 @@ export default function ProfileScreen() {
     }
 
     try {
+      // Password changes also require recent authentication through the service function.
       await updateUserPassword(currentUser, currentPassword, newPassword);
 
       setUpdateMessage("Password updated successfully.");
@@ -104,9 +109,11 @@ export default function ProfileScreen() {
 
               <Text style={styles.email}>{theme}</Text>
 
+              {/* Pressing this changes the global theme value in ThemeContext. */}
               <ThemeButton theme={theme} onPress={toggleTheme} />
 
               {updateMessage && (
+                // The same message area is used for success and failure feedback.
                 <Text style={styles.errorText}>{updateMessage}</Text>
               )}
 

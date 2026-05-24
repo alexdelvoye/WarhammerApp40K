@@ -15,6 +15,7 @@ type ThemeProviderProps = {
 
 export const ThemeContext = createContext<ThemeContextType>({
   theme: "dark",
+  // Default empty function is only used before the real provider is mounted.
   toggleTheme: () => {},
 });
 
@@ -23,6 +24,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   useEffect(() => {
     const loadTheme = async () => {
+      // AsyncStorage works like small local storage on the phone.
       const savedTheme = await AsyncStorage.getItem("theme");
 
       if (savedTheme === "light" || savedTheme === "dark") {
@@ -36,12 +38,14 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const toggleTheme = async () => {
     const newTheme = theme === "dark" ? "light" : "dark";
 
+    // Update the UI immediately, then save the choice for the next app start.
     setTheme(newTheme);
 
     await AsyncStorage.setItem("theme", newTheme);
   };
 
   return (
+    // Everything inside this provider can read and change the selected theme.
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>

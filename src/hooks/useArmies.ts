@@ -9,6 +9,7 @@ export function useArmies() {
 
   useEffect(() => {
     const loadArmies = async () => {
+      // Loads the selectable army factions from Firestore once when the screen needs them.
       const fetchedArmies = await getArmies(database);
       setArmies(fetchedArmies);
     };

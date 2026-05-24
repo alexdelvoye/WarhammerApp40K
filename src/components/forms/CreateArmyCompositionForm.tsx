@@ -24,9 +24,11 @@ const CreateArmyCompositionForm = ({
   return (
     <View style={styles.formContainer}>
       <Formik
+        // Formik stores the input value and validation state for this form.
         initialValues={{ armyCompositionName: "" }}
         validationSchema={createArmyCompositionValidationSchema}
         onSubmit={(values) => {
+          // Formik validates first; this submit only runs with a valid army name.
           createArmyComposition(values.armyCompositionName);
         }}
       >
@@ -34,6 +36,7 @@ const CreateArmyCompositionForm = ({
           <View style={styles.formContent}>
             <Text style={styles.label}>Army Name</Text>
 
+            {/* TextInput is controlled by Formik, so the form state always matches the input. */}
             <TextInput
               style={[
                 styles.input,
@@ -59,6 +62,7 @@ const CreateArmyCompositionForm = ({
 
             {children}
 
+            {/* handleSubmit runs validation and then calls onSubmit if the data is valid. */}
             <Pressable
               style={[styles.createButton, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}

@@ -11,6 +11,7 @@ import { ArmyComposition } from "../types/army_composition";
 export type BattleForgeStackParamList = {
   Home: undefined;
   CreateArmyComposition: undefined;
+  // This screen needs the selected composition, so it is passed as a route parameter.
   ArmyComposition: { armyComposition: ArmyComposition };
 };
 
@@ -19,6 +20,7 @@ const Stack = createStackNavigator<BattleForgeStackParamList>();
 export default function BattleForgeStack() {
   return (
     <Stack.Navigator screenOptions={{}}>
+      {/* Stack screens are pages in the army-building part of the app. */}
       <Stack.Screen
         name="Home"
         component={HomeScreen}
@@ -31,6 +33,7 @@ export default function BattleForgeStack() {
         name="CreateArmyComposition"
         component={CreateArmyCompositionScreen}
         options={{
+          // canGoBack shows a back button in our custom Header.
           header: () => (
             <Header title="Create Army Composition" canGoBack={true} />
           ),
@@ -41,6 +44,7 @@ export default function BattleForgeStack() {
         name="ArmyComposition"
         component={ArmyCompositionScreen}
         options={({ navigation }) => ({
+          // Custom back behavior returns to Home instead of stacking duplicate detail screens.
           header: () => (
             <Header
               title="Army Composition"
