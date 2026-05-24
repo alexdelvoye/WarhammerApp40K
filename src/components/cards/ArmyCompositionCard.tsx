@@ -42,6 +42,8 @@ const ArmyCompositionCard = ({
           <View style={styles.overlay}>
             <Text style={styles.title}>{armyComposition.name}</Text>
 
+            <Text style={styles.armyName}>{armyComposition.army.name}</Text>
+
             <Text style={styles.subtitle}>{armyComposition.army.armyRule}</Text>
 
             <View

@@ -34,9 +34,7 @@ export default function BattleForgeStack() {
         component={CreateArmyCompositionScreen}
         options={{
           // canGoBack shows a back button in our custom Header.
-          header: () => (
-            <Header title="Create Army Composition" canGoBack={true} />
-          ),
+          header: () => <Header title="Create Army" canGoBack={true} />,
         }}
       />
 
@@ -47,7 +45,7 @@ export default function BattleForgeStack() {
           // Custom back behavior returns to Home instead of stacking duplicate detail screens.
           header: () => (
             <Header
-              title="Army Composition"
+              title="Army"
               canGoBack={true}
               onBackPress={() => navigation.navigate("Home")}
             />

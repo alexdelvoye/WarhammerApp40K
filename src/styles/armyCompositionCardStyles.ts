@@ -35,6 +35,12 @@ export const ArmyCompositionCardStyles = StyleSheet.create({
     marginBottom: 5,
   },
 
+  armyName: {
+    color: "#B0B0B0",
+    fontSize: 15,
+    marginBottom: 2,
+  },
+
   subtitle: {
     color: "#B0B0B0",
     fontSize: 14,
