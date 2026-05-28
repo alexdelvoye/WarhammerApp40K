@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -47,6 +47,15 @@
       border-left-color: #a65f00;
       background: #fff7e8;
     }
+    .flow {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 10px 12px;
+      white-space: pre-wrap;
+      margin: 12px 0;
+    }
     ul { margin-top: 6px; }
     li { margin: 4px 0; }
     .toc li { margin: 7px 0; }
@@ -61,22 +70,1145 @@
 
     <h2>Table of Contents</h2>
     <ol class="toc">
-      <li>App Structure and Startup Flow</li>
-      <li>Authentication Context and Firebase Auth</li>
-      <li>Theme Context and AsyncStorage</li>
-      <li>Navigation: Auth Stack, App Drawer, and Screen Stacks</li>
-      <li>Redux Store, Redux Toolkit, and Persisted State</li>
-      <li>Firebase Services and Firestore Data Flow</li>
-      <li>Forms, Formik, and Yup Validation</li>
-      <li>Main Screens and User Flows</li>
-      <li>Reusable Components: Cards, Buttons, Header, Modal</li>
+      <li>Expo, Assets, Fonts, and Splash Screen</li>
       <li>TypeScript Types and Why They Matter</li>
+      <li>Reusable Components: Cards, Buttons, Header, Modal</li>
+      <li>Styling and Theme System</li>
+      <li>Theme Context and AsyncStorage</li>
+      <li>Authentication Context and Firebase Auth</li>
+      <li>Navigation: Custom Header, Stack, and Drawer Navigation</li>
+      <li>Forms, Formik, and Yup Validation</li>
+      <li>Forms Deep Dive</li>
+      <li>Firebase Services and Firestore Data Flow</li>
+      <li>Redux Store, Redux Toolkit, and Persisted State</li>
+      <li>Custom Hooks</li>
+      <li>App Structure and Startup Flow</li>
+      <li>Main Screens and User Flows</li>
+      <li>End-to-End Data Flow</li>
+      <li>TypeScript Defense Details</li>
+      <li>Security, Limitations, and Honest Defense</li>
       <li>Defense Questions and Short Answers</li>
-    </ol>
+</ol>
   </section>
 
-  <section class="chapter">
-    <h2>1. App Structure and Startup Flow</h2>
+<section class="chapter">
+    <h2>1. Expo, Assets, Fonts, and Splash Screen</h2>
+
+    <h3>What Expo is</h3>
+    <p>Expo is a platform and toolchain for React Native. It simplifies running, building, and configuring a React Native app. This project uses Expo scripts such as:</p>
+
+    <pre><code>npm start
+npm run android
+npm run ios
+npm run web</code></pre>
+
+    <p>These scripts come from <code>package.json</code> and run Expo commands.</p>
+
+    <h3>app.json</h3>
+    <p><code>app.json</code> contains Expo app configuration:</p>
+
+    <pre><code>{
+  "expo": {
+    "name": "Warhammer40KApp",
+    "slug": "Warhammer40KApp",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}</code></pre>
+
+    <p>This file configures app name, icon, orientation, splash assets, platform settings, and plugins.</p>
+
+    <h3>expo-font plugin</h3>
+    <p>The app uses <code>expo-font</code> so it can load a custom font:</p>
+
+    <pre><code>"plugins": [
+  "expo-font"
+]</code></pre>
+
+    <p>The actual font loading happens in <code>useLoadFonts</code>:</p>
+
+    <pre><code>export function useLoadFonts() {
+  return useFonts({
+    MedievalSharp: require("../assets/fonts/MedievalSharp-Regular.ttf"),
+  });
+}</code></pre>
+
+    <p>The key <code>MedievalSharp</code> is the font family name the app can use in styles.</p>
+
+    <h3>Why AppContent waits for fonts</h3>
+    <pre><code>const [fontsLoaded] = useLoadFonts();
+
+if (loading || showSplashScreen || !fontsLoaded) {
+  return &lt;SplashScreen /&gt;;
+}</code></pre>
+
+    <p>The app waits until fonts are loaded before showing normal screens. This prevents text from appearing in a fallback font and then suddenly changing.</p>
+
+    <h3>Splash screen behavior</h3>
+    <p>The app has its own <code>SplashScreen</code> component and a short delay in <code>AppContent</code>:</p>
+
+    <pre><code>const [showSplashScreen, setShowSplashScreen] = useState(true);
+
+useEffect(() =&gt; {
+  const timer = setTimeout(() =&gt; {
+    setShowSplashScreen(false);
+  }, 2000);
+
+  return () =&gt; clearTimeout(timer);
+}, []);</code></pre>
+
+    <p>This keeps the splash screen visible briefly while startup checks finish. The cleanup clears the timer if the component unmounts early.</p>
+
+    <h3>Local image assets</h3>
+    <p>The app uses local images with <code>require</code>:</p>
+
+    <pre><code>&lt;ImageBackground
+  source={require("../assets/images/screen_background.png")}
+  style={styles.background}
+&gt;</code></pre>
+
+    <p>React Native bundles these local assets with the app.</p>
+
+    <h3>armyImages helper</h3>
+    <p>Firestore stores an image key, not the image file itself. The app maps image keys to local images through <code>armyImages</code>.</p>
+
+    <pre><code>source={armyImages[armyComposition.army.imageKey]}</code></pre>
+
+    <p>This is useful because Firestore stores simple serializable data, while the actual images stay bundled locally in the app.</p>
+
+    <h3>Expo assets versus Firestore data</h3>
+    <ul>
+      <li>Local assets are bundled with the app, such as icons, backgrounds, faction images, and fonts.</li>
+      <li>Firestore stores dynamic data, such as armies and user-created army compositions.</li>
+    </ul>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Expo manages app configuration and development tooling. Local assets are bundled with the app, custom fonts are loaded with <code>expo-font</code>, and the app waits for fonts/auth/startup state before rendering the main UI.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>2. TypeScript Types and Why They Matter</h2>
+    <h3>Army</h3>
+    <pre><code>export type Army = {
+  id: string;
+  name: string;
+  armyRule: string;
+  imageKey: ArmyImageKey;
+  units: Unit[];
+};</code></pre>
+
+    <p>An army has an id, name, rule, image key, and list of units. The image key links Firestore data to local image assets.</p>
+
+    <h3>Unit</h3>
+    <pre><code>export type Unit = {
+  id: string;
+  name: string;
+  movement: number;
+  toughness: number;
+  save: number;
+  wounds: number;
+  leadership: number;
+  objectControl: number;
+  ability: string;
+  points: number;
+};</code></pre>
+
+    <p>This type describes the game stats for a unit.</p>
+
+    <h3>ArmyComposition</h3>
+    <pre><code>export type ArmyComposition = {
+  id: string;
+  name: string;
+  army: Army;
+  units: SelectedUnit[];
+  totalPoints: number;
+};</code></pre>
+
+    <p>An army composition is the user's saved list. It contains the selected army, selected units, and total points.</p>
+
+    <h3>Why TypeScript helps</h3>
+    <ul>
+      <li>It catches wrong property names before runtime.</li>
+      <li>It documents the shape of the data.</li>
+      <li>It makes navigation parameters safer.</li>
+      <li>It improves autocomplete in the editor.</li>
+    </ul>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> TypeScript gives the project stronger safety. It helps prevent common bugs, especially when passing data between screens, Redux, Firebase, and components.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>3. Reusable Components: Cards, Buttons, Header, Modal</h2>
+    <h3>Component props</h3>
+    <p>Props are values passed from a parent component to a child component. They make components reusable.</p>
+
+    <h3>ArmyCompositionCard</h3>
+    <pre><code>type ArmyCompositionCardProps = {
+  armyComposition: ArmyComposition;
+  onPress: () =&gt; void;
+  onDelete: () =&gt; void;
+};</code></pre>
+
+    <ul>
+      <li><code>armyComposition</code> is the data to display.</li>
+      <li><code>onPress</code> is called when the user opens the card.</li>
+      <li><code>onDelete</code> is called when the user presses the trash icon.</li>
+    </ul>
+
+    <h3>UnitCard</h3>
+    <pre><code>type UnitCardProps = {
+  unit: Unit;
+  buttonText: string;
+  onPress: () =&gt; void;
+};</code></pre>
+
+    <p>The same card can be used in two situations. In the modal, <code>buttonText</code> is <code>"+"</code>. In the selected unit list, it is <code>"-"</code>. This avoids duplicate components.</p>
+
+    <h3>Modal</h3>
+    <pre><code>&lt;Modal visible={visible} animationType="slide"&gt;</code></pre>
+
+    <p>A React Native <code>Modal</code> renders content above the current screen. In this app, <code>SelectUnitModal</code> lets the user choose a unit without leaving the army composition screen.</p>
+
+    <pre><code>type SelectUnitModalProps = {
+  visible: boolean;
+  units: Unit[];
+  totalPoints: number;
+  maxPoints: number;
+  onClose: () =&gt; void;
+  onAddUnit: (unit: Unit) =&gt; void;
+};</code></pre>
+
+    <ul>
+      <li><code>visible</code> controls whether the modal is shown.</li>
+      <li><code>units</code> is the list of valid units for the selected army.</li>
+      <li><code>totalPoints</code> and <code>maxPoints</code> show the point status.</li>
+      <li><code>onClose</code> closes the modal.</li>
+      <li><code>onAddUnit</code> sends the chosen unit back to the screen.</li>
+    </ul>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Reusable components reduce duplication. Props let each parent decide what data the component shows and what should happen when the user interacts with it.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>4. Styling and Theme System</h2>
+
+    <h3>Style files</h3>
+    <p>The project stores most styles in separate files under <code>src/styles</code>. This keeps screen and component files focused on structure and logic.</p>
+
+    <pre><code>import { ThemeButtonStyles as styles } from "../../styles/themeButtonStyles";</code></pre>
+
+    <p>The component imports its styles and uses them through the <code>style</code> prop.</p>
+
+    <h3>StyleSheet.create</h3>
+    <pre><code>export const ThemeButtonStyles = StyleSheet.create({
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 12,
+  },
+});</code></pre>
+
+    <p><code>StyleSheet.create</code> creates named style objects. React Native styling uses JavaScript objects instead of CSS classes.</p>
+
+    <h3>Combining static and dynamic styles</h3>
+    <pre><code>&lt;Pressable
+  style={[styles.button, { backgroundColor: colors.button }]}
+  onPress={onPress}
+&gt;</code></pre>
+
+    <p>The style prop can receive an array. React Native combines the styles from left to right. Static layout comes from <code>styles.button</code>, while theme color comes from <code>colors.button</code>.</p>
+
+    <h3>Theme colors</h3>
+    <pre><code>export const themeColors = {
+  dark: {
+    background: "#111",
+    card: "#1E1E1E",
+    text: "white",
+    subText: "#B0B0B0",
+    border: "#333",
+    button: "#D9D9D9",
+    buttonText: "black",
+  },
+
+  light: {
+    background: "#F2F2F2",
+    card: "white",
+    text: "black",
+    subText: "#555",
+    border: "#CCC",
+    button: "#111",
+    buttonText: "white",
+  },
+};</code></pre>
+
+    <p>The app uses one shared object for light and dark theme colors. Components read the current theme and choose the correct color set.</p>
+
+    <pre><code>const { theme } = useTheme();
+const colors = themeColors[theme];</code></pre>
+
+    <p>This means changing the global theme value changes the color object used by the component.</p>
+
+    <h3>ThemeButton</h3>
+    <pre><code>const ThemeButton = ({ theme, onPress }: ThemeButtonProps) =&gt; {
+  const colors = themeColors[theme];
+
+  return (
+    &lt;Pressable
+      style={[styles.button, { backgroundColor: colors.button }]}
+      onPress={onPress}
+    &gt;
+      &lt;Text style={[styles.buttonText, { color: colors.buttonText }]}&gt;
+        Switch to {theme === "dark" ? "Light" : "Dark"} Theme
+      &lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+};</code></pre>
+
+    <p>The button text is based on the current theme. If the current theme is dark, the button offers light mode. If the current theme is light, it offers dark mode.</p>
+
+    <h3>ImageBackground</h3>
+    <p>Many screens use <code>ImageBackground</code> to place content over a background image.</p>
+
+    <pre><code>&lt;ImageBackground
+  source={require("../assets/images/screen_background.png")}
+  style={styles.background}
+&gt;
+  ...
+&lt;/ImageBackground&gt;</code></pre>
+
+    <p>This gives the app a consistent visual identity. In cards, overlays are used so text remains readable over faction images.</p>
+
+    <h3>SafeAreaView</h3>
+    <p>Screens use <code>SafeAreaView</code> so content avoids device notches, status bars, and bottom gesture areas.</p>
+
+    <pre><code>&lt;SafeAreaView
+  style={styles.container}
+  edges={["left", "right", "bottom"]}
+&gt;</code></pre>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Styling is separated into style files for readability. Theme colors are centralized in <code>themeColors</code>, and components combine static styles with dynamic theme colors using style arrays.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>5. Theme Context and AsyncStorage</h2>
+    <h3>Important file: src/contexts/ThemeContext.tsx</h3>
+    <p>This file manages the light/dark theme globally.</p>
+
+    <pre><code>type Theme = "light" | "dark";</code></pre>
+
+    <p>This TypeScript union type means the theme can only be exactly <code>"light"</code> or <code>"dark"</code>. This prevents accidental values like <code>"blue"</code> or <code>"Dark"</code>.</p>
+
+    <pre><code>type ThemeContextType = {
+  theme: Theme;
+  toggleTheme: () =&gt; void;
+};</code></pre>
+
+    <p>The theme context exposes two things: the current theme value and a function to change it.</p>
+
+    <h3>Loading saved theme</h3>
+    <pre><code>useEffect(() =&gt; {
+  const loadTheme = async () =&gt; {
+    const savedTheme = await AsyncStorage.getItem("theme");
+
+    if (savedTheme === "light" || savedTheme === "dark") {
+      setTheme(savedTheme);
+    }
+  };
+
+  loadTheme();
+}, []);</code></pre>
+
+    <p><code>AsyncStorage</code> is local key-value storage on the device. It is asynchronous, so the code uses <code>async</code> and <code>await</code>.</p>
+
+    <ul>
+      <li><code>AsyncStorage.getItem("theme")</code> reads the saved value.</li>
+      <li>The <code>if</code> check protects the app from invalid stored values.</li>
+      <li><code>setTheme(savedTheme)</code> updates the UI theme.</li>
+      <li>The empty dependency array means this runs once when the provider mounts.</li>
+    </ul>
+
+    <h3>Toggling theme</h3>
+    <pre><code>const toggleTheme = async () =&gt; {
+  const newTheme = theme === "dark" ? "light" : "dark";
+
+  setTheme(newTheme);
+
+  await AsyncStorage.setItem("theme", newTheme);
+};</code></pre>
+
+    <p>The ternary operator means: if the current theme is dark, switch to light; otherwise switch to dark. The UI updates immediately with <code>setTheme</code>, then the new choice is saved locally.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> I used AsyncStorage for the theme because it is a local user preference. It does not need to be stored in Firestore because it is not shared army data.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>6. Authentication Context and Firebase Auth</h2>
+    <h3>Important file: src/contexts/AuthContext.tsx</h3>
+    <p>This file creates a global authentication state. It lets every screen know whether a user is logged in.</p>
+
+    <pre><code>type AuthContextType = {
+  currentUser: User | null;
+  loading: boolean;
+};</code></pre>
+
+    <p><code>currentUser</code> can be a Firebase <code>User</code> object or <code>null</code>. It is <code>null</code> when nobody is logged in. <code>loading</code> tells the app whether Firebase is still checking the saved login session.</p>
+
+    <pre><code>export const AuthContext = createContext&lt;AuthContextType&gt;({
+  currentUser: null,
+  loading: true,
+});</code></pre>
+
+    <p><code>createContext</code> creates a shared data container. The object passed to it is the default value. The real values come from <code>AuthProvider</code>.</p>
+
+    <h3>The provider</h3>
+    <pre><code>export const AuthProvider = ({ children }: AuthProviderProps) =&gt; {
+  const [currentUser, setCurrentUser] = useState&lt;User | null&gt;(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() =&gt; {
+    const unsubscribe = onAuthStateChanged(auth, (user) =&gt; {
+      setCurrentUser(user);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  return (
+    &lt;AuthContext.Provider value={{ currentUser, loading }}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  );
+};</code></pre>
+
+    <h3>How Firebase Auth works here</h3>
+    <ul>
+      <li><code>onAuthStateChanged</code> starts listening to Firebase Auth.</li>
+      <li>Firebase calls the callback when the user logs in, logs out, or when the app reloads and Firebase checks saved login data.</li>
+      <li>The <code>user</code> parameter is either a Firebase user object or <code>null</code>.</li>
+      <li><code>setCurrentUser(user)</code> updates React state.</li>
+      <li><code>setLoading(false)</code> tells the app that the Firebase check is finished.</li>
+    </ul>
+
+    <h3>Why return unsubscribe?</h3>
+    <p><code>onAuthStateChanged</code> subscribes to auth changes and returns a function that stops the subscription. React calls a returned function from <code>useEffect</code> as cleanup.</p>
+
+    <pre><code>return unsubscribe;</code></pre>
+
+    <p>This is the same idea as:</p>
+
+    <pre><code>return () =&gt; {
+  unsubscribe();
+};</code></pre>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> I used Context for auth because login state is needed globally. The listener keeps the app synchronized with Firebase, and the cleanup prevents the listener from staying active after the provider is removed.
+    </div>
+
+    <h3>useAuth hook</h3>
+    <pre><code>export const useAuth = () =&gt; {
+  return useContext(AuthContext);
+};</code></pre>
+
+    <p>This hook is a small wrapper around <code>useContext</code>. Instead of importing <code>useContext</code> and <code>AuthContext</code> everywhere, screens can simply call <code>useAuth()</code>.</p>
+  </section>
+
+<section class="chapter">
+    <h2>7. Navigation: Custom Header, Stack, and Drawer Navigation</h2>
+    <h3>React Navigation concept</h3>
+    <p>React Navigation controls which screen is visible. This project uses stack navigators for flows, a drawer navigator for large app sections, and a custom header component so the app has one consistent Warhammer-styled top bar.</p>
+
+    <ul>
+      <li>A <strong>stack navigator</strong> is like a pile of pages. You navigate forward, and you can go back.</li>
+      <li>A <strong>drawer navigator</strong> is a side menu for switching between larger sections of the app.</li>
+      <li>A <strong>custom header</strong> replaces the default React Navigation header with your own component.</li>
+    </ul>
+
+    <h3>NavigationContainer</h3>
+    <p>In <code>App.tsx</code>, the app renders navigation only after auth, fonts, and the splash delay are finished:</p>
+
+    <pre><code>&lt;NavigationContainer&gt;
+  {currentUser ? &lt;BattleForgeInformationDrawerStack /&gt; : &lt;AuthStack /&gt;}
+&lt;/NavigationContainer&gt;</code></pre>
+
+    <p><code>NavigationContainer</code> is the top-level navigation wrapper from React Navigation. It stores and manages navigation state. Inside it, the app chooses between the logged-out flow and the logged-in flow.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The navigation container wraps the navigators. The app conditionally renders the auth stack or main drawer depending on whether Firebase has a logged-in user.
+    </div>
+
+    <h3>AuthStack</h3>
+    <pre><code>export type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+};</code></pre>
+
+    <p>This type says the auth stack has two screens. <code>undefined</code> means those screens do not require route parameters.</p>
+
+    <pre><code>&lt;Stack.Navigator screenOptions={{ headerShown: false }}&gt;
+  &lt;Stack.Screen name="Login" component={LoginScreen} /&gt;
+  &lt;Stack.Screen name="Register" component={RegisterScreen} /&gt;
+&lt;/Stack.Navigator&gt;</code></pre>
+
+    <p>The header is hidden because login and register screens use their own layout.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The auth stack separates the logged-out screens from the main app. Login and Register do not need route params, so their param types are <code>undefined</code>.
+    </div>
+
+    <h3>BattleForgeStack</h3>
+    <pre><code>export type BattleForgeStackParamList = {
+  Home: undefined;
+  CreateArmyComposition: undefined;
+  ArmyComposition: { armyComposition: ArmyComposition };
+};</code></pre>
+
+    <p><code>ArmyComposition</code> needs data about the selected composition, so it receives an <code>armyComposition</code> route parameter.</p>
+
+    <pre><code>&lt;Stack.Screen
+  name="Home"
+  component={HomeScreen}
+  options={{
+    header: () =&gt; &lt;Header title="Battle Forge" /&gt;,
+  }}
+/&gt;</code></pre>
+
+    <p>This screen uses the custom <code>Header</code>. Because <code>canGoBack</code> is not passed, it defaults to <code>false</code>, so the header shows the menu icon.</p>
+
+    <pre><code>&lt;Stack.Screen
+  name="CreateArmyComposition"
+  component={CreateArmyCompositionScreen}
+  options={{
+    header: () =&gt; &lt;Header title="Create Army" canGoBack={true} /&gt;,
+  }}
+/&gt;</code></pre>
+
+    <p>This screen passes <code>canGoBack={true}</code>, so the custom header shows a back arrow instead of the drawer menu icon.</p>
+
+    <pre><code>&lt;Stack.Screen
+  name="ArmyComposition"
+  component={ArmyCompositionScreen}
+  options={({ navigation }) =&gt; ({
+    header: () =&gt; (
+      &lt;Header
+        title="Army"
+        canGoBack={true}
+        onBackPress={() =&gt; navigation.navigate("Home")}
+      /&gt;
+    ),
+  })}
+/&gt;</code></pre>
+
+    <p>This screen uses a custom <code>onBackPress</code>. Instead of simply going back in stack history, it navigates to <code>Home</code>. This avoids stacking duplicate detail screens.</p>
+
+    <h3>InformationStack</h3>
+    <pre><code>export type InformationStackParamList = {
+  InformationHome: undefined;
+  GameRules: undefined;
+  Profile: undefined;
+  ArmyRules: undefined;
+};</code></pre>
+
+    <p>This stack groups the informational screens. The top-level <code>InformationHome</code> screen uses a menu header, while inner screens like Profile, Game Rules, and Army Rules use a back header.</p>
+
+    <pre><code>&lt;Stack.Screen
+  name="Profile"
+  component={ProfileScreen}
+  options={{
+    header: () =&gt; &lt;Header title="Profile" canGoBack={true} /&gt;,
+  }}
+/&gt;</code></pre>
+
+    <p>This means Profile belongs to the Information stack and uses the shared custom header.</p>
+
+    <h3>Drawer navigation</h3>
+    <p>The drawer navigator is in <code>BattleForgeInformationDrawerStack.tsx</code>. It contains the two main logged-in sections of the app:</p>
+
+    <pre><code>&lt;Drawer.Screen
+  name="BattleForgeStack"
+  component={BattleForgeStack}
+  options={{ title: "Battle Forge" }}
+/&gt;</code></pre>
+
+    <pre><code>&lt;Drawer.Screen
+  name="InformationStack"
+  component={InformationStack}
+  options={{ title: "Information" }}
+/&gt;</code></pre>
+
+    <p>The drawer does not show individual screens like Home and Profile. Instead, it shows big sections. Each drawer item contains its own stack navigator.</p>
+
+    <p>The drawer also uses the theme:</p>
+
+    <pre><code>const { theme } = useTheme();
+const colors = themeColors[theme];</code></pre>
+
+    <p>Those colors are used in <code>screenOptions</code>:</p>
+
+    <pre><code>drawerStyle: {
+  backgroundColor: colors.background,
+},
+drawerActiveBackgroundColor: colors.card,
+drawerActiveTintColor: colors.text,
+drawerInactiveTintColor: colors.subText,</code></pre>
+
+    <p>This keeps the drawer visually consistent with the selected light or dark theme.</p>
+
+    <h3>Why the drawer hides its own header</h3>
+    <pre><code>screenOptions={{
+  headerShown: false,
+}}</code></pre>
+
+    <p>The drawer hides its default header because the inner stacks already provide headers through the custom <code>Header</code> component. This prevents two headers from appearing at the same time.</p>
+
+    <h3>Custom Header component</h3>
+    <p>The custom header lives in <code>src/screens/shared/Header.tsx</code>. It receives three props:</p>
+
+    <pre><code>type HeaderProps = {
+  title: string;
+  canGoBack?: boolean;
+  onBackPress?: () =&gt; void;
+};</code></pre>
+
+    <ul>
+      <li><code>title</code> is the text shown in the header.</li>
+      <li><code>canGoBack</code> decides whether the left icon is a back arrow or a menu icon.</li>
+      <li><code>onBackPress</code> is an optional custom back action.</li>
+    </ul>
+
+    <p>The header receives drawer navigation through <code>useNavigation</code>:</p>
+
+    <pre><code>const navigation =
+  useNavigation&lt;
+    DrawerNavigationProp&lt;BattleForgeInformationDrawerStackParamList&gt;
+  &gt;();</code></pre>
+
+    <p>This lets the header call <code>navigation.openDrawer()</code> when the user presses the menu icon.</p>
+
+    <h3>Header button logic</h3>
+    <pre><code>const handleMenuPress = () =&gt; {
+  if (canGoBack &amp;&amp; onBackPress) {
+    onBackPress();
+  } else if (canGoBack &amp;&amp; navigation.canGoBack()) {
+    navigation.goBack();
+  } else {
+    navigation.openDrawer();
+  }
+};</code></pre>
+
+    <p>This function has three cases:</p>
+
+    <ul>
+      <li>If the screen can go back and a custom back function exists, run the custom function.</li>
+      <li>If the screen can go back and navigation has a previous screen, use <code>navigation.goBack()</code>.</li>
+      <li>Otherwise, open the drawer with <code>navigation.openDrawer()</code>.</li>
+    </ul>
+
+    <p>That is why the same header component can work as both a drawer menu header and a back header.</p>
+
+    <h3>Header icon logic</h3>
+    <pre><code>{canGoBack ? (
+  &lt;Ionicons name="arrow-back" size={24} color="white" /&gt;
+) : (
+  &lt;Ionicons name="menu" size={24} color="white" /&gt;
+)}</code></pre>
+
+    <p>This is conditional rendering. If <code>canGoBack</code> is true, show the back arrow. Otherwise, show the menu icon.</p>
+
+    <h3>Header layout</h3>
+    <p>The header uses <code>SafeAreaView</code> with <code>edges={["top"]}</code> so it respects the top safe area on phones. It also uses <code>ImageBackground</code> so the header has the Warhammer-style background image.</p>
+
+    <pre><code>&lt;SafeAreaView style={styles.safeArea} edges={["top"]}&gt;
+  &lt;ImageBackground
+    source={require("../../assets/images/header_background.png")}
+    style={styles.container}
+  &gt;
+    ...
+  &lt;/ImageBackground&gt;
+&lt;/SafeAreaView&gt;</code></pre>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The app uses stacks for screen flows and a drawer for top-level sections. The drawer contains two stacks: Battle Forge and Information. Each stack uses the same custom Header component, which switches between opening the drawer and going back based on the <code>canGoBack</code> and <code>onBackPress</code> props.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>8. Forms, Formik, and Yup Validation</h2>
+    <h3>Why Formik?</h3>
+    <p>Forms need to track input values, touched fields, validation errors, and submit handling. Formik manages that state so the component does not need many separate <code>useState</code> calls.</p>
+
+    <h3>LoginForm example</h3>
+    <pre><code>&lt;Formik
+  initialValues={{ email: "", password: "" }}
+  validationSchema={loginValidationSchema}
+  onSubmit={(values) =&gt; {
+    handleLogin(values.email, values.password);
+  }}
+&gt;</code></pre>
+
+    <ul>
+      <li><code>initialValues</code> defines the starting form values.</li>
+      <li><code>validationSchema</code> connects Yup validation rules.</li>
+      <li><code>onSubmit</code> runs after validation succeeds.</li>
+    </ul>
+
+    <h3>TextInput controlled by Formik</h3>
+    <pre><code>&lt;TextInput
+  value={props.values.email}
+  onChangeText={props.handleChange("email")}
+  onBlur={props.handleBlur("email")}
+/&gt;</code></pre>
+
+    <p>The input value comes from Formik. When the user types, Formik updates the value. When the input loses focus, Formik marks the field as touched.</p>
+
+    <h3>Yup validation</h3>
+    <pre><code>export const registerValidationSchema = Yup.object({
+  email: Yup.string()
+    .email("Enter a valid email")
+    .required("Email is required"),
+
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwods must match")
+    .required("Confirm password is required"),
+});</code></pre>
+
+    <p><code>Yup.ref("password")</code> means the confirm password must match the password field.</p>
+
+    <div class="box warning">
+      <strong>Small note:</strong> The message says <code>Passwods</code>. That is only a spelling issue in the validation message, not a logic problem.
+    </div>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Formik manages form state, and Yup keeps validation rules separate and reusable. This makes the form components cleaner.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>9. Forms Deep Dive</h2>
+
+    <h3>Why forms use Formik</h3>
+    <p>Formik manages form state, validation state, touched fields, and submit handling. Without Formik, each form would need multiple <code>useState</code> values and manual validation handling.</p>
+
+    <h3>Formik structure</h3>
+    <pre><code>&lt;Formik
+  initialValues={{ email: "", password: "" }}
+  validationSchema={loginValidationSchema}
+  onSubmit={(values) =&gt; {
+    handleLogin(values.email, values.password);
+  }}
+&gt;
+  {(props) =&gt; (
+    ...
+  )}
+&lt;/Formik&gt;</code></pre>
+
+    <ul>
+      <li><code>initialValues</code> defines the starting values.</li>
+      <li><code>validationSchema</code> connects Yup rules.</li>
+      <li><code>onSubmit</code> runs after the form is valid.</li>
+      <li><code>props</code> contains Formik helpers and form state.</li>
+    </ul>
+
+    <h3>Controlled TextInput</h3>
+    <pre><code>&lt;TextInput
+  value={props.values.email}
+  onChangeText={props.handleChange("email")}
+  onBlur={props.handleBlur("email")}
+  autoCapitalize="none"
+/&gt;</code></pre>
+
+    <p>This is a controlled input. The visible value comes from <code>props.values.email</code>. When the user types, <code>handleChange("email")</code> updates Formik's email value. When the field loses focus, <code>handleBlur("email")</code> marks the field as touched.</p>
+
+    <h3>touched and errors</h3>
+    <pre><code>&lt;Text style={styles.errorText}&gt;
+  {props.touched.email &amp;&amp; props.errors.email
+    ? props.errors.email
+    : ""}
+&lt;/Text&gt;</code></pre>
+
+    <p><code>errors.email</code> contains the validation message. <code>touched.email</code> tells whether the user has interacted with the field. Showing an error only after a field is touched avoids displaying errors before the user has typed anything.</p>
+
+    <h3>handleSubmit</h3>
+    <pre><code>&lt;Pressable
+  style={[styles.button, { backgroundColor: colors.button }]}
+  onPress={() =&gt; props.handleSubmit()}
+&gt;</code></pre>
+
+    <p><code>handleSubmit</code> runs validation. If the data is valid, Formik calls <code>onSubmit</code>. If the data is invalid, Formik fills the <code>errors</code> object.</p>
+
+    <h3>Yup validation</h3>
+    <pre><code>export const changePasswordValidationSchema = Yup.object({
+  currentPassword: Yup.string().required("Current password is required"),
+
+  newPassword: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("New password is required"),
+
+  confirmNewPassword: Yup.string()
+    .oneOf([Yup.ref("newPassword")], "Passwords must match")
+    .required("Confirm password is required"),
+});</code></pre>
+
+    <p>Yup schemas describe validation rules separately from the UI. <code>Yup.ref("newPassword")</code> compares one field to another, which is how confirm-password validation works.</p>
+
+    <h3>Form ownership in this app</h3>
+    <p>The form components own input rendering and validation. The screen components own the Firebase or app behavior after submit.</p>
+
+    <div class="flow">LoginForm
+  -> validates email/password
+  -> calls handleLogin(email, password)
+
+LoginScreen
+  -> receives handleLogin call
+  -> calls Firebase auth service
+  -> shows firebaseError if the request fails</div>
+
+    <p>This separation keeps forms reusable and keeps Firebase logic out of form components.</p>
+
+    <h3>Keyboard handling</h3>
+    <p>Form screens use <code>KeyboardAvoidingView</code> so the mobile keyboard does not cover inputs, and <code>TouchableWithoutFeedback</code> with <code>Keyboard.dismiss</code> so tapping outside the form hides the keyboard.</p>
+
+    <pre><code>&lt;TouchableWithoutFeedback onPress={Keyboard.dismiss}&gt;
+  &lt;KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+  &gt;
+    ...
+  &lt;/KeyboardAvoidingView&gt;
+&lt;/TouchableWithoutFeedback&gt;</code></pre>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Formik handles form state and submission, Yup handles validation rules, and the screens handle what happens after a valid submit. This keeps form UI separate from Firebase and navigation logic.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>10. Firebase Services and Firestore Data Flow</h2>
+    <h3>Firebase config</h3>
+    <pre><code>const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+export const database = getFirestore(app);</code></pre>
+
+    <p><code>initializeApp</code> connects the app to your Firebase project. <code>auth</code> is used for login/register/logout. <code>database</code> is the Firestore database connection.</p>
+
+    <h3>Auth service</h3>
+    <pre><code>export const login = (auth: Auth, email: string, password: string) =&gt; {
+  return signInWithEmailAndPassword(auth, email, password);
+};</code></pre>
+
+    <p>The service function hides Firebase details from the screen. The screen calls <code>login</code>, and Firebase handles credential checking.</p>
+
+    <h3>Firestore structure</h3>
+    <pre><code>users/{userId}/armyCompositions/{armyCompositionId}</code></pre>
+
+    <p>This means each user has their own subcollection of army compositions. This is important because one user's armies should not appear for another user.</p>
+
+    <h3>Live Firestore subscription</h3>
+    <pre><code>return onSnapshot(
+  collection(database, "users", userId, "armyCompositions"),
+  (querySnapshot) =&gt; {
+    const armyCompositions = querySnapshot.docs.map((document) =&gt; {
+      return document.data() as ArmyComposition;
+    });
+
+    onArmyCompositionsChanged(armyCompositions);
+  },
+);</code></pre>
+
+    <p><code>onSnapshot</code> listens in real time. When Firestore data changes, Firebase sends a new snapshot. The app converts Firestore documents into normal TypeScript objects and sends them back through the callback.</p>
+
+    <h3>Saving data</h3>
+    <pre><code>return setDoc(
+  doc(database, "users", userId, "armyCompositions", armyComposition.id),
+  armyComposition,
+);</code></pre>
+
+    <p><code>doc</code> creates a reference to one Firestore document. <code>setDoc</code> writes data to that document.</p>
+
+    <h3>Updating only units and total points</h3>
+    <pre><code>return setDoc(
+  doc(database, "users", userId, "armyCompositions", armyCompositionId),
+  { units, totalPoints },
+  { merge: true },
+);</code></pre>
+
+    <p><code>merge: true</code> means Firestore updates only the provided fields. It keeps other fields like <code>name</code> and <code>army</code>.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> I put Firebase calls in service files to keep screens focused on UI. Services make the app easier to test, read, and change.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>11. Redux Store, Redux Toolkit, and Persisted State</h2>
+    <h3>Important files</h3>
+    <ul>
+      <li><code>src/store/index.ts</code></li>
+      <li><code>src/store/hooks.ts</code></li>
+      <li><code>src/features/armyCompositions/armyCompositionSlice.ts</code></li>
+    </ul>
+
+    <h3>What Redux does in this app</h3>
+    <p>Redux stores the list of army compositions in one shared place. Screens can read from it without passing props through many layers.</p>
+
+    <p>Firestore is the remote database. Redux is the local app state. They work together.</p>
+
+    <h3>Store setup</h3>
+    <pre><code>const rootReducer = combineReducers({
+  armyCompositions: armyCompositionsReducer,
+});</code></pre>
+
+    <p>This means Redux state has a property called <code>armyCompositions</code>, controlled by <code>armyCompositionsReducer</code>.</p>
+
+    <pre><code>const persistedReducer = persistReducer(persistConfig, rootReducer);</code></pre>
+
+    <p><code>redux-persist</code> wraps the reducer so Redux state can be saved to <code>AsyncStorage</code>.</p>
+
+    <h3>Slice concept</h3>
+    <pre><code>export const armyCompositionSlice = createSlice({
+  name: "armyCompositions",
+  initialState,
+  reducers: {
+    armyCompositionAdded(state, action: { payload: ArmyComposition }) {
+      state.push(action.payload);
+    },
+  },
+});</code></pre>
+
+    <p>A slice contains the state and the reducer functions for one feature. Redux Toolkit uses Immer internally, so code like <code>state.push</code> is allowed even though Redux state must stay immutable.</p>
+
+    <h3>Important reducers</h3>
+    <ul>
+      <li><code>armyCompositionsLoaded</code>: replaces local Redux data with data loaded from Firestore.</li>
+      <li><code>armyCompositionsCleared</code>: empties the list when logging out.</li>
+      <li><code>armyCompositionAdded</code>: adds a new composition to Redux.</li>
+      <li><code>armyCompositionUnitsUpdated</code>: updates the units and total points of one composition.</li>
+      <li><code>armyCompositionDeleted</code>: removes a composition by id.</li>
+    </ul>
+
+    <h3>Typed Redux hooks</h3>
+    <pre><code>export const useAppDispatch = useDispatch.withTypes&lt;AppDispatch&gt;();
+export const useAppSelector = useSelector.withTypes&lt;RootState&gt;();</code></pre>
+
+    <p>These hooks make Redux usage type-safe. TypeScript knows what actions can be dispatched and what the state shape looks like.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Redux is useful here because army compositions are shared between multiple screens. Redux Toolkit reduces boilerplate and makes reducers easier to write safely.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>12. Custom Hooks</h2>
+
+    <h3>What a custom hook is</h3>
+    <p>A custom hook is a reusable function that uses React hooks or other app logic. Its name starts with <code>use</code>, such as <code>useAuth</code> or <code>useArmyCompositions</code>.</p>
+
+    <p>Custom hooks help keep screen files clean. Instead of putting Firebase, Redux, and state logic directly inside screens, the screen calls a hook and receives the values/functions it needs.</p>
+
+    <div class="flow">Screen
+  -> calls custom hook
+  -> hook handles state/services/Redux/Firebase
+  -> screen receives clean values and callbacks</div>
+
+    <h3>Rules of hooks</h3>
+    <ul>
+      <li>Hooks must be called at the top level of a component or another hook.</li>
+      <li>Hooks should not be called inside loops, conditions, or nested functions.</li>
+      <li>Custom hook names should start with <code>use</code> so React tooling recognizes them as hooks.</li>
+    </ul>
+
+    <h3>useAuth</h3>
+    <pre><code>export const useAuth = () =&gt; {
+  return useContext(AuthContext);
+};</code></pre>
+
+    <p><code>useAuth</code> is a small wrapper around <code>useContext(AuthContext)</code>. It lets screens write:</p>
+
+    <pre><code>const { currentUser, loading } = useAuth();</code></pre>
+
+    <p>instead of importing both <code>useContext</code> and <code>AuthContext</code> every time.</p>
+
+    <h3>useTheme</h3>
+    <pre><code>export const useTheme = () =&gt; {
+  return useContext(ThemeContext);
+};</code></pre>
+
+    <p><code>useTheme</code> gives components access to the global theme and toggle function:</p>
+
+    <pre><code>const { theme, toggleTheme } = useTheme();</code></pre>
+
+    <h3>useLoadFonts</h3>
+    <pre><code>export function useLoadFonts() {
+  return useFonts({
+    MedievalSharp: require("../assets/fonts/MedievalSharp-Regular.ttf"),
+  });
+}</code></pre>
+
+    <p>This hook uses Expo's <code>useFonts</code> hook to load the custom font. <code>AppContent</code> waits for the returned <code>fontsLoaded</code> value before showing the normal UI.</p>
+
+    <h3>useArmies</h3>
+    <pre><code>export function useArmies() {
+  const [armies, setArmies] = useState&lt;Army[]&gt;([]);
+
+  useEffect(() =&gt; {
+    const loadArmies = async () =&gt; {
+      const fetchedArmies = await getArmies(database);
+      setArmies(fetchedArmies);
+    };
+
+    loadArmies();
+  }, []);
+
+  return { armies };
+}</code></pre>
+
+    <p>This hook loads the selectable armies from Firestore once. It uses <code>useState</code> to store the result and <code>useEffect</code> because loading data is a side effect.</p>
+
+    <h3>useLoadArmyCompositions</h3>
+    <pre><code>export function useLoadArmyCompositions() {
+  const dispatch = useAppDispatch();
+  const { currentUser } = useAuth();
+
+  useEffect(() =&gt; {
+    if (!currentUser) {
+      return;
+    }
+
+    const unsubscribe = subscribeToArmyCompositions(
+      database,
+      currentUser.uid,
+      (armyCompositions) =&gt; {
+        dispatch(armyCompositionsLoaded(armyCompositions));
+      },
+    );
+
+    return unsubscribe;
+  }, [currentUser, dispatch]);
+}</code></pre>
+
+    <p>This hook connects Firebase Auth, Firestore, and Redux. When a user is logged in, it subscribes to that user's Firestore army compositions. Whenever Firestore sends a new snapshot, the hook dispatches <code>armyCompositionsLoaded</code> into Redux.</p>
+
+    <h3>useArmyCompositions</h3>
+    <pre><code>export function useArmyCompositions() {
+  const dispatch = useAppDispatch();
+  const { currentUser } = useAuth();
+  const armyCompositions = useAppSelector(selectArmyCompositions);
+
+  const deleteComposition = async (id: string) =&gt; {
+    dispatch(armyCompositionDeleted(id));
+
+    if (currentUser) {
+      await deleteArmyComposition(database, currentUser.uid, id);
+    }
+  };
+
+  return {
+    armyCompositions,
+    deleteComposition,
+  };
+}</code></pre>
+
+    <p>This hook reads army compositions from Redux and exposes a delete function. The delete function first updates Redux, then deletes the document from Firestore. This is an optimistic UI update.</p>
+
+    <h3>useCreateArmyComposition</h3>
+    <p>This hook owns the logic for selecting an army and creating a new army composition.</p>
+
+    <pre><code>const [selectedArmy, setSelectedArmy] = useState&lt;Army | null&gt;(null);
+const [armySelectionError, setArmySelectionError] = useState("");</code></pre>
+
+    <p>The hook tracks which army is selected and whether there is a selection error.</p>
+
+    <pre><code>const newArmyComposition: ArmyComposition = {
+  id: uuid.v4().toString(),
+  name: compositionName,
+  army: selectedArmy,
+  units: [],
+  totalPoints: 0,
+};</code></pre>
+
+    <p>When creation succeeds, the hook builds a new typed object with a unique id, empty units, and zero starting points.</p>
+
+    <pre><code>dispatch(armyCompositionAdded(newArmyComposition));
+
+await saveArmyComposition(database, currentUser.uid, newArmyComposition);
+
+navigation.navigate("ArmyComposition", {
+  armyComposition: newArmyComposition,
+});</code></pre>
+
+    <p>The hook updates Redux immediately, saves to Firestore, then navigates to the detail screen.</p>
+
+    <h3>useArmyCompositionUnits</h3>
+    <p>This hook manages adding/removing units and recalculating total points.</p>
+
+    <pre><code>const [selectedUnits, setSelectedUnits] = useState&lt;SelectedUnit[]&gt;(
+  armyComposition.units.map((unit) =&gt; ({
+    ...unit,
+    armyCompositionUnitId: uuid.v4().toString(),
+  })),
+);</code></pre>
+
+    <p>The hook gives every selected unit copy its own <code>armyCompositionUnitId</code>. This matters because the same unit type can be added more than once.</p>
+
+    <pre><code>const totalPoints = selectedUnits.reduce(
+  (total, unit) =&gt; total + unit.points,
+  0,
+);</code></pre>
+
+    <p><code>reduce</code> calculates the total points from the selected units.</p>
+
+    <pre><code>const saveUpdatedUnits = async (
+  updatedUnits: SelectedUnit[],
+  updatedTotalPoints: number,
+) =&gt; {
+  setSelectedUnits(updatedUnits);
+
+  dispatch(
+    armyCompositionUnitsUpdated({
+      armyCompositionId: armyComposition.id,
+      units: updatedUnits,
+      totalPoints: updatedTotalPoints,
+    }),
+  );
+
+  if (currentUser) {
+    await updateArmyCompositionUnits(
+      database,
+      currentUser.uid,
+      armyComposition.id,
+      updatedUnits,
+      updatedTotalPoints,
+    );
+  }
+};</code></pre>
+
+    <p>This helper updates three places: local screen state, Redux state, and Firestore.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Custom hooks keep the screens readable. Screens focus on UI, while hooks handle reusable logic such as reading context, loading Firestore data, dispatching Redux actions, managing unit state, and navigating after creation.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>13. App Structure and Startup Flow</h2>
     <h3>Important file: App.tsx</h3>
     <p><code>App.tsx</code> is the root of the app. It decides which global providers exist and which navigation flow the user sees.</p>
 
@@ -152,353 +1284,8 @@
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>2. Authentication Context and Firebase Auth</h2>
-    <h3>Important file: src/contexts/AuthContext.tsx</h3>
-    <p>This file creates a global authentication state. It lets every screen know whether a user is logged in.</p>
-
-    <pre><code>type AuthContextType = {
-  currentUser: User | null;
-  loading: boolean;
-};</code></pre>
-
-    <p><code>currentUser</code> can be a Firebase <code>User</code> object or <code>null</code>. It is <code>null</code> when nobody is logged in. <code>loading</code> tells the app whether Firebase is still checking the saved login session.</p>
-
-    <pre><code>export const AuthContext = createContext&lt;AuthContextType&gt;({
-  currentUser: null,
-  loading: true,
-});</code></pre>
-
-    <p><code>createContext</code> creates a shared data container. The object passed to it is the default value. The real values come from <code>AuthProvider</code>.</p>
-
-    <h3>The provider</h3>
-    <pre><code>export const AuthProvider = ({ children }: AuthProviderProps) =&gt; {
-  const [currentUser, setCurrentUser] = useState&lt;User | null&gt;(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() =&gt; {
-    const unsubscribe = onAuthStateChanged(auth, (user) =&gt; {
-      setCurrentUser(user);
-      setLoading(false);
-    });
-
-    return unsubscribe;
-  }, []);
-
-  return (
-    &lt;AuthContext.Provider value={{ currentUser, loading }}&gt;
-      {children}
-    &lt;/AuthContext.Provider&gt;
-  );
-};</code></pre>
-
-    <h3>How Firebase Auth works here</h3>
-    <ul>
-      <li><code>onAuthStateChanged</code> starts listening to Firebase Auth.</li>
-      <li>Firebase calls the callback when the user logs in, logs out, or when the app reloads and Firebase checks saved login data.</li>
-      <li>The <code>user</code> parameter is either a Firebase user object or <code>null</code>.</li>
-      <li><code>setCurrentUser(user)</code> updates React state.</li>
-      <li><code>setLoading(false)</code> tells the app that the Firebase check is finished.</li>
-    </ul>
-
-    <h3>Why return unsubscribe?</h3>
-    <p><code>onAuthStateChanged</code> subscribes to auth changes and returns a function that stops the subscription. React calls a returned function from <code>useEffect</code> as cleanup.</p>
-
-    <pre><code>return unsubscribe;</code></pre>
-
-    <p>This is the same idea as:</p>
-
-    <pre><code>return () =&gt; {
-  unsubscribe();
-};</code></pre>
-
-    <div class="box defense">
-      <strong>Defense answer:</strong> I used Context for auth because login state is needed globally. The listener keeps the app synchronized with Firebase, and the cleanup prevents the listener from staying active after the provider is removed.
-    </div>
-
-    <h3>useAuth hook</h3>
-    <pre><code>export const useAuth = () =&gt; {
-  return useContext(AuthContext);
-};</code></pre>
-
-    <p>This hook is a small wrapper around <code>useContext</code>. Instead of importing <code>useContext</code> and <code>AuthContext</code> everywhere, screens can simply call <code>useAuth()</code>.</p>
-  </section>
-
-  <section class="chapter">
-    <h2>3. Theme Context and AsyncStorage</h2>
-    <h3>Important file: src/contexts/ThemeContext.tsx</h3>
-    <p>This file manages the light/dark theme globally.</p>
-
-    <pre><code>type Theme = "light" | "dark";</code></pre>
-
-    <p>This TypeScript union type means the theme can only be exactly <code>"light"</code> or <code>"dark"</code>. This prevents accidental values like <code>"blue"</code> or <code>"Dark"</code>.</p>
-
-    <pre><code>type ThemeContextType = {
-  theme: Theme;
-  toggleTheme: () =&gt; void;
-};</code></pre>
-
-    <p>The theme context exposes two things: the current theme value and a function to change it.</p>
-
-    <h3>Loading saved theme</h3>
-    <pre><code>useEffect(() =&gt; {
-  const loadTheme = async () =&gt; {
-    const savedTheme = await AsyncStorage.getItem("theme");
-
-    if (savedTheme === "light" || savedTheme === "dark") {
-      setTheme(savedTheme);
-    }
-  };
-
-  loadTheme();
-}, []);</code></pre>
-
-    <p><code>AsyncStorage</code> is local key-value storage on the device. It is asynchronous, so the code uses <code>async</code> and <code>await</code>.</p>
-
-    <ul>
-      <li><code>AsyncStorage.getItem("theme")</code> reads the saved value.</li>
-      <li>The <code>if</code> check protects the app from invalid stored values.</li>
-      <li><code>setTheme(savedTheme)</code> updates the UI theme.</li>
-      <li>The empty dependency array means this runs once when the provider mounts.</li>
-    </ul>
-
-    <h3>Toggling theme</h3>
-    <pre><code>const toggleTheme = async () =&gt; {
-  const newTheme = theme === "dark" ? "light" : "dark";
-
-  setTheme(newTheme);
-
-  await AsyncStorage.setItem("theme", newTheme);
-};</code></pre>
-
-    <p>The ternary operator means: if the current theme is dark, switch to light; otherwise switch to dark. The UI updates immediately with <code>setTheme</code>, then the new choice is saved locally.</p>
-
-    <div class="box defense">
-      <strong>Defense answer:</strong> I used AsyncStorage for the theme because it is a local user preference. It does not need to be stored in Firestore because it is not shared army data.
-    </div>
-  </section>
-
-  <section class="chapter">
-    <h2>4. Navigation: Auth Stack, App Drawer, and Screen Stacks</h2>
-    <h3>React Navigation concept</h3>
-    <p>React Navigation controls which screen is visible. This project uses stack navigators and a drawer navigator.</p>
-
-    <ul>
-      <li>A <strong>stack navigator</strong> is like a pile of pages. You navigate forward, and you can go back.</li>
-      <li>A <strong>drawer navigator</strong> is a side menu for switching between larger sections of the app.</li>
-    </ul>
-
-    <h3>AuthStack</h3>
-    <pre><code>export type AuthStackParamList = {
-  Login: undefined;
-  Register: undefined;
-};</code></pre>
-
-    <p>This type says the auth stack has two screens. <code>undefined</code> means those screens do not require route parameters.</p>
-
-    <pre><code>&lt;Stack.Navigator screenOptions={{ headerShown: false }}&gt;
-  &lt;Stack.Screen name="Login" component={LoginScreen} /&gt;
-  &lt;Stack.Screen name="Register" component={RegisterScreen} /&gt;
-&lt;/Stack.Navigator&gt;</code></pre>
-
-    <p>The header is hidden because login and register screens use their own layout.</p>
-
-    <h3>BattleForgeStack</h3>
-    <pre><code>export type BattleForgeStackParamList = {
-  Home: undefined;
-  CreateArmyComposition: undefined;
-  ArmyComposition: { armyComposition: ArmyComposition };
-};</code></pre>
-
-    <p><code>ArmyComposition</code> needs data about the selected composition, so it receives an <code>armyComposition</code> route parameter.</p>
-
-    <h3>Drawer stack</h3>
-    <pre><code>&lt;Drawer.Screen
-  name="BattleForgeStack"
-  component={BattleForgeStack}
-  options={{ title: "Battle Forge" }}
-/&gt;</code></pre>
-
-    <p>The drawer does not show individual screens like Home and Profile. Instead, it shows big sections. Each drawer item contains its own stack navigator.</p>
-
-    <div class="box defense">
-      <strong>Defense answer:</strong> I use stacks for flows, such as Home to Create Army to Army details. I use a drawer for top-level sections, such as Battle Forge and Information.
-    </div>
-  </section>
-
-  <section class="chapter">
-    <h2>5. Redux Store, Redux Toolkit, and Persisted State</h2>
-    <h3>Important files</h3>
-    <ul>
-      <li><code>src/store/index.ts</code></li>
-      <li><code>src/store/hooks.ts</code></li>
-      <li><code>src/features/armyCompositions/armyCompositionSlice.ts</code></li>
-    </ul>
-
-    <h3>What Redux does in this app</h3>
-    <p>Redux stores the list of army compositions in one shared place. Screens can read from it without passing props through many layers.</p>
-
-    <p>Firestore is the remote database. Redux is the local app state. They work together.</p>
-
-    <h3>Store setup</h3>
-    <pre><code>const rootReducer = combineReducers({
-  armyCompositions: armyCompositionsReducer,
-});</code></pre>
-
-    <p>This means Redux state has a property called <code>armyCompositions</code>, controlled by <code>armyCompositionsReducer</code>.</p>
-
-    <pre><code>const persistedReducer = persistReducer(persistConfig, rootReducer);</code></pre>
-
-    <p><code>redux-persist</code> wraps the reducer so Redux state can be saved to <code>AsyncStorage</code>.</p>
-
-    <h3>Slice concept</h3>
-    <pre><code>export const armyCompositionSlice = createSlice({
-  name: "armyCompositions",
-  initialState,
-  reducers: {
-    armyCompositionAdded(state, action: { payload: ArmyComposition }) {
-      state.push(action.payload);
-    },
-  },
-});</code></pre>
-
-    <p>A slice contains the state and the reducer functions for one feature. Redux Toolkit uses Immer internally, so code like <code>state.push</code> is allowed even though Redux state must stay immutable.</p>
-
-    <h3>Important reducers</h3>
-    <ul>
-      <li><code>armyCompositionsLoaded</code>: replaces local Redux data with data loaded from Firestore.</li>
-      <li><code>armyCompositionsCleared</code>: empties the list when logging out.</li>
-      <li><code>armyCompositionAdded</code>: adds a new composition to Redux.</li>
-      <li><code>armyCompositionUnitsUpdated</code>: updates the units and total points of one composition.</li>
-      <li><code>armyCompositionDeleted</code>: removes a composition by id.</li>
-    </ul>
-
-    <h3>Typed Redux hooks</h3>
-    <pre><code>export const useAppDispatch = useDispatch.withTypes&lt;AppDispatch&gt;();
-export const useAppSelector = useSelector.withTypes&lt;RootState&gt;();</code></pre>
-
-    <p>These hooks make Redux usage type-safe. TypeScript knows what actions can be dispatched and what the state shape looks like.</p>
-
-    <div class="box defense">
-      <strong>Defense answer:</strong> Redux is useful here because army compositions are shared between multiple screens. Redux Toolkit reduces boilerplate and makes reducers easier to write safely.
-    </div>
-  </section>
-
-  <section class="chapter">
-    <h2>6. Firebase Services and Firestore Data Flow</h2>
-    <h3>Firebase config</h3>
-    <pre><code>const app = initializeApp(firebaseConfig);
-
-export const auth = getAuth(app);
-export const database = getFirestore(app);</code></pre>
-
-    <p><code>initializeApp</code> connects the app to your Firebase project. <code>auth</code> is used for login/register/logout. <code>database</code> is the Firestore database connection.</p>
-
-    <h3>Auth service</h3>
-    <pre><code>export const login = (auth: Auth, email: string, password: string) =&gt; {
-  return signInWithEmailAndPassword(auth, email, password);
-};</code></pre>
-
-    <p>The service function hides Firebase details from the screen. The screen calls <code>login</code>, and Firebase handles credential checking.</p>
-
-    <h3>Firestore structure</h3>
-    <pre><code>users/{userId}/armyCompositions/{armyCompositionId}</code></pre>
-
-    <p>This means each user has their own subcollection of army compositions. This is important because one user's armies should not appear for another user.</p>
-
-    <h3>Live Firestore subscription</h3>
-    <pre><code>return onSnapshot(
-  collection(database, "users", userId, "armyCompositions"),
-  (querySnapshot) =&gt; {
-    const armyCompositions = querySnapshot.docs.map((document) =&gt; {
-      return document.data() as ArmyComposition;
-    });
-
-    onArmyCompositionsChanged(armyCompositions);
-  },
-);</code></pre>
-
-    <p><code>onSnapshot</code> listens in real time. When Firestore data changes, Firebase sends a new snapshot. The app converts Firestore documents into normal TypeScript objects and sends them back through the callback.</p>
-
-    <h3>Saving data</h3>
-    <pre><code>return setDoc(
-  doc(database, "users", userId, "armyCompositions", armyComposition.id),
-  armyComposition,
-);</code></pre>
-
-    <p><code>doc</code> creates a reference to one Firestore document. <code>setDoc</code> writes data to that document.</p>
-
-    <h3>Updating only units and total points</h3>
-    <pre><code>return setDoc(
-  doc(database, "users", userId, "armyCompositions", armyCompositionId),
-  { units, totalPoints },
-  { merge: true },
-);</code></pre>
-
-    <p><code>merge: true</code> means Firestore updates only the provided fields. It keeps other fields like <code>name</code> and <code>army</code>.</p>
-
-    <div class="box defense">
-      <strong>Defense answer:</strong> I put Firebase calls in service files to keep screens focused on UI. Services make the app easier to test, read, and change.
-    </div>
-  </section>
-
-  <section class="chapter">
-    <h2>7. Forms, Formik, and Yup Validation</h2>
-    <h3>Why Formik?</h3>
-    <p>Forms need to track input values, touched fields, validation errors, and submit handling. Formik manages that state so the component does not need many separate <code>useState</code> calls.</p>
-
-    <h3>LoginForm example</h3>
-    <pre><code>&lt;Formik
-  initialValues={{ email: "", password: "" }}
-  validationSchema={loginValidationSchema}
-  onSubmit={(values) =&gt; {
-    handleLogin(values.email, values.password);
-  }}
-&gt;</code></pre>
-
-    <ul>
-      <li><code>initialValues</code> defines the starting form values.</li>
-      <li><code>validationSchema</code> connects Yup validation rules.</li>
-      <li><code>onSubmit</code> runs after validation succeeds.</li>
-    </ul>
-
-    <h3>TextInput controlled by Formik</h3>
-    <pre><code>&lt;TextInput
-  value={props.values.email}
-  onChangeText={props.handleChange("email")}
-  onBlur={props.handleBlur("email")}
-/&gt;</code></pre>
-
-    <p>The input value comes from Formik. When the user types, Formik updates the value. When the input loses focus, Formik marks the field as touched.</p>
-
-    <h3>Yup validation</h3>
-    <pre><code>export const registerValidationSchema = Yup.object({
-  email: Yup.string()
-    .email("Enter a valid email")
-    .required("Email is required"),
-
-  password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
-
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Passwods must match")
-    .required("Confirm password is required"),
-});</code></pre>
-
-    <p><code>Yup.ref("password")</code> means the confirm password must match the password field.</p>
-
-    <div class="box warning">
-      <strong>Small note:</strong> The message says <code>Passwods</code>. That is only a spelling issue in the validation message, not a logic problem.
-    </div>
-
-    <div class="box defense">
-      <strong>Defense answer:</strong> Formik manages form state, and Yup keeps validation rules separate and reusable. This makes the form components cleaner.
-    </div>
-  </section>
-
-  <section class="chapter">
-    <h2>8. Main Screens and User Flows</h2>
+<section class="chapter">
+    <h2>14. Main Screens and User Flows</h2>
     <h3>LoginScreen and RegisterScreen</h3>
     <p>These screens show forms and call Firebase service functions.</p>
 
@@ -555,115 +1342,235 @@ export const database = getFirestore(app);</code></pre>
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>9. Reusable Components: Cards, Buttons, Header, Modal</h2>
-    <h3>Component props</h3>
-    <p>Props are values passed from a parent component to a child component. They make components reusable.</p>
+<section class="chapter">
+    <h2>15. End-to-End Data Flow</h2>
 
-    <h3>ArmyCompositionCard</h3>
-    <pre><code>type ArmyCompositionCardProps = {
-  armyComposition: ArmyComposition;
-  onPress: () =&gt; void;
-  onDelete: () =&gt; void;
-};</code></pre>
+    <h3>Why data flow matters</h3>
+    <p>For defense, it is useful to explain not only individual files, but also how the app behaves from one user action to the final UI update.</p>
 
-    <ul>
-      <li><code>armyComposition</code> is the data to display.</li>
-      <li><code>onPress</code> is called when the user opens the card.</li>
-      <li><code>onDelete</code> is called when the user presses the trash icon.</li>
-    </ul>
+    <h3>App startup flow</h3>
+    <div class="flow">App starts
+  -> Redux Provider makes store available
+  -> PersistGate reloads persisted Redux data
+  -> AuthProvider starts Firebase auth listener
+  -> ThemeProvider loads saved theme from AsyncStorage
+  -> AppContent waits for auth, fonts, and splash delay
+  -> if currentUser exists, show main drawer
+  -> otherwise, show AuthStack</div>
 
-    <h3>UnitCard</h3>
-    <pre><code>type UnitCardProps = {
-  unit: Unit;
-  buttonText: string;
-  onPress: () =&gt; void;
-};</code></pre>
+    <h3>Login flow</h3>
+    <div class="flow">User enters email/password
+  -> LoginForm submits values
+  -> LoginScreen calls login(auth, email, password)
+  -> Firebase Auth checks credentials
+  -> onAuthStateChanged receives user
+  -> AuthContext sets currentUser
+  -> AppContent re-renders
+  -> main drawer is shown</div>
 
-    <p>The same card can be used in two situations. In the modal, <code>buttonText</code> is <code>"+"</code>. In the selected unit list, it is <code>"-"</code>. This avoids duplicate components.</p>
+    <p>The important point is that <code>LoginScreen</code> does not manually navigate to the main app. Firebase auth state changes, <code>AuthContext</code> updates, and <code>AppContent</code> switches navigation.</p>
 
-    <h3>Modal</h3>
-    <pre><code>&lt;Modal visible={visible} animationType="slide"&gt;</code></pre>
+    <h3>Logout flow</h3>
+    <div class="flow">User presses Sign out
+  -> ProfileScreen dispatches armyCompositionsCleared()
+  -> ProfileScreen calls logout(auth)
+  -> Firebase signs user out
+  -> onAuthStateChanged receives null
+  -> AuthContext sets currentUser to null
+  -> AppContent shows AuthStack</div>
 
-    <p>A React Native <code>Modal</code> renders content above the current screen. In this app, <code>SelectUnitModal</code> lets the user choose a unit without leaving the army composition screen.</p>
+    <p>Redux is cleared before logout so the next user does not briefly see the previous user's local army data.</p>
 
-    <pre><code>type SelectUnitModalProps = {
-  visible: boolean;
-  units: Unit[];
-  totalPoints: number;
-  maxPoints: number;
-  onClose: () =&gt; void;
-  onAddUnit: (unit: Unit) =&gt; void;
-};</code></pre>
+    <h3>Create army composition flow</h3>
+    <div class="flow">User opens Create Army
+  -> useArmies loads available factions from Firestore
+  -> user selects an army
+  -> user enters a composition name
+  -> Formik validates the name
+  -> useCreateArmyComposition builds newArmyComposition
+  -> dispatch(armyCompositionAdded(newArmyComposition))
+  -> saveArmyComposition writes to Firestore
+  -> navigation opens ArmyComposition screen</div>
 
-    <ul>
-      <li><code>visible</code> controls whether the modal is shown.</li>
-      <li><code>units</code> is the list of valid units for the selected army.</li>
-      <li><code>totalPoints</code> and <code>maxPoints</code> show the point status.</li>
-      <li><code>onClose</code> closes the modal.</li>
-      <li><code>onAddUnit</code> sends the chosen unit back to the screen.</li>
-    </ul>
+    <p>This flow combines Formik/Yup, hook state, Redux, Firestore, and navigation.</p>
+
+    <h3>Add unit flow</h3>
+    <div class="flow">User presses Add Unit
+  -> modalVisible becomes true
+  -> SelectUnitModal appears
+  -> user presses + on a UnitCard
+  -> addUnit creates a SelectedUnit with unique armyCompositionUnitId
+  -> total points are recalculated
+  -> local selectedUnits state updates
+  -> Redux armyCompositionUnitsUpdated is dispatched
+  -> Firestore document is updated with merge: true
+  -> UI re-renders with new unit and point total</div>
+
+    <h3>Delete army composition flow</h3>
+    <div class="flow">User presses trash icon
+  -> ArmyCompositionCard calls onDelete
+  -> HomeScreen calls deleteComposition(item.id)
+  -> Redux removes composition immediately
+  -> Firestore deleteDoc removes remote document
+  -> FlatList re-renders without that card</div>
+
+    <h3>Theme toggle flow</h3>
+    <div class="flow">User presses theme button
+  -> ThemeButton calls toggleTheme
+  -> ThemeContext calculates newTheme
+  -> setTheme updates UI immediately
+  -> AsyncStorage saves the new theme
+  -> components using useTheme re-render with new colors</div>
 
     <div class="box defense">
-      <strong>Defense answer:</strong> Reusable components reduce duplication. Props let each parent decide what data the component shows and what should happen when the user interacts with it.
+      <strong>Defense answer:</strong> The app's data flow is controlled by hooks and providers. User actions trigger callbacks, callbacks update state or dispatch Redux actions, Firebase/Firestore save persistent data, and React re-renders the UI from the latest state.
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>10. TypeScript Types and Why They Matter</h2>
-    <h3>Army</h3>
-    <pre><code>export type Army = {
-  id: string;
-  name: string;
-  armyRule: string;
-  imageKey: ArmyImageKey;
-  units: Unit[];
+<section class="chapter">
+    <h2>16. TypeScript Defense Details</h2>
+
+    <h3>Why TypeScript matters in this app</h3>
+    <p>TypeScript is used to describe the shape of data and catch mistakes before runtime. This is especially useful because the app passes data through components, navigation, Redux, hooks, Firebase, and Firestore.</p>
+
+    <h3>Union types</h3>
+    <pre><code>type Theme = "light" | "dark";</code></pre>
+
+    <p>This means <code>theme</code> can only be <code>"light"</code> or <code>"dark"</code>. It prevents invalid values like <code>"blue"</code>, <code>"Dark"</code>, or an empty string.</p>
+
+    <h3>Nullable types</h3>
+    <pre><code>const [currentUser, setCurrentUser] = useState&lt;User | null&gt;(null);</code></pre>
+
+    <p><code>User | null</code> means there may be a Firebase user, or there may be no user. This matches reality because before login there is no authenticated user.</p>
+
+    <h3>Props types</h3>
+    <pre><code>type ThemeButtonProps = {
+  theme: "dark" | "light";
+  onPress: () =&gt; void;
 };</code></pre>
 
-    <p>An army has an id, name, rule, image key, and list of units. The image key links Firestore data to local image assets.</p>
+    <p>This says <code>ThemeButton</code> must receive a theme value and an <code>onPress</code> function. TypeScript warns you if the parent forgets one or passes the wrong type.</p>
 
-    <h3>Unit</h3>
-    <pre><code>export type Unit = {
-  id: string;
-  name: string;
-  movement: number;
-  toughness: number;
-  save: number;
-  wounds: number;
-  leadership: number;
-  objectControl: number;
-  ability: string;
-  points: number;
+    <h3>Optional props</h3>
+    <pre><code>type HeaderProps = {
+  title: string;
+  canGoBack?: boolean;
+  onBackPress?: () =&gt; void;
 };</code></pre>
 
-    <p>This type describes the game stats for a unit.</p>
+    <p>The <code>?</code> means a prop is optional. <code>Header</code> can be used with only a title, or with back-button behavior.</p>
 
-    <h3>ArmyComposition</h3>
-    <pre><code>export type ArmyComposition = {
-  id: string;
-  name: string;
-  army: Army;
-  units: SelectedUnit[];
-  totalPoints: number;
+    <h3>Navigation param types</h3>
+    <pre><code>export type BattleForgeStackParamList = {
+  Home: undefined;
+  CreateArmyComposition: undefined;
+  ArmyComposition: { armyComposition: ArmyComposition };
 };</code></pre>
 
-    <p>An army composition is the user's saved list. It contains the selected army, selected units, and total points.</p>
+    <p>This protects navigation calls. TypeScript knows that <code>ArmyComposition</code> requires an <code>armyComposition</code> param, while <code>Home</code> does not.</p>
 
-    <h3>Why TypeScript helps</h3>
-    <ul>
-      <li>It catches wrong property names before runtime.</li>
-      <li>It documents the shape of the data.</li>
-      <li>It makes navigation parameters safer.</li>
-      <li>It improves autocomplete in the editor.</li>
-    </ul>
+    <h3>RouteProp</h3>
+    <pre><code>type ArmyCompositionRouteProp = RouteProp&lt;
+  BattleForgeStackParamList,
+  "ArmyComposition"
+&gt;;</code></pre>
+
+    <p>This tells TypeScript what route params exist on the <code>ArmyComposition</code> screen. Then <code>route.params.armyComposition</code> is known to be an <code>ArmyComposition</code>.</p>
+
+    <h3>StackScreenProps</h3>
+    <pre><code>type LoginScreenProps = StackScreenProps&lt;AuthStackParamList, "Login"&gt;;</code></pre>
+
+    <p>This gives the screen typed navigation props. It helps prevent mistakes in screen names and navigation parameters.</p>
+
+    <h3>Type assertions with Firestore</h3>
+    <pre><code>return document.data() as ArmyComposition;</code></pre>
+
+    <p>Firestore returns generic document data. The app tells TypeScript, "This document should have the shape of an <code>ArmyComposition</code>." This is useful, but it is also a trust point: TypeScript does not validate Firestore data at runtime.</p>
+
+    <div class="box warning">
+      <strong>Honest defense:</strong> TypeScript catches compile-time mistakes, but it does not prove that Firestore data is valid at runtime. For a larger production app, runtime validation could be added when reading Firestore documents.
+    </div>
+
+    <h3>Typed Redux hooks</h3>
+    <pre><code>export const useAppDispatch = useDispatch.withTypes&lt;AppDispatch&gt;();
+export const useAppSelector = useSelector.withTypes&lt;RootState&gt;();</code></pre>
+
+    <p>These hooks make Redux usage type-safe. TypeScript knows the dispatch type and the shape of the Redux state.</p>
 
     <div class="box defense">
-      <strong>Defense answer:</strong> TypeScript gives the project stronger safety. It helps prevent common bugs, especially when passing data between screens, Redux, Firebase, and components.
+      <strong>Defense answer:</strong> TypeScript documents the app's data shapes and catches many mistakes before the app runs. It is especially useful for props, navigation params, Redux state, Firebase users, and Firestore data models.
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>11. Defense Questions and Short Answers</h2>
+<section class="chapter">
+    <h2>17. Security, Limitations, and Honest Defense</h2>
+
+    <h3>Why this chapter matters</h3>
+    <p>In a project defense, it is strong to explain what the app does well and what could be improved. That shows you understand the system beyond simply making it work.</p>
+
+    <h3>Firebase API keys</h3>
+    <p>The Firebase config contains an API key. In Firebase frontend apps, this key is not treated like a private server secret. It identifies the Firebase project, but access should be controlled by Firebase Authentication and Firestore security rules.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Firebase frontend config is expected to be present in the client app. Real data protection should come from Firebase Auth and Firestore security rules, not from hiding the frontend API key.
+    </div>
+
+    <h3>Firestore security rules</h3>
+    <p>The frontend stores user data under:</p>
+
+    <div class="flow">users/{userId}/armyCompositions/{armyCompositionId}</div>
+
+    <p>The security rule concept should be that users can only read and write their own documents:</p>
+
+    <pre><code>allow read, write: if request.auth != null
+  &amp;&amp; request.auth.uid == userId;</code></pre>
+
+    <p>The app builds the correct path with <code>currentUser.uid</code>, but Firestore rules are what enforce security on the backend.</p>
+
+    <h3>Client-side validation limitation</h3>
+    <p>Formik and Yup validate form input on the client. That improves user experience, but client-side validation can be bypassed. Important security rules should still exist on the backend or in Firestore rules.</p>
+
+    <h3>Optimistic update limitation</h3>
+    <p>The app often updates Redux before Firestore finishes. This makes the UI feel fast.</p>
+
+    <pre><code>dispatch(armyCompositionDeleted(id));
+
+if (currentUser) {
+  await deleteArmyComposition(database, currentUser.uid, id);
+}</code></pre>
+
+    <p>The limitation is that if Firestore fails, the UI has already changed. A stronger production version could catch the error and roll back the Redux state or show a retry message.</p>
+
+    <h3>Runtime data validation limitation</h3>
+    <p>The app uses TypeScript types for Firestore data:</p>
+
+    <pre><code>return document.data() as ArmyComposition;</code></pre>
+
+    <p>This tells TypeScript what shape the data should have, but it does not check the data at runtime. A larger app could validate Firestore data after reading it.</p>
+
+    <h3>Error handling limitation</h3>
+    <p>Some screens show general error messages like <code>Login failed</code> or <code>Registration failed</code>. This is simple and safe, but a more polished app could map Firebase error codes to clearer messages.</p>
+
+    <h3>Data duplication tradeoff</h3>
+    <p>An army composition stores the selected <code>army</code> object. This makes the detail screen easy to render because the selected composition already contains the army data. The tradeoff is that if the shared army data changes later, old compositions may still contain the old copy.</p>
+
+    <h3>Good production improvements</h3>
+    <ul>
+      <li>Add stronger Firestore security rules.</li>
+      <li>Add rollback behavior for failed optimistic updates.</li>
+      <li>Add runtime validation for Firestore documents.</li>
+      <li>Add more specific Firebase error messages.</li>
+      <li>Add loading and empty states for Firestore reads.</li>
+      <li>Add tests for hooks, reducers, and validation schemas.</li>
+    </ul>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The current app meets the project requirements, but a production version should improve Firestore rules, error handling, rollback behavior, and runtime validation. Knowing these limitations shows understanding of real-world app quality.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>18. Defense Questions and Short Answers</h2>
 
     <h3>Why use Context for auth and theme?</h3>
     <p>Because both are global app state. Many screens need them, and passing them manually through props would be messy.</p>
@@ -709,6 +1616,34 @@ export const database = getFirestore(app);</code></pre>
 
     <h3>What is a modal?</h3>
     <p>A modal is a temporary UI layer displayed above the current screen. This app uses it to let the user choose a unit while staying inside the army composition flow.</p>
+
+    <h3>Why use custom hooks?</h3>
+    <p>Custom hooks keep screens focused on UI while reusable logic lives elsewhere. In this app, hooks handle context access, Firestore loading, Redux dispatching, army creation, unit management, and font loading.</p>
+
+    <h3>What is the most important full data flow?</h3>
+    <p>One example is: user creates army, Formik validates input, the custom hook builds the object, Redux updates immediately, Firestore saves it, and navigation opens the detail screen.</p>
+
+    <h3>What is the role of Formik touched and errors?</h3>
+    <p><code>errors</code> stores validation messages, while <code>touched</code> tells whether the user interacted with the field. Showing errors only after a field is touched avoids noisy validation before the user types.</p>
+
+    <h3>Why use TypeScript for navigation?</h3>
+    <p>Typed navigation param lists prevent wrong screen names and missing route parameters. For example, TypeScript knows that <code>ArmyComposition</code> requires an <code>armyComposition</code> param.</p>
+
+    <h3>How does the theme system work?</h3>
+    <p><code>ThemeContext</code> stores the current theme, <code>themeColors</code> maps that theme to colors, and components combine static styles with dynamic theme colors.</p>
+
+    <h3>Are Firebase API keys secret?</h3>
+    <p>Firebase frontend API keys are not treated like private server secrets. Real protection should come from Firebase Authentication and Firestore security rules.</p>
+
+    <h3>What is an optimistic update?</h3>
+    <p>An optimistic update changes the UI before the remote database finishes. It makes the app feel faster, but production apps should handle failures and possibly roll back the local state.</p>
+
+    <h3>What does Expo do in this project?</h3>
+    <p>Expo provides the React Native toolchain, app configuration, development scripts, asset handling, and font loading through <code>expo-font</code>.</p>
+
+    <h3>Why wait for fonts before showing the app?</h3>
+    <p>The app waits for fonts so screens do not render with a fallback font and then visually change after the custom font loads.</p>
   </section>
 </body>
 </html>
+

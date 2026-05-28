@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -68,26 +68,36 @@
   <section class="first">
     <h1>React Native Study Notes</h1>
     <p><strong>Project:</strong> Warhammer40KApp</p>
-    <p><strong>Goal:</strong> explain the React Native and React concepts used in the app: components, JSX, state, effects, touchables, lists, modals, props, and navigation params.</p>
+    <p><strong>Goal:</strong> explain the React Native and React concepts used in the app: Expo setup, components, JSX, styling, props, state, effects, touchables, lists, modals, providers, context, AsyncStorage, and navigation params.</p>
 
     <h2>Table of Contents</h2>
     <ol>
       <li>What React Native Is</li>
+      <li>Expo Project Setup</li>
       <li>Components, JSX, and Rendering</li>
+      <li>React Render Cycle</li>
+      <li>Component Composition</li>
+      <li>Core React Native Components and Layout</li>
+      <li>Styling in React Native</li>
+      <li>Props</li>
+      <li>Destructuring</li>
       <li>useState</li>
       <li>useEffect</li>
+      <li>Conditional Rendering</li>
+      <li>Controlled Components and TextInput</li>
       <li>Pressable, TouchableOpacity, and TouchableWithoutFeedback</li>
       <li>FlatList, renderItem, and keyExtractor</li>
+      <li>Array Methods in UI</li>
       <li>Modal</li>
-      <li>Props</li>
-      <li>Navigation Params</li>
+      <li>Async/Await, Loading, and Error States</li>
+      <li>React Navigation Basics and Params</li>
       <li>Wrapping and Providers</li>
       <li>Context and AsyncStorage</li>
       <li>Short Defense Answers</li>
-    </ol>
+</ol>
   </section>
 
-  <section class="chapter">
+<section class="chapter">
     <h2>1. What React Native Is</h2>
 
     <p>React Native is a framework for building mobile apps with React and JavaScript or TypeScript. Instead of writing Android UI in Kotlin/Java and iOS UI in Swift, you write React components. React Native converts those components into native mobile UI.</p>
@@ -122,8 +132,75 @@
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>2. Components, JSX, and Rendering</h2>
+<section class="chapter">
+    <h2>2. Expo Project Setup</h2>
+
+    <h3>What Expo does</h3>
+    <p>Expo is the toolchain around this React Native app. It helps run the app during development, configure native app settings, load assets, and use Expo libraries such as <code>expo-font</code>.</p>
+
+    <p>The project scripts in <code>package.json</code> are Expo commands:</p>
+
+    <pre><code>"scripts": {
+  "start": "expo start",
+  "android": "expo start --android",
+  "ios": "expo start --ios",
+  "web": "expo start --web",
+  "lint": "expo lint"
+}</code></pre>
+
+    <ul>
+      <li><code>npm start</code> starts the Expo development server.</li>
+      <li><code>npm run android</code> starts the app for Android.</li>
+      <li><code>npm run ios</code> starts the app for iOS.</li>
+      <li><code>npm run web</code> starts the web version.</li>
+      <li><code>npm run lint</code> checks code quality.</li>
+    </ul>
+
+    <h3>app.json</h3>
+    <p><code>app.json</code> contains Expo configuration such as the app name, icon, splash image, orientation, and plugins.</p>
+
+    <pre><code>{
+  "expo": {
+    "name": "Warhammer40KApp",
+    "slug": "Warhammer40KApp",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}</code></pre>
+
+    <p>This is configuration, not screen UI code. Expo reads it to know how the app should be built and displayed.</p>
+
+    <h3>Entry files</h3>
+    <p>The project has an <code>index.ts</code> file and an <code>App.tsx</code> file. The entry file starts the React Native app. <code>App.tsx</code> is the root component where providers and navigation are set up.</p>
+
+    <h3>Gesture handler import</h3>
+    <p>At the top of <code>App.tsx</code>, the project imports:</p>
+
+    <pre><code>import "react-native-gesture-handler";</code></pre>
+
+    <p>This is required by React Navigation drawer/gesture behavior. It should be imported before the app renders navigation components.</p>
+
+    <h3>Expo fonts</h3>
+    <p>The app uses <code>expo-font</code> to load the custom MedievalSharp font:</p>
+
+    <pre><code>export function useLoadFonts() {
+  return useFonts({
+    MedievalSharp: require("../assets/fonts/MedievalSharp-Regular.ttf"),
+  });
+}</code></pre>
+
+    <p>Because fonts load asynchronously, <code>AppContent</code> waits for <code>fontsLoaded</code> before showing the normal app UI.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Expo provides the project tooling and configuration around React Native. It starts the development server, manages app settings through <code>app.json</code>, handles assets, and loads the custom font through <code>expo-font</code>.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>3. Components, JSX, and Rendering</h2>
 
     <h3>What a component is</h3>
     <p>A component is a reusable piece of UI written as a function. It returns JSX, which looks like HTML but is actually JavaScript/TypeScript syntax used by React.</p>
@@ -163,8 +240,408 @@
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>3. useState</h2>
+<section class="chapter">
+    <h2>4. React Render Cycle</h2>
+
+    <h3>What rendering means</h3>
+    <p>Rendering means React runs a component function and uses the returned JSX to describe what the UI should look like.</p>
+
+    <p>For example:</p>
+
+    <pre><code>const ThemeButton = ({ theme, onPress }: ThemeButtonProps) =&gt; {
+  return (
+    &lt;Pressable onPress={onPress}&gt;
+      &lt;Text&gt;Switch to {theme === "dark" ? "Light" : "Dark"} Theme&lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+};</code></pre>
+
+    <p>React runs this function and renders the <code>Pressable</code> and <code>Text</code> output.</p>
+
+    <h3>What causes a re-render?</h3>
+    <p>A component re-renders when the data it depends on changes.</p>
+
+    <ul>
+      <li><strong>State changes:</strong> for example <code>setModalVisible(true)</code>.</li>
+      <li><strong>Props change:</strong> for example <code>ThemeButton</code> receives a different <code>theme</code>.</li>
+      <li><strong>Context changes:</strong> for example <code>ThemeContext</code> changes from dark to light.</li>
+      <li><strong>Redux selector data changes:</strong> for example <code>armyCompositions</code> changes after dispatch.</li>
+    </ul>
+
+    <h3>Example: theme re-render</h3>
+    <div class="flow">User presses ThemeButton
+  -> toggleTheme runs
+  -> setTheme(newTheme)
+  -> ThemeContext value changes
+  -> components using useTheme re-render
+  -> colors update on screen</div>
+
+    <h3>Example: modal re-render</h3>
+    <div class="flow">modalVisible starts false
+  -> user presses Add Unit
+  -> setModalVisible(true)
+  -> ArmyCompositionScreen re-renders
+  -> SelectUnitModal receives visible={true}
+  -> modal appears</div>
+
+    <h3>Important point</h3>
+    <p>You do not manually redraw the screen. You update state, props, context, or Redux state, and React Native re-renders the UI from the new data.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> React Native UI is data-driven. When state, props, context, or selected Redux data changes, React re-renders the affected components and the screen updates.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>5. Component Composition</h2>
+
+    <h3>What component composition means</h3>
+    <p>Component composition means building large screens by combining smaller reusable components.</p>
+
+    <div class="flow">Screen
+  -> layout containers
+  -> reusable components
+  -> buttons/cards/forms/modals</div>
+
+    <h3>HomeScreen composition</h3>
+    <p><code>HomeScreen</code> is built from a background image, safe-area layout, a title, a <code>FlatList</code>, <code>ArmyCompositionCard</code>, and <code>AddArmyCompositionButton</code>.</p>
+
+    <pre><code>&lt;FlatList
+  data={armyCompositions}
+  keyExtractor={(item) =&gt; item.id.toString()}
+  renderItem={renderArmyCompositionItem}
+/&gt;
+
+&lt;AddArmyCompositionButton
+  onPress={() =&gt; navigation.navigate("CreateArmyComposition")}
+/&gt;</code></pre>
+
+    <p>The screen does not manually draw every card. It gives data to <code>FlatList</code>, and <code>renderItem</code> returns an <code>ArmyCompositionCard</code> for each item.</p>
+
+    <h3>ArmyCompositionScreen composition</h3>
+    <p><code>ArmyCompositionScreen</code> combines a summary card, unit list, add button, and modal.</p>
+
+    <pre><code>&lt;AddUnitButton onPress={() =&gt; setModalVisible(true)} /&gt;
+
+&lt;SelectUnitModal
+  visible={modalVisible}
+  units={armyComposition.army.units}
+  onClose={() =&gt; setModalVisible(false)}
+  onAddUnit={addUnit}
+/&gt;</code></pre>
+
+    <p>This keeps the screen readable because the modal and button behavior are separated into their own components.</p>
+
+    <h3>Why composition is useful</h3>
+    <ul>
+      <li>It keeps screens easier to read.</li>
+      <li>It avoids repeating UI code.</li>
+      <li>It lets components be reused in different places.</li>
+      <li>It separates responsibilities between screens and smaller UI pieces.</li>
+    </ul>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The app uses composition by building screens from smaller components like forms, buttons, cards, and modals. This makes the code easier to reuse and easier to explain.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>6. Core React Native Components and Layout</h2>
+
+    <h3>View</h3>
+    <p><code>View</code> is the basic layout container in React Native. It is similar to a <code>div</code> in web development.</p>
+
+    <pre><code>&lt;View style={styles.container}&gt;
+  &lt;Text&gt;Content&lt;/Text&gt;
+&lt;/View&gt;</code></pre>
+
+    <p>Your app uses <code>View</code> for layout inside cards, forms, headers, overlays, and screen sections.</p>
+
+    <h3>Text</h3>
+    <p><code>Text</code> displays text. In React Native, text should be inside a <code>Text</code> component.</p>
+
+    <pre><code>&lt;Text style={styles.title}&gt;PROFILE&lt;/Text&gt;</code></pre>
+
+    <p>Unlike web React, you do not use <code>p</code>, <code>span</code>, or <code>h1</code>. You use <code>Text</code> and style it.</p>
+
+    <h3>TextInput</h3>
+    <p><code>TextInput</code> lets the user type text. Your forms use it with Formik.</p>
+
+    <pre><code>&lt;TextInput
+  placeholder="Email"
+  value={props.values.email}
+  onChangeText={props.handleChange("email")}
+  onBlur={props.handleBlur("email")}
+  autoCapitalize="none"
+/&gt;</code></pre>
+
+    <ul>
+      <li><code>value</code> controls what is shown in the input.</li>
+      <li><code>onChangeText</code> runs when the user types.</li>
+      <li><code>onBlur</code> runs when the input loses focus.</li>
+      <li><code>secureTextEntry</code> hides password text.</li>
+      <li><code>placeholderTextColor</code> controls placeholder color.</li>
+    </ul>
+
+    <h3>Image and ImageBackground</h3>
+    <p><code>Image</code> displays an image. <code>ImageBackground</code> displays an image behind child content.</p>
+
+    <pre><code>&lt;ImageBackground
+  source={require("../assets/images/screen_background.png")}
+  style={styles.background}
+&gt;
+  ...
+&lt;/ImageBackground&gt;</code></pre>
+
+    <p>Your screens use <code>ImageBackground</code> for the Warhammer-style screen background, header background, and army/faction cards.</p>
+
+    <h3>SafeAreaView</h3>
+    <p><code>SafeAreaView</code> keeps content away from device-specific blocked areas, such as notches, status bars, and bottom gesture areas.</p>
+
+    <pre><code>&lt;SafeAreaView
+  style={styles.container}
+  edges={["left", "right", "bottom"]}
+&gt;</code></pre>
+
+    <p>The custom header uses <code>edges={["top"]}</code> so it respects the top safe area.</p>
+
+    <h3>KeyboardAvoidingView</h3>
+    <p><code>KeyboardAvoidingView</code> moves or resizes content so the keyboard does not cover form inputs.</p>
+
+    <pre><code>&lt;KeyboardAvoidingView
+  style={styles.keyboardAvoidingView}
+  behavior={Platform.OS === "ios" ? "padding" : "height"}
+&gt;</code></pre>
+
+    <p>The behavior is different on iOS and Android, so the app checks <code>Platform.OS</code>.</p>
+
+    <h3>ScrollView</h3>
+    <p><code>ScrollView</code> makes content scrollable. Your <code>ProfileScreen</code> uses it because the profile page contains multiple sections and forms.</p>
+
+    <pre><code>&lt;ScrollView keyboardShouldPersistTaps="handled"&gt;
+  ...
+&lt;/ScrollView&gt;</code></pre>
+
+    <p><code>keyboardShouldPersistTaps="handled"</code> helps taps on form controls work correctly while the keyboard is open.</p>
+
+    <h3>Platform and Keyboard</h3>
+    <p><code>Platform</code> lets the app react differently on iOS or Android. <code>Keyboard.dismiss</code> hides the mobile keyboard.</p>
+
+    <pre><code>&lt;TouchableWithoutFeedback onPress={Keyboard.dismiss}&gt;
+  ...
+&lt;/TouchableWithoutFeedback&gt;</code></pre>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> React Native provides mobile UI components instead of HTML elements. This app uses <code>View</code> for layout, <code>Text</code> for text, <code>TextInput</code> for forms, <code>ImageBackground</code> for visual design, <code>SafeAreaView</code> for device safe areas, and keyboard helpers for mobile form usability.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>7. Styling in React Native</h2>
+
+    <h3>Style objects instead of CSS</h3>
+    <p>React Native does not use normal browser CSS. Styles are JavaScript objects. This project keeps styles in separate files under <code>src/styles</code>.</p>
+
+    <pre><code>import { ThemeButtonStyles as styles } from "../../styles/themeButtonStyles";</code></pre>
+
+    <h3>StyleSheet.create</h3>
+    <pre><code>export const ThemeButtonStyles = StyleSheet.create({
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 12,
+  },
+
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});</code></pre>
+
+    <p><code>StyleSheet.create</code> creates named style objects. The component then uses those styles through the <code>style</code> prop.</p>
+
+    <h3>Combining styles with arrays</h3>
+    <pre><code>&lt;Pressable
+  style={[styles.button, { backgroundColor: colors.button }]}
+  onPress={onPress}
+&gt;</code></pre>
+
+    <p>The style prop can receive an array. React Native combines the style objects from left to right. In this example, the static button layout comes from <code>styles.button</code>, and the dynamic theme color comes from <code>colors.button</code>.</p>
+
+    <h3>Dynamic theme styling</h3>
+    <pre><code>const { theme } = useTheme();
+const colors = themeColors[theme];</code></pre>
+
+    <p>The app reads the current theme from context and selects the correct colors from <code>themeColors</code>.</p>
+
+    <h3>Flexbox layout</h3>
+    <p>React Native uses Flexbox for layout. Common style properties in this project include:</p>
+
+    <ul>
+      <li><code>flex</code>: controls how much space a component takes.</li>
+      <li><code>flexDirection</code>: row or column layout.</li>
+      <li><code>alignItems</code>: alignment across the cross axis.</li>
+      <li><code>justifyContent</code>: alignment along the main axis.</li>
+      <li><code>padding</code> and <code>margin</code>: internal and external spacing.</li>
+    </ul>
+
+    <h3>Important difference from CSS</h3>
+    <p>React Native style names use camelCase, not CSS kebab-case. For example:</p>
+
+    <pre><code>backgroundColor: "black"
+fontWeight: "bold"
+paddingHorizontal: 16</code></pre>
+
+    <p>instead of:</p>
+
+    <pre><code>background-color: black;
+font-weight: bold;</code></pre>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> React Native uses JavaScript style objects instead of CSS. The app separates styles into files, combines static and dynamic styles with arrays, and uses theme colors from context to support light and dark mode.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>8. Props</h2>
+
+    <h3>What props are</h3>
+    <p>Props are values passed from a parent component to a child component. They are how components receive data and callbacks.</p>
+
+    <p>Props flow downward:</p>
+
+    <div class="flow">Parent component
+  -> passes props
+  -> child component receives props
+  -> child component uses props to render or call callbacks</div>
+
+    <h3>Props example: AddUnitButton</h3>
+    <pre><code>type AddUnitButtonProps = {
+  onPress: () =&gt; void;
+};</code></pre>
+
+    <p>This type says the component needs one prop named <code>onPress</code>. That prop must be a function that returns nothing.</p>
+
+    <pre><code>const AddUnitButton = ({ onPress }: AddUnitButtonProps) =&gt; {
+  return (
+    &lt;Pressable onPress={onPress}&gt;
+      &lt;Text&gt;Add Unit&lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+};</code></pre>
+
+    <p>The parent decides what <code>onPress</code> does:</p>
+
+    <pre><code>&lt;AddUnitButton onPress={() =&gt; setModalVisible(true)} /&gt;</code></pre>
+
+    <p>So the child button is reusable. It only knows that it should call <code>onPress</code> when pressed.</p>
+
+    <h3>Callback props</h3>
+    <p>A callback prop is a function passed as a prop. The child component calls it when something happens, but the parent decides what the function actually does.</p>
+
+    <pre><code>&lt;ThemeButton theme={theme} onPress={toggleTheme} /&gt;</code></pre>
+
+    <p>Here, <code>ThemeButton</code> does not contain theme-changing logic. It only calls <code>onPress</code>. The parent passes <code>toggleTheme</code>, which comes from <code>ThemeContext</code>.</p>
+
+    <p>This pattern is used throughout the app:</p>
+
+    <ul>
+      <li><code>AddUnitButton</code> receives a callback that opens the modal.</li>
+      <li><code>LogoutButton</code> receives a callback that signs the user out.</li>
+      <li><code>UnitCard</code> receives a callback that adds or removes a unit.</li>
+      <li><code>ArmyCompositionCard</code> receives callbacks for opening or deleting a composition.</li>
+    </ul>
+
+    <h3>Props example: UnitCard</h3>
+    <pre><code>type UnitCardProps = {
+  unit: Unit;
+  buttonText: string;
+  onPress: () =&gt; void;
+};</code></pre>
+
+    <p>This component receives:</p>
+    <ul>
+      <li><code>unit</code>: the unit data to display.</li>
+      <li><code>buttonText</code>: the text on the button, such as <code>+</code> or <code>-</code>.</li>
+      <li><code>onPress</code>: what happens when the button is pressed.</li>
+    </ul>
+
+    <p>The same <code>UnitCard</code> can be reused for adding and removing units because behavior comes from props.</p>
+
+    <h3>Props example: Header</h3>
+    <pre><code>type HeaderProps = {
+  title: string;
+  canGoBack?: boolean;
+  onBackPress?: () =&gt; void;
+};</code></pre>
+
+    <p>The question mark means optional. <code>canGoBack</code> and <code>onBackPress</code> do not have to be passed every time.</p>
+
+    <pre><code>const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) =&gt; {
+  ...
+};</code></pre>
+
+    <p><code>canGoBack = false</code> gives a default value. If the parent does not pass <code>canGoBack</code>, it will be <code>false</code>.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Props make components reusable. A child component receives data and callback functions from its parent, but the parent stays in control of what should happen.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>9. Destructuring</h2>
+
+    <h3>What destructuring is</h3>
+    <p>Destructuring is JavaScript syntax for taking values out of objects or arrays.</p>
+
+    <h3>Object destructuring</h3>
+    <pre><code>const { theme } = useTheme();</code></pre>
+
+    <p><code>useTheme()</code> returns an object. This line takes the <code>theme</code> property from that object.</p>
+
+    <p>This:</p>
+
+    <pre><code>const { theme } = useTheme();</code></pre>
+
+    <p>is similar to:</p>
+
+    <pre><code>const themeContext = useTheme();
+const theme = themeContext.theme;</code></pre>
+
+    <h3>Destructuring props</h3>
+    <pre><code>const ThemeButton = ({ theme, onPress }: ThemeButtonProps) =&gt; {
+  ...
+};</code></pre>
+
+    <p>The component receives a props object, then immediately takes out <code>theme</code> and <code>onPress</code>.</p>
+
+    <h3>Destructuring route params</h3>
+    <pre><code>const route = useRoute&lt;ArmyCompositionRouteProp&gt;();
+const { armyComposition } = route.params;</code></pre>
+
+    <p>This takes <code>armyComposition</code> out of <code>route.params</code>.</p>
+
+    <h3>Destructuring FlatList items</h3>
+    <pre><code>const renderArmyCompositionItem = ({ item }: { item: ArmyComposition }) =&gt; {
+  ...
+};</code></pre>
+
+    <p><code>FlatList</code> passes an object to <code>renderItem</code>. That object contains <code>item</code>. This syntax extracts <code>item</code> directly.</p>
+
+    <h3>Array destructuring</h3>
+    <pre><code>const [modalVisible, setModalVisible] = useState(false);</code></pre>
+
+    <p><code>useState</code> returns an array with two values: the current state value and the setter function. Array destructuring names both values.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Destructuring makes code shorter by extracting values from objects or arrays, such as props, context values, route params, FlatList item objects, and <code>useState</code> results.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>10. useState</h2>
 
     <h3>What useState does</h3>
     <p><code>useState</code> stores data that can change while the component is being used. When state changes, React re-renders the component with the new value.</p>
@@ -219,8 +696,8 @@
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>4. useEffect</h2>
+<section class="chapter">
+    <h2>11. useEffect</h2>
 
     <h3>What useEffect does</h3>
     <p><code>useEffect</code> runs side effects. A side effect is work that happens outside normal rendering, such as loading data, starting a Firebase listener, reading AsyncStorage, or setting a timer.</p>
@@ -297,8 +774,94 @@
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>5. Pressable, TouchableOpacity, and TouchableWithoutFeedback</h2>
+<section class="chapter">
+    <h2>12. Conditional Rendering</h2>
+
+    <h3>What conditional rendering is</h3>
+    <p>Conditional rendering means showing different UI depending on a condition.</p>
+
+    <h3>Ternary conditional rendering</h3>
+    <pre><code>{currentUser ? &lt;BattleForgeInformationDrawerStack /&gt; : &lt;AuthStack /&gt;}</code></pre>
+
+    <p>If <code>currentUser</code> exists, the app shows the logged-in drawer. Otherwise, it shows the auth stack.</p>
+
+    <h3>Empty state versus list</h3>
+    <pre><code>{selectedUnits.length === 0 ? (
+  &lt;View style={styles.emptyCard}&gt;
+    &lt;Text&gt;No units added yet.&lt;/Text&gt;
+  &lt;/View&gt;
+) : (
+  &lt;FlatList
+    data={selectedUnits}
+    renderItem={renderSelectedUnitItem}
+  /&gt;
+)}</code></pre>
+
+    <p>If there are no selected units, the app shows an empty message. If there are units, it shows the list.</p>
+
+    <h3>Logical AND rendering</h3>
+    <pre><code>{updateMessage &amp;&amp; (
+  &lt;Text style={styles.errorText}&gt;{updateMessage}&lt;/Text&gt;
+)}</code></pre>
+
+    <p>This means: if <code>updateMessage</code> has a value, show the message. If it is an empty string, show nothing.</p>
+
+    <h3>Conditional styles</h3>
+    <pre><code>style={[
+  styles.pointsText,
+  isOverPointLimit &amp;&amp; styles.pointsTextError,
+]}</code></pre>
+
+    <p>This adds the error style only when <code>isOverPointLimit</code> is true.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Conditional rendering lets the app show different UI for different states, such as logged in versus logged out, empty unit lists versus FlatLists, success/error messages, and point-limit warnings.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>13. Controlled Components and TextInput</h2>
+
+    <h3>What a controlled component is</h3>
+    <p>A controlled component is an input whose value is controlled by React state or a form library instead of being stored only inside the native input.</p>
+
+    <h3>Controlled TextInput with Formik</h3>
+    <pre><code>&lt;TextInput
+  value={props.values.email}
+  onChangeText={props.handleChange("email")}
+  onBlur={props.handleBlur("email")}
+/&gt;</code></pre>
+
+    <p>The value shown in the input comes from <code>props.values.email</code>. When the user types, <code>onChangeText</code> updates Formik's form state.</p>
+
+    <div class="flow">User types
+  -> onChangeText runs
+  -> Formik updates values.email
+  -> component re-renders
+  -> TextInput receives the new value</div>
+
+    <h3>Why controlled inputs are useful</h3>
+    <ul>
+      <li>The form state always matches what is shown on screen.</li>
+      <li>Validation can use the current form values.</li>
+      <li>Submit handlers can read all values from one place.</li>
+      <li>The app can clear or change inputs programmatically.</li>
+    </ul>
+
+    <h3>Formik touched and errors</h3>
+    <pre><code>{props.touched.email &amp;&amp; props.errors.email
+  ? props.errors.email
+  : ""}</code></pre>
+
+    <p><code>touched</code> means the user interacted with the field. <code>errors</code> contains validation messages. The app shows the message only after the field was touched.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The app uses controlled inputs through Formik. The input value comes from Formik state, typing updates that state, and validation/submission use the same form values.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>14. Pressable, TouchableOpacity, and TouchableWithoutFeedback</h2>
 
     <h3>Pressable</h3>
     <p><code>Pressable</code> is a React Native component for handling press interactions. It is more flexible than older touchable components because it can react to pressed, hovered, focused, and disabled states.</p>
@@ -369,11 +932,16 @@
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>6. FlatList, renderItem, and keyExtractor</h2>
+<section class="chapter">
+    <h2>15. FlatList, renderItem, and keyExtractor</h2>
 
     <h3>What FlatList does</h3>
     <p><code>FlatList</code> renders scrollable lists efficiently. Instead of rendering every item at once, it renders what is needed for the visible area. This is better for performance when lists become large.</p>
+
+    <h3>FlatList versus ScrollView</h3>
+    <p><code>ScrollView</code> is useful when you have a known amount of content that should scroll, such as the profile screen with forms and labels. <code>FlatList</code> is better for arrays of repeated data, such as army compositions, armies, or units.</p>
+
+    <p>The reason is performance: <code>ScrollView</code> renders all its children, while <code>FlatList</code> is optimized for list data and can render list rows more efficiently.</p>
 
     <h3>Basic FlatList shape</h3>
     <pre><code>&lt;FlatList
@@ -455,8 +1023,53 @@
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>7. Modal</h2>
+<section class="chapter">
+    <h2>16. Array Methods in UI</h2>
+
+    <h3>Why array methods matter</h3>
+    <p>React Native screens often display arrays of data. This app uses array methods to transform, filter, and calculate data for the UI.</p>
+
+    <h3>map</h3>
+    <p><code>map</code> converts every item in an array into a new value.</p>
+
+    <pre><code>armyComposition.units.map((unit) =&gt; ({
+  ...unit,
+  armyCompositionUnitId: uuid.v4().toString(),
+}))</code></pre>
+
+    <p>This takes every saved unit and returns a copy with a new <code>armyCompositionUnitId</code>.</p>
+
+    <h3>filter</h3>
+    <p><code>filter</code> creates a new array that only keeps items matching a condition.</p>
+
+    <pre><code>const updatedUnits = selectedUnits.filter(
+  (unit) =&gt; unit.armyCompositionUnitId !== armyCompositionUnitId,
+);</code></pre>
+
+    <p>This removes only the selected unit copy with the matching id.</p>
+
+    <h3>reduce</h3>
+    <p><code>reduce</code> combines an array into one value.</p>
+
+    <pre><code>const totalPoints = selectedUnits.reduce(
+  (total, unit) =&gt; total + unit.points,
+  0,
+);</code></pre>
+
+    <p>This calculates the total points by adding every selected unit's points.</p>
+
+    <h3>Spread operator</h3>
+    <pre><code>const updatedUnits = [...selectedUnits, selectedUnit];</code></pre>
+
+    <p>The spread operator creates a new array containing the old units plus the new selected unit. This avoids changing the old array directly.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The app uses array methods to work with UI data: <code>map</code> to transform units, <code>filter</code> to remove a selected unit, <code>reduce</code> to calculate total points, and spread syntax to create updated arrays.
+    </div>
+  </section>
+
+<section class="chapter">
+    <h2>17. Modal</h2>
 
     <h3>What Modal does</h3>
     <p>A <code>Modal</code> displays content above the current screen. It is useful for temporary workflows where the user should not fully navigate away.</p>
@@ -498,78 +1111,119 @@
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>8. Props</h2>
+<section class="chapter">
+    <h2>18. Async/Await, Loading, and Error States</h2>
 
-    <h3>What props are</h3>
-    <p>Props are values passed from a parent component to a child component. They are how components receive data and callbacks.</p>
+    <h3>Why async/await is used</h3>
+    <p>Some operations take time, such as Firebase login, Firestore reads/writes, AsyncStorage access, and font loading. These operations are asynchronous.</p>
 
-    <p>Props flow downward:</p>
-
-    <div class="flow">Parent component
-  -> passes props
-  -> child component receives props
-  -> child component uses props to render or call callbacks</div>
-
-    <h3>Props example: AddUnitButton</h3>
-    <pre><code>type AddUnitButtonProps = {
-  onPress: () =&gt; void;
+    <pre><code>const handleLogin = async (email: string, password: string) =&gt; {
+  try {
+    setFirebaseError("");
+    await login(auth, email, password);
+  } catch {
+    setFirebaseError("Login failed");
+  }
 };</code></pre>
 
-    <p>This type says the component needs one prop named <code>onPress</code>. That prop must be a function that returns nothing.</p>
+    <p><code>async</code> allows the function to use <code>await</code>. <code>await</code> pauses that function until the promise finishes.</p>
 
-    <pre><code>const AddUnitButton = ({ onPress }: AddUnitButtonProps) =&gt; {
-  return (
-    &lt;Pressable onPress={onPress}&gt;
-      &lt;Text&gt;Add Unit&lt;/Text&gt;
-    &lt;/Pressable&gt;
-  );
-};</code></pre>
+    <h3>try/catch</h3>
+    <p><code>try/catch</code> handles failed async operations.</p>
 
-    <p>The parent decides what <code>onPress</code> does:</p>
+    <pre><code>try {
+  await updateUserPassword(currentUser, currentPassword, newPassword);
+  setUpdateMessage("Password updated successfully.");
+} catch {
+  setUpdateMessage("Failed to update password.");
+}</code></pre>
 
-    <pre><code>&lt;AddUnitButton onPress={() =&gt; setModalVisible(true)} /&gt;</code></pre>
+    <p>If the Firebase request succeeds, the success message is shown. If it fails, the catch block shows an error message.</p>
 
-    <p>So the child button is reusable. It only knows that it should call <code>onPress</code> when pressed.</p>
+    <h3>Loading state</h3>
+    <p>Loading state tells the UI that the app is waiting for something.</p>
 
-    <h3>Props example: UnitCard</h3>
-    <pre><code>type UnitCardProps = {
-  unit: Unit;
-  buttonText: string;
-  onPress: () =&gt; void;
-};</code></pre>
+    <pre><code>const [loading, setLoading] = useState(true);</code></pre>
 
-    <p>This component receives:</p>
-    <ul>
-      <li><code>unit</code>: the unit data to display.</li>
-      <li><code>buttonText</code>: the text on the button, such as <code>+</code> or <code>-</code>.</li>
-      <li><code>onPress</code>: what happens when the button is pressed.</li>
-    </ul>
+    <p>In <code>AuthContext</code>, loading starts as true because Firebase still has to check whether a saved login exists.</p>
 
-    <p>The same <code>UnitCard</code> can be reused for adding and removing units because behavior comes from props.</p>
+    <pre><code>if (loading || showSplashScreen || !fontsLoaded) {
+  return &lt;SplashScreen /&gt;;
+}</code></pre>
 
-    <h3>Props example: Header</h3>
-    <pre><code>type HeaderProps = {
-  title: string;
-  canGoBack?: boolean;
-  onBackPress?: () =&gt; void;
-};</code></pre>
+    <p>The app shows the splash screen while auth, fonts, or the splash delay are still loading.</p>
 
-    <p>The question mark means optional. <code>canGoBack</code> and <code>onBackPress</code> do not have to be passed every time.</p>
+    <h3>Error state</h3>
+    <pre><code>const [firebaseError, setFirebaseError] = useState("");</code></pre>
 
-    <pre><code>const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) =&gt; {
-  ...
-};</code></pre>
+    <p>Error state stores a message that the UI can show after something fails.</p>
 
-    <p><code>canGoBack = false</code> gives a default value. If the parent does not pass <code>canGoBack</code>, it will be <code>false</code>.</p>
+    <pre><code>&lt;Text style={styles.errorText}&gt;{firebaseError}&lt;/Text&gt;</code></pre>
+
+    <h3>Empty state</h3>
+    <p>An empty state is UI shown when there is no data yet.</p>
+
+    <pre><code>{selectedUnits.length === 0 ? (
+  &lt;Text&gt;No units added yet.&lt;/Text&gt;
+) : (
+  &lt;FlatList data={selectedUnits} ... /&gt;
+)}</code></pre>
+
+    <p>This is better than showing a blank screen.</p>
 
     <div class="box defense">
-      <strong>Defense answer:</strong> Props make components reusable. A child component receives data and callback functions from its parent, but the parent stays in control of what should happen.
+      <strong>Defense answer:</strong> Async operations are handled with <code>async</code>/<code>await</code> and <code>try/catch</code>. Loading, error, and empty states make the UI understandable while the app waits, fails, or has no data to show.
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>9. Navigation Params</h2>
+<section class="chapter">
+    <h2>19. React Navigation Basics and Params</h2>
+
+    <h3>What React Navigation does</h3>
+    <p>React Navigation controls which screen is visible and how the user moves between screens. In this app, it handles login/register navigation, the main drawer menu, and stack navigation between army screens.</p>
+
+    <h3>navigation.navigate</h3>
+    <p><code>navigation.navigate</code> opens another screen.</p>
+
+    <pre><code>navigation.navigate("Register")</code></pre>
+
+    <p>This is used on the login screen to move to the register screen.</p>
+
+    <pre><code>navigation.navigate("ArmyComposition", {
+  armyComposition: item,
+})</code></pre>
+
+    <p>This opens the army composition detail screen and passes the selected army composition as a navigation parameter.</p>
+
+    <h3>navigation.goBack</h3>
+    <p><code>navigation.goBack()</code> returns to the previous screen in the stack if there is one.</p>
+
+    <pre><code>navigation.goBack();</code></pre>
+
+    <p>Your custom header uses this when <code>canGoBack</code> is true and no custom back action was passed.</p>
+
+    <h3>navigation.openDrawer</h3>
+    <p><code>navigation.openDrawer()</code> opens the side drawer menu.</p>
+
+    <pre><code>navigation.openDrawer();</code></pre>
+
+    <p>The custom header uses this when the current screen is a top-level screen and should show the drawer menu button.</p>
+
+    <h3>useNavigation</h3>
+    <p><code>useNavigation</code> gives a component access to navigation. This is useful when a component is not receiving <code>navigation</code> directly as a screen prop.</p>
+
+    <pre><code>const navigation =
+  useNavigation&lt;StackNavigationProp&lt;BattleForgeStackParamList&gt;&gt;();</code></pre>
+
+    <p><code>HomeScreen</code> uses this so it can navigate to the create screen or detail screen.</p>
+
+    <h3>useRoute</h3>
+    <p><code>useRoute</code> gives a screen access to the current route and its parameters.</p>
+
+    <pre><code>const route = useRoute&lt;ArmyCompositionRouteProp&gt;();
+const { armyComposition } = route.params;</code></pre>
+
+    <p><code>ArmyCompositionScreen</code> uses this to read the selected army composition passed from <code>HomeScreen</code>.</p>
 
     <h3>What navigation params are</h3>
     <p>Navigation params are data passed from one screen to another through React Navigation.</p>
@@ -632,12 +1286,12 @@ const { armyComposition } = route.params;</code></pre>
     <p>Inside <code>navigation.navigate</code>, <code>armyComposition: item</code> is a navigation param passed to the next screen.</p>
 
     <div class="box defense">
-      <strong>Defense answer:</strong> I use props to pass data and functions into reusable components. I use navigation params to pass data between screens, for example sending the selected army composition from Home to the detail screen.
+      <strong>Defense answer:</strong> React Navigation controls screen movement. The app uses <code>navigate</code> to open screens, <code>goBack</code> for stack back behavior, <code>openDrawer</code> for the drawer menu, <code>useNavigation</code> to access navigation, and <code>useRoute</code> to read route params.
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>10. Wrapping and Providers</h2>
+<section class="chapter">
+    <h2>20. Wrapping and Providers</h2>
 
     <h3>What wrapping means</h3>
     <p>Wrapping means placing one component around another component.</p>
@@ -815,8 +1469,8 @@ Component outside
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>11. Context and AsyncStorage</h2>
+<section class="chapter">
+    <h2>21. Context and AsyncStorage</h2>
 
     <h3>What Context is</h3>
     <p>React Context is a way to share data with many components without manually passing props through every level of the component tree.</p>
@@ -1083,17 +1737,62 @@ if (savedSettings) {
     </div>
   </section>
 
-  <section class="chapter">
-    <h2>12. Short Defense Answers</h2>
+<section class="chapter">
+    <h2>22. Short Defense Answers</h2>
 
     <h3>What is React Native?</h3>
     <p>React Native is a framework that lets us build mobile apps with React components. The components render to native mobile UI instead of browser HTML.</p>
+
+    <h3>What is Expo?</h3>
+    <p>Expo is the toolchain around the React Native app. It provides development commands, app configuration, asset support, and libraries such as <code>expo-font</code>.</p>
+
+    <h3>What is View?</h3>
+    <p><code>View</code> is the basic layout container in React Native, similar to a <code>div</code> in web development.</p>
+
+    <h3>What is Text?</h3>
+    <p><code>Text</code> displays text. In React Native, text should normally be placed inside a <code>Text</code> component.</p>
+
+    <h3>What is TextInput?</h3>
+    <p><code>TextInput</code> lets the user type. In this project, Formik controls its <code>value</code>, <code>onChangeText</code>, and <code>onBlur</code>.</p>
+
+    <h3>What is ImageBackground?</h3>
+    <p><code>ImageBackground</code> displays an image behind child content. The app uses it for screen backgrounds, the custom header, and army cards.</p>
+
+    <h3>What is SafeAreaView?</h3>
+    <p><code>SafeAreaView</code> keeps content away from device notches, status bars, and bottom gesture areas.</p>
+
+    <h3>What is KeyboardAvoidingView?</h3>
+    <p><code>KeyboardAvoidingView</code> helps keep inputs visible when the mobile keyboard opens.</p>
+
+    <h3>What is ScrollView?</h3>
+    <p><code>ScrollView</code> makes content scrollable. The profile screen uses it because it contains several sections and forms.</p>
+
+    <h3>How does styling work in React Native?</h3>
+    <p>React Native uses JavaScript style objects instead of CSS. The app keeps styles in separate files and combines static styles with dynamic theme styles using style arrays.</p>
+
+    <h3>What is a callback prop?</h3>
+    <p>A callback prop is a function passed from parent to child. The child calls it when something happens, but the parent controls what it does.</p>
+
+    <h3>What causes a re-render?</h3>
+    <p>A component re-renders when state, props, context, or selected Redux data changes.</p>
+
+    <h3>What is component composition?</h3>
+    <p>Component composition means building larger screens from smaller reusable components such as buttons, cards, forms, lists, and modals.</p>
+
+    <h3>What is destructuring?</h3>
+    <p>Destructuring is JavaScript syntax for extracting values from objects or arrays, such as <code>const { theme } = useTheme()</code> or <code>const [value, setValue] = useState()</code>.</p>
 
     <h3>What is useState?</h3>
     <p><code>useState</code> stores a value that can change. When the setter function changes the value, React re-renders the component.</p>
 
     <h3>What is useEffect?</h3>
     <p><code>useEffect</code> runs side effects such as timers, subscriptions, loading data, and reading storage. Its dependency array controls when it runs, and its return function is cleanup.</p>
+
+    <h3>What is conditional rendering?</h3>
+    <p>Conditional rendering means showing different UI depending on a condition, such as logged-in versus logged-out navigation or an empty state versus a list.</p>
+
+    <h3>What is a controlled component?</h3>
+    <p>A controlled component is an input whose value comes from React state or a form library. In this app, Formik controls <code>TextInput</code> values.</p>
 
     <h3>Why use Pressable?</h3>
     <p><code>Pressable</code> handles touch interactions and can respond to pressed state. The project uses it for buttons, cards, and icons.</p>
@@ -1113,11 +1812,23 @@ if (savedSettings) {
     <h3>What is keyExtractor?</h3>
     <p><code>keyExtractor</code> returns a stable unique key for each item. React uses keys to track list items correctly during updates.</p>
 
+    <h3>Why use map, filter, and reduce?</h3>
+    <p>The app uses <code>map</code> to transform arrays, <code>filter</code> to remove units, and <code>reduce</code> to calculate total points.</p>
+
+    <h3>Why use async/await?</h3>
+    <p><code>async</code>/<code>await</code> handles operations that take time, such as Firebase login, Firestore saves, AsyncStorage reads/writes, and font loading.</p>
+
+    <h3>Why use loading, error, and empty states?</h3>
+    <p>They make the UI understandable while the app waits for data, handles failed requests, or has no items to show.</p>
+
     <h3>What are props?</h3>
     <p>Props are values passed from a parent component to a child component. They can be normal data or callback functions.</p>
 
     <h3>What are navigation params?</h3>
     <p>Navigation params are data passed from one screen to another through React Navigation.</p>
+
+    <h3>What are useNavigation and useRoute?</h3>
+    <p><code>useNavigation</code> gives access to navigation actions like <code>navigate</code> and <code>goBack</code>. <code>useRoute</code> gives access to the current screen's route params.</p>
 
     <h3>What does wrapping mean in React?</h3>
     <p>Wrapping means placing one component around another. A wrapper can provide layout, behavior, or shared data to its children.</p>
@@ -1145,3 +1856,4 @@ if (savedSettings) {
   </section>
 </body>
 </html>
+
