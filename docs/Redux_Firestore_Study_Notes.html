@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Redux and Firestore Study Notes</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1d1d1d;
+      line-height: 1.45;
+      font-size: 11pt;
+    }
+    h1, h2, h3 { color: #101820; line-height: 1.15; }
+    h1 { font-size: 27pt; margin-top: 0; }
+    h2 {
+      font-size: 20pt;
+      margin-top: 0;
+      border-bottom: 2px solid #26364a;
+      padding-bottom: 6px;
+    }
+    h3 { font-size: 14pt; margin-top: 22px; }
+    p { margin: 8px 0; }
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f1f3f5;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+    pre {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 10px 12px;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+      font-size: 9.5pt;
+    }
+    ul { margin-top: 6px; }
+    li { margin: 4px 0; }
+    .chapter { break-before: page; }
+    .first { break-before: auto; }
+    .box {
+      border-left: 4px solid #385f8f;
+      background: #f3f7fb;
+      padding: 8px 12px;
+      margin: 12px 0;
+    }
+    .defense {
+      border-left-color: #4f7c44;
+      background: #f3faf1;
+    }
+    .flow {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 10px 12px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <section class="first">
+    <h1>Redux and Firestore Study Notes</h1>
+    <p><strong>Project:</strong> Warhammer40KApp</p>
+    <p><strong>Goal:</strong> explain how Redux, slices, reducers, dispatch, Firestore, and the related design patterns work in this app.</p>
+    <p><strong>Important defense wording:</strong> if Redux or Firestore was required by the assignment, do not say "I chose it." Say "The requirement was to use it, and I implemented it in this structure."</p>
+
+    <h2>Table of Contents</h2>
+    <ol>
+      <li>Redux: Store, Slices, Reducers, Actions, Dispatch, and Selectors</li>
+      <li>Firestore: Collections, Documents, Reads, Writes, Listeners, and Patterns</li>
+      <li>Firebase Authentication and How It Connects To Firestore</li>
+      <li>How Redux and Firestore Work Together In This App</li>
+      <li>Short Defense Answers</li>
+    </ol>
+  </section>
+
+  <section class="chapter">
+    <h2>1. Redux: Store, Slices, Reducers, Actions, Dispatch, and Selectors</h2>
+
+    <h3>What Redux is</h3>
+    <p>Redux is a central state container. Instead of every screen keeping its own separate copy of important shared data, Redux stores that shared data in one place.</p>
+    <p>In this app, Redux mainly stores the user's army compositions.</p>
+
+    <div class="flow">Component presses button
+  -> dispatch(action)
+  -> Redux store receives action
+  -> reducer decides how state changes
+  -> components using that state re-render</div>
+
+    <h3>The store</h3>
+    <p>The Redux store is created in <code>src/store/index.ts</code>.</p>
+
+    <pre><code>const rootReducer = combineReducers({
+  armyCompositions: armyCompositionsReducer,
+});</code></pre>
+
+    <p>This means the global Redux state has a property named <code>armyCompositions</code>. That property is controlled by the army compositions reducer.</p>
+
+    <pre><code>{
+  armyCompositions: []
+}</code></pre>
+
+    <p>The store is made available to the whole app in <code>App.tsx</code>:</p>
+
+    <pre><code>&lt;Provider store={store}&gt;
+  ...
+&lt;/Provider&gt;</code></pre>
+
+    <p>Without this provider, components could not use <code>useAppDispatch</code> or <code>useAppSelector</code>, because React would not know which Redux store to use.</p>
+
+    <h3>The slice</h3>
+    <p>A slice is Redux Toolkit's way to group one feature's state, reducers, and generated actions.</p>
+    <p>Your slice is in <code>src/features/armyCompositions/armyCompositionSlice.ts</code>.</p>
+
+    <pre><code>const initialState: ArmyComposition[] = [];</code></pre>
+
+    <p>This says the army compositions state starts as an empty array.</p>
+
+    <pre><code>export const armyCompositionSlice = createSlice({
+  name: "armyCompositions",
+  initialState,
+  reducers: {
+    armyCompositionAdded(state, action: { payload: ArmyComposition }) {
+      state.push(action.payload);
+    },
+  },
+});</code></pre>
+
+    <p><code>createSlice</code> does several things:</p>
+    <ul>
+      <li>It gives the feature a name: <code>armyCompositions</code>.</li>
+      <li>It stores the initial state.</li>
+      <li>It defines reducer functions.</li>
+      <li>It automatically creates action creator functions with the same names as the reducers.</li>
+    </ul>
+
+    <h3>Reducers</h3>
+    <p>A reducer is a function that changes Redux state based on an action.</p>
+    <p>Example:</p>
+
+    <pre><code>armyCompositionAdded(state, action: { payload: ArmyComposition }) {
+  state.push(action.payload);
+}</code></pre>
+
+    <p>This means: when Redux receives the <code>armyCompositionAdded</code> action, take the new army composition from <code>action.payload</code> and add it to the array.</p>
+
+    <h3>Why state.push is allowed</h3>
+    <p>In classic Redux, reducers are not allowed to directly mutate state. But this project uses Redux Toolkit, and Redux Toolkit uses Immer internally.</p>
+    <p>Immer lets you write code that looks like mutation:</p>
+
+    <pre><code>state.push(action.payload);</code></pre>
+
+    <p>But internally, it still creates a safe immutable state update.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Redux Toolkit allows simpler reducer syntax through Immer. Although the code looks like direct mutation, Redux Toolkit safely creates the new immutable state behind the scenes.
+    </div>
+
+    <h3>Actions and payloads</h3>
+    <p>An action is an object that describes what happened. A payload is the data attached to the action.</p>
+    <p>This code in your app:</p>
+
+    <pre><code>dispatch(armyCompositionAdded(newArmyComposition));</code></pre>
+
+    <p>creates an action similar to this:</p>
+
+    <pre><code>{
+  type: "armyCompositions/armyCompositionAdded",
+  payload: newArmyComposition
+}</code></pre>
+
+    <p>The <code>type</code> tells Redux what happened. The <code>payload</code> contains the new data needed by the reducer.</p>
+
+    <h3>Dispatch</h3>
+    <p><code>dispatch</code> sends an action to Redux.</p>
+
+    <pre><code>dispatch(armyCompositionAdded(newArmyComposition));</code></pre>
+
+    <p>This means: "Hey Redux, an army composition was added. Here is the new army composition. Please update the store."</p>
+
+    <p>Redux receives the action, checks the action type, and runs the matching reducer from the slice.</p>
+
+    <h3>Selectors</h3>
+    <p>A selector reads data from Redux state.</p>
+
+    <pre><code>export const selectArmyCompositions = (state: RootState) =&gt;
+  state.armyCompositions;</code></pre>
+
+    <p>This selector says: from the full Redux state, return only the army compositions part.</p>
+
+    <p>The app reads that data with:</p>
+
+    <pre><code>const armyCompositions = useAppSelector(selectArmyCompositions);</code></pre>
+
+    <p>When the Redux state changes, components using this selector automatically re-render with the new data.</p>
+
+    <h3>Full Redux example from the app</h3>
+    <div class="flow">User creates army
+  -> useCreateArmyComposition creates newArmyComposition
+  -> dispatch(armyCompositionAdded(newArmyComposition))
+  -> Redux reducer adds it to the armyCompositions array
+  -> HomeScreen reads updated Redux state
+  -> new army card appears
+  -> Firestore also saves it remotely</div>
+
+    <h3>Important Redux vocabulary</h3>
+    <ul>
+      <li><strong>Store:</strong> the central state container.</li>
+      <li><strong>Slice:</strong> one feature's Redux state and reducers.</li>
+      <li><strong>Reducer:</strong> a function that updates state based on an action.</li>
+      <li><strong>Action:</strong> an object describing what happened.</li>
+      <li><strong>Payload:</strong> the data sent with the action.</li>
+      <li><strong>Dispatch:</strong> the function used to send an action to Redux.</li>
+      <li><strong>Selector:</strong> a function used to read data from Redux.</li>
+    </ul>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The requirement was to use Redux. In this app, Redux stores army compositions because that data is shared between screens. The slice defines the allowed state changes, dispatch sends actions, reducers update the state, and selectors let screens read the updated data.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>2. Firestore: Collections, Documents, Reads, Writes, Listeners, and Patterns</h2>
+
+    <h3>What Firestore is</h3>
+    <p>Firestore is a NoSQL cloud database from Firebase. It stores data in collections and documents instead of SQL tables and rows.</p>
+
+    <p>Traditional SQL databases use:</p>
+    <div class="flow">tables
+rows
+columns
+relations</div>
+
+    <p>Firestore uses:</p>
+    <div class="flow">collections
+documents
+fields
+subcollections</div>
+
+    <h3>Firestore data model</h3>
+    <p>A collection is a group of documents. A document is like a JavaScript object with fields.</p>
+
+    <pre><code>{
+  id: "abc",
+  name: "My Army",
+  totalPoints: 500
+}</code></pre>
+
+    <p>A subcollection is a collection inside a document.</p>
+
+    <h3>Firestore in your app</h3>
+    <p>The Firebase setup is in <code>src/config/firebase.ts</code>:</p>
+
+    <pre><code>const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+export const database = getFirestore(app);</code></pre>
+
+    <p><code>initializeApp</code> connects the React Native app to the Firebase project. <code>auth</code> is the Firebase Auth service. <code>database</code> is the Firestore database connection.</p>
+
+    <h3>Service layer pattern</h3>
+    <p>Firestore functions are placed in <code>src/services/firestoreService.ts</code>.</p>
+    <p>This is a service layer. Screens do not directly contain Firestore calls. Instead, they call service functions like:</p>
+
+    <ul>
+      <li><code>subscribeToArmyCompositions</code></li>
+      <li><code>saveArmyComposition</code></li>
+      <li><code>updateArmyCompositionUnits</code></li>
+      <li><code>deleteArmyComposition</code></li>
+      <li><code>getArmies</code></li>
+    </ul>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Firestore access is isolated in a service file so the screens do not directly depend on Firebase implementation details.
+    </div>
+
+    <h3>Your Firestore structure</h3>
+    <p>User-created army compositions are stored like this:</p>
+
+    <div class="flow">users/{userId}/armyCompositions/{armyCompositionId}</div>
+
+    <p>In code, that looks like this:</p>
+
+    <pre><code>doc(database, "users", userId, "armyCompositions", armyComposition.id)</code></pre>
+
+    <p>Example structure:</p>
+
+    <div class="flow">users
+  alexUserId
+    armyCompositions
+      army1
+      army2
+
+  otherUserId
+    armyCompositions
+      army3</div>
+
+    <p>This is a user-owned data pattern. Each authenticated user has their own army compositions subcollection.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The app stores army compositions under the authenticated user's id. That keeps each user's data logically separated and makes security rules easier because access can be checked against the user id.
+    </div>
+
+    <h3>collection versus doc</h3>
+    <p>This points to a collection:</p>
+
+    <pre><code>collection(database, "users", userId, "armyCompositions")</code></pre>
+
+    <p>This points to one specific document:</p>
+
+    <pre><code>doc(database, "users", userId, "armyCompositions", armyComposition.id)</code></pre>
+
+    <p><code>collection(...)</code> means "a list of documents." <code>doc(...)</code> means "one specific document."</p>
+
+    <h3>Reading data once with getDocs</h3>
+    <p>The app uses <code>getDocs</code> to load the available armies:</p>
+
+    <pre><code>const querySnapshot = await getDocs(collection(database, "armies"));</code></pre>
+
+    <p><code>getDocs</code> reads data once. In this app, that is used for shared army reference data.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The app uses <code>getDocs</code> for armies because armies are shared reference data and do not need constant real-time updates while the user is on the screen.
+    </div>
+
+    <h3>Listening in real time with onSnapshot</h3>
+    <p>The app uses <code>onSnapshot</code> for user army compositions:</p>
+
+    <pre><code>return onSnapshot(
+  collection(database, "users", userId, "armyCompositions"),
+  (querySnapshot) =&gt; {
+    const armyCompositions = querySnapshot.docs.map((document) =&gt; {
+      return document.data() as ArmyComposition;
+    });
+
+    onArmyCompositionsChanged(armyCompositions);
+  },
+);</code></pre>
+
+    <p><code>onSnapshot</code> keeps listening. When Firestore data changes, Firebase sends a new snapshot to the app.</p>
+
+    <p>This is the observer or subscription pattern. The app subscribes to changes, and Firestore notifies the app when data changes.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The app uses Firestore's real-time listener so local state stays synchronized with the database. When Firestore changes, the listener receives a snapshot and dispatches the new data into Redux.
+    </div>
+
+    <h3>Saving data with setDoc</h3>
+    <p>This saves a full army composition:</p>
+
+    <pre><code>return setDoc(
+  doc(database, "users", userId, "armyCompositions", armyComposition.id),
+  armyComposition,
+);</code></pre>
+
+    <p><code>doc(...)</code> creates a reference to the document. <code>setDoc(...)</code> writes the data to that document.</p>
+    <p>If the document does not exist, Firestore creates it. If it exists, Firestore replaces it unless merge is used.</p>
+
+    <h3>Updating part of a document with merge</h3>
+    <pre><code>return setDoc(
+  doc(database, "users", userId, "armyCompositions", armyCompositionId),
+  {
+    units,
+    totalPoints,
+  },
+  { merge: true },
+);</code></pre>
+
+    <p><code>{ merge: true }</code> means update only the provided fields. In this case, Firestore updates <code>units</code> and <code>totalPoints</code>, while keeping fields like <code>id</code>, <code>name</code>, and <code>army</code>.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> <code>merge: true</code> is used so updating units does not overwrite the whole army composition document.
+    </div>
+
+    <h3>Deleting data</h3>
+    <pre><code>return deleteDoc(
+  doc(database, "users", userId, "armyCompositions", armyCompositionId),
+);</code></pre>
+
+    <p><code>deleteDoc</code> removes one specific document from Firestore.</p>
+
+    <h3>Important Firestore patterns in this app</h3>
+    <ul>
+      <li><strong>User-owned data pattern:</strong> each user's data is stored under <code>users/{userId}</code>.</li>
+      <li><strong>Service layer pattern:</strong> Firestore logic lives in service functions, not directly in screens.</li>
+      <li><strong>Observer/subscription pattern:</strong> <code>onSnapshot</code> listens for real-time database changes.</li>
+      <li><strong>Optimistic UI pattern:</strong> the app sometimes updates Redux before Firestore finishes saving, so the UI feels faster.</li>
+      <li><strong>Query-shaped data pattern:</strong> Firestore documents are shaped around how the app reads them, because Firestore is not built around SQL joins.</li>
+      <li><strong>Async data pattern:</strong> reads and writes use <code>async</code> and <code>await</code> because database work takes time.</li>
+    </ul>
+  </section>
+
+  <section class="chapter">
+    <h2>3. Firebase Authentication and How It Connects To Firestore</h2>
+
+    <h3>Important distinction</h3>
+    <p>Firebase Authentication and Firestore are related, but they are not the same thing.</p>
+
+    <ul>
+      <li><strong>Firebase Authentication</strong> proves who the user is. It handles register, login, logout, password updates, and email updates.</li>
+      <li><strong>Firestore</strong> stores database documents, such as armies and army compositions.</li>
+    </ul>
+
+    <p>Authentication answers the question: "Who is using the app?" Firestore answers the question: "What data should be stored or loaded?"</p>
+
+    <h3>Firebase setup</h3>
+    <p>In <code>src/config/firebase.ts</code>, the app creates both an Auth instance and a Firestore instance:</p>
+
+    <pre><code>const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+export const database = getFirestore(app);</code></pre>
+
+    <p><code>auth</code> is the object used by Firebase Authentication functions. <code>database</code> is the object used by Firestore functions.</p>
+
+    <h3>Why auth is passed as the first parameter</h3>
+    <p>Firebase uses the modular SDK style. In this style, most Firebase functions receive the service instance as their first argument.</p>
+
+    <p>For example, in <code>src/services/authService.ts</code>:</p>
+
+    <pre><code>export const login = (auth: Auth, email: string, password: string) =&gt; {
+  return signInWithEmailAndPassword(auth, email, password);
+};</code></pre>
+
+    <p>The call looks like this:</p>
+
+    <pre><code>signInWithEmailAndPassword(auth, email, password)</code></pre>
+
+    <p>The first parameter, <code>auth</code>, tells Firebase which Firebase Auth instance should handle this login request. The email and password are the actual credentials being checked.</p>
+
+    <p>This is similar to Firestore functions using the database instance:</p>
+
+    <pre><code>getDocs(collection(database, "armies"))</code></pre>
+
+    <p>Here, <code>database</code> tells Firebase which Firestore database to read from.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Firebase's modular API passes the service instance first. For authentication functions, that first parameter is <code>auth</code>. For Firestore functions, it is usually <code>database</code> or a document/collection reference created from <code>database</code>.
+    </div>
+
+    <h3>Why the service functions receive auth as a parameter</h3>
+    <p>Your service functions are written like this:</p>
+
+    <pre><code>export const register = (auth: Auth, email: string, password: string) =&gt; {
+  return createUserWithEmailAndPassword(auth, email, password);
+};</code></pre>
+
+    <p>They could have imported <code>auth</code> directly inside the service file, but this version passes <code>auth</code> in from the screen:</p>
+
+    <pre><code>await login(auth, email, password);</code></pre>
+
+    <p>This makes the service function explicit: it needs an Auth instance, an email, and a password. It also makes the function easier to test or reuse with another Auth instance.</p>
+
+    <h3>Register flow</h3>
+    <p>When the user registers, the app calls:</p>
+
+    <pre><code>await register(auth, email, password);</code></pre>
+
+    <p>The service calls:</p>
+
+    <pre><code>createUserWithEmailAndPassword(auth, email, password)</code></pre>
+
+    <p>Firebase creates the account. After registration, Firebase automatically signs in the new user. That login state change is detected by <code>onAuthStateChanged</code> in <code>AuthContext</code>.</p>
+
+    <h3>Login flow</h3>
+    <p>When the user logs in, the app calls:</p>
+
+    <pre><code>await login(auth, email, password);</code></pre>
+
+    <p>The service calls:</p>
+
+    <pre><code>signInWithEmailAndPassword(auth, email, password)</code></pre>
+
+    <p>Firebase checks the email and password. If they are correct, Firebase updates the auth state. Then <code>AuthContext</code> receives the logged-in user.</p>
+
+    <h3>AuthContext watches login state</h3>
+    <p>The important listener is in <code>src/contexts/AuthContext.tsx</code>:</p>
+
+    <pre><code>const unsubscribe = onAuthStateChanged(auth, (user) =&gt; {
+  setCurrentUser(user);
+  setLoading(false);
+});</code></pre>
+
+    <p><code>onAuthStateChanged</code> watches Firebase Auth. It runs when:</p>
+
+    <ul>
+      <li>the user logs in</li>
+      <li>the user logs out</li>
+      <li>the app reloads and Firebase checks whether a saved session still exists</li>
+    </ul>
+
+    <p>If a user is logged in, <code>user</code> is a Firebase <code>User</code> object. If no user is logged in, <code>user</code> is <code>null</code>.</p>
+
+    <h3>How authentication connects to Firestore</h3>
+    <p>After login, Firebase gives the app a user object. The most important field for Firestore paths is:</p>
+
+    <pre><code>currentUser.uid</code></pre>
+
+    <p>The <code>uid</code> is Firebase's unique id for that authenticated user. Your app uses it in Firestore paths:</p>
+
+    <pre><code>collection(database, "users", userId, "armyCompositions")</code></pre>
+
+    <p>When the hook calls the service, it passes the logged-in user's uid:</p>
+
+    <pre><code>subscribeToArmyCompositions(
+  database,
+  currentUser.uid,
+  (armyCompositions) =&gt; {
+    dispatch(armyCompositionsLoaded(armyCompositions));
+  },
+);</code></pre>
+
+    <p>This creates a path like:</p>
+
+    <div class="flow">users/{currentUser.uid}/armyCompositions</div>
+
+    <p>So the logged-in user's id decides which Firestore subcollection is loaded.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Firebase Auth identifies the user. The app then uses <code>currentUser.uid</code> to read and write that user's Firestore data under <code>users/{uid}</code>.
+    </div>
+
+    <h3>Firestore security rules concept</h3>
+    <p>In the app code, using <code>currentUser.uid</code> creates the correct path. But real protection should also happen in Firestore security rules.</p>
+
+    <p>A typical rule concept is:</p>
+
+    <pre><code>allow read, write: if request.auth != null
+  &amp;&amp; request.auth.uid == userId;</code></pre>
+
+    <p>This means a user may only access documents where the path's <code>userId</code> matches their authenticated Firebase uid.</p>
+
+    <p>The frontend path is important for organization. Firestore rules are important for security.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The frontend uses the authenticated user's uid to build the correct Firestore path. Firestore security rules should enforce that users can only access their own documents.
+    </div>
+
+    <h3>Why sensitive account changes reauthenticate</h3>
+    <p>Changing email or password is sensitive. Firebase often requires recent authentication before allowing those operations.</p>
+
+    <pre><code>const credential = EmailAuthProvider.credential(user.email, password);
+
+await reauthenticateWithCredential(user, credential);</code></pre>
+
+    <p>This proves that the person using the app still knows the current password. After that, Firebase allows sensitive operations like updating email or password.</p>
+
+    <pre><code>await verifyBeforeUpdateEmail(user, newEmail);</code></pre>
+
+    <p>This sends a verification email before changing to the new email address.</p>
+
+    <pre><code>return updatePassword(user, newPassword);</code></pre>
+
+    <p>This updates the Firebase Auth password after reauthentication succeeds.</p>
+
+    <h3>Logout flow</h3>
+    <p>Logout calls:</p>
+
+    <pre><code>await logout(auth);</code></pre>
+
+    <p>The service calls:</p>
+
+    <pre><code>signOut(auth)</code></pre>
+
+    <p>Firebase signs the user out. Then <code>onAuthStateChanged</code> receives <code>null</code>, <code>currentUser</code> becomes <code>null</code>, and <code>App.tsx</code> switches back to the auth screens.</p>
+
+    <div class="box defense">
+      <strong>Defense summary:</strong> Firebase Authentication handles identity. The app passes the <code>auth</code> instance to Firebase Auth functions because that is how the modular SDK knows which Auth service to use. Once a user is authenticated, their <code>uid</code> is used to load and save their Firestore data in a user-owned path.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>4. How Redux and Firestore Work Together In This App</h2>
+
+    <p>Firestore is the remote database. Redux is the local app state. React Native screens display the Redux state.</p>
+
+    <div class="flow">Firestore
+  -> onSnapshot
+  -> useLoadArmyCompositions hook
+  -> dispatch
+  -> Redux store
+  -> selector
+  -> screen UI</div>
+
+    <h3>Loading army compositions</h3>
+    <p>The hook <code>useLoadArmyCompositions</code> listens to Firestore when a user is logged in.</p>
+
+    <pre><code>const unsubscribe = subscribeToArmyCompositions(
+  database,
+  currentUser.uid,
+  (armyCompositions) =&gt; {
+    dispatch(armyCompositionsLoaded(armyCompositions));
+  },
+);</code></pre>
+
+    <p>This means Firestore sends the latest army compositions, and the hook dispatches them into Redux.</p>
+
+    <h3>Creating an army composition</h3>
+    <p>In <code>useCreateArmyComposition</code>, the app creates a new object, updates Redux, saves to Firestore, and navigates to the detail screen.</p>
+
+    <pre><code>dispatch(armyCompositionAdded(newArmyComposition));
+
+await saveArmyComposition(database, currentUser.uid, newArmyComposition);</code></pre>
+
+    <p>Redux updates immediately. Firestore saves the data remotely.</p>
+
+    <h3>Deleting an army composition</h3>
+    <p>In <code>useArmyCompositions</code>, the app removes the composition locally first, then deletes it from Firestore.</p>
+
+    <pre><code>dispatch(armyCompositionDeleted(id));
+
+if (currentUser) {
+  await deleteArmyComposition(database, currentUser.uid, id);
+}</code></pre>
+
+    <p>This is an optimistic update. The UI changes immediately instead of waiting for the network.</p>
+
+    <h3>Updating units</h3>
+    <p>In <code>useArmyCompositionUnits</code>, one helper updates three places:</p>
+
+    <ul>
+      <li>local screen state with <code>setSelectedUnits</code></li>
+      <li>Redux state with <code>dispatch</code></li>
+      <li>Firestore with <code>updateArmyCompositionUnits</code></li>
+    </ul>
+
+    <pre><code>setSelectedUnits(updatedUnits);
+
+dispatch(
+  armyCompositionUnitsUpdated({
+    armyCompositionId: armyComposition.id,
+    units: updatedUnits,
+    totalPoints: updatedTotalPoints,
+  }),
+);
+
+await updateArmyCompositionUnits(
+  database,
+  currentUser.uid,
+  armyComposition.id,
+  updatedUnits,
+  updatedTotalPoints,
+);</code></pre>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Firestore stores the persistent remote data. Redux stores the local app state that screens read from. Hooks connect them by listening to Firestore and dispatching updates into Redux.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>5. Short Defense Answers</h2>
+
+    <h3>How does Redux work in this app?</h3>
+    <p>Redux stores army compositions in a central store. The army composition slice defines reducers for loading, adding, updating, clearing, and deleting compositions. Components dispatch actions to request state changes, reducers update the state, and selectors let screens read the updated state.</p>
+
+    <h3>What is a slice?</h3>
+    <p>A slice is one feature's Redux state and reducer logic grouped together. Redux Toolkit also generates action creators from the reducer names.</p>
+
+    <h3>What is dispatch?</h3>
+    <p><code>dispatch</code> sends an action to the Redux store. The store then runs the matching reducer to update state.</p>
+
+    <h3>What is a reducer?</h3>
+    <p>A reducer is a function that receives the current state and an action, then produces the next state.</p>
+
+    <h3>What is a payload?</h3>
+    <p>The payload is the data sent with an action. For example, when adding an army composition, the payload is the new army composition object.</p>
+
+    <h3>How does Firestore work in this app?</h3>
+    <p>Firestore stores shared armies in a top-level <code>armies</code> collection and user-created army compositions under <code>users/{userId}/armyCompositions</code>. The app uses <code>getDocs</code> for one-time reads, <code>onSnapshot</code> for real-time user data, <code>setDoc</code> for saving and updating, and <code>deleteDoc</code> for deleting.</p>
+
+    <h3>How does Firebase Authentication work in this app?</h3>
+    <p>Firebase Authentication handles register, login, logout, and account updates. <code>AuthContext</code> listens to Firebase with <code>onAuthStateChanged</code>. When Firebase detects a logged-in user, the app stores that user in <code>currentUser</code>; when the user logs out, <code>currentUser</code> becomes <code>null</code>.</p>
+
+    <h3>Why is auth passed as the first parameter?</h3>
+    <p>Firebase's modular SDK passes the service instance first. Authentication functions receive <code>auth</code> first so Firebase knows which Auth instance should handle the operation. Firestore functions similarly use the <code>database</code> instance or references created from it.</p>
+
+    <h3>How does authentication connect to Firestore?</h3>
+    <p>After login, Firebase gives the app a user object with a unique <code>uid</code>. The app uses that uid in Firestore paths like <code>users/{uid}/armyCompositions</code>, so each user loads and saves their own army compositions.</p>
+
+    <h3>What design patterns are used around Firestore?</h3>
+    <p>The app uses a service layer, user-owned subcollections, observer/subscription through <code>onSnapshot</code>, optimistic UI updates, query-shaped documents, and async data handling with <code>async</code>/<code>await</code>.</p>
+
+    <h3>What is the difference between Firestore and Redux?</h3>
+    <p>Firestore is the remote database. Redux is local app state. Firestore persists and syncs data. Redux makes the data easy and fast for screens to read while the app is running.</p>
+  </section>
+</body>
+</html>

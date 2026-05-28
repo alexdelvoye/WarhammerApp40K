@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>React Native Study Notes</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1d1d1d;
+      line-height: 1.45;
+      font-size: 11pt;
+    }
+    h1, h2, h3 { color: #101820; line-height: 1.15; }
+    h1 { font-size: 27pt; margin-top: 0; }
+    h2 {
+      font-size: 20pt;
+      margin-top: 0;
+      border-bottom: 2px solid #26364a;
+      padding-bottom: 6px;
+    }
+    h3 { font-size: 14pt; margin-top: 22px; }
+    p { margin: 8px 0; }
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f1f3f5;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+    pre {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 10px 12px;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+      font-size: 9.5pt;
+    }
+    ul { margin-top: 6px; }
+    li { margin: 4px 0; }
+    .chapter { break-before: page; }
+    .first { break-before: auto; }
+    .box {
+      border-left: 4px solid #385f8f;
+      background: #f3f7fb;
+      padding: 8px 12px;
+      margin: 12px 0;
+    }
+    .defense {
+      border-left-color: #4f7c44;
+      background: #f3faf1;
+    }
+    .warning {
+      border-left-color: #a65f00;
+      background: #fff7e8;
+    }
+    .flow {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 10px 12px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <section class="first">
+    <h1>React Native Study Notes</h1>
+    <p><strong>Project:</strong> Warhammer40KApp</p>
+    <p><strong>Goal:</strong> explain the React Native and React concepts used in the app: components, JSX, state, effects, touchables, lists, modals, props, and navigation params.</p>
+
+    <h2>Table of Contents</h2>
+    <ol>
+      <li>What React Native Is</li>
+      <li>Components, JSX, and Rendering</li>
+      <li>useState</li>
+      <li>useEffect</li>
+      <li>Pressable, TouchableOpacity, and TouchableWithoutFeedback</li>
+      <li>FlatList, renderItem, and keyExtractor</li>
+      <li>Modal</li>
+      <li>Props</li>
+      <li>Navigation Params</li>
+      <li>Wrapping and Providers</li>
+      <li>Context and AsyncStorage</li>
+      <li>Short Defense Answers</li>
+    </ol>
+  </section>
+
+  <section class="chapter">
+    <h2>1. What React Native Is</h2>
+
+    <p>React Native is a framework for building mobile apps with React and JavaScript or TypeScript. Instead of writing Android UI in Kotlin/Java and iOS UI in Swift, you write React components. React Native converts those components into native mobile UI.</p>
+
+    <p>In a web React app, you use elements like:</p>
+
+    <pre><code>&lt;div&gt;
+  &lt;p&gt;Hello&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+    <p>In React Native, you use mobile components like:</p>
+
+    <pre><code>&lt;View&gt;
+  &lt;Text&gt;Hello&lt;/Text&gt;
+&lt;/View&gt;</code></pre>
+
+    <h3>Common React Native components used in this project</h3>
+    <ul>
+      <li><code>View</code>: a layout container, similar to a <code>div</code> on the web.</li>
+      <li><code>Text</code>: displays text. In React Native, text must usually be inside <code>Text</code>.</li>
+      <li><code>TextInput</code>: lets the user type input.</li>
+      <li><code>Pressable</code>: handles presses/taps.</li>
+      <li><code>FlatList</code>: renders scrollable lists efficiently.</li>
+      <li><code>ImageBackground</code>: displays an image as a background with content on top.</li>
+      <li><code>Modal</code>: displays content above the current screen.</li>
+      <li><code>KeyboardAvoidingView</code>: moves content so the keyboard does not cover inputs.</li>
+      <li><code>TouchableWithoutFeedback</code>: detects a touch without visual feedback, used here to dismiss the keyboard.</li>
+    </ul>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> React Native lets the app be built with React components while still rendering native mobile UI. The project uses React Native components such as <code>View</code>, <code>Text</code>, <code>Pressable</code>, <code>FlatList</code>, and <code>Modal</code> to build mobile screens.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>2. Components, JSX, and Rendering</h2>
+
+    <h3>What a component is</h3>
+    <p>A component is a reusable piece of UI written as a function. It returns JSX, which looks like HTML but is actually JavaScript/TypeScript syntax used by React.</p>
+
+    <pre><code>const AddUnitButton = ({ onPress }: AddUnitButtonProps) =&gt; {
+  return (
+    &lt;Pressable onPress={onPress}&gt;
+      &lt;Text&gt;Add Unit&lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+};</code></pre>
+
+    <p>This component receives an <code>onPress</code> prop and renders a button-like UI.</p>
+
+    <h3>Rendering</h3>
+    <p>Rendering means React runs the component function and creates the UI from the returned JSX.</p>
+
+    <p>A component re-renders when:</p>
+    <ul>
+      <li>its state changes</li>
+      <li>its props change</li>
+      <li>context or Redux data it reads changes</li>
+    </ul>
+
+    <h3>React Native styles</h3>
+    <p>React Native styling uses JavaScript objects instead of CSS files. In this project, styles are stored in separate files under <code>src/styles</code>.</p>
+
+    <pre><code>&lt;Pressable
+  style={[styles.button, { backgroundColor: colors.button }]}
+  onPress={onPress}
+&gt;</code></pre>
+
+    <p>The style prop receives an array. React Native combines the objects from left to right. This lets the app combine fixed styles with dynamic theme colors.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Screens and reusable UI pieces are written as components. Components return JSX, and React re-renders them when their data changes.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>3. useState</h2>
+
+    <h3>What useState does</h3>
+    <p><code>useState</code> stores data that can change while the component is being used. When state changes, React re-renders the component with the new value.</p>
+
+    <h3>How to write useState</h3>
+    <pre><code>const [value, setValue] = useState(initialValue);</code></pre>
+
+    <ul>
+      <li><code>value</code> is the current state value.</li>
+      <li><code>setValue</code> is the function used to change it.</li>
+      <li><code>initialValue</code> is the starting value.</li>
+    </ul>
+
+    <h3>Example: splash screen state</h3>
+    <p>In <code>App.tsx</code>:</p>
+
+    <pre><code>const [showSplashScreen, setShowSplashScreen] = useState(true);</code></pre>
+
+    <p>This means the splash screen starts visible. Later, the app calls:</p>
+
+    <pre><code>setShowSplashScreen(false);</code></pre>
+
+    <p>That changes the state. React re-renders <code>AppContent</code>, and the app can stop showing the splash screen.</p>
+
+    <h3>Example: modal state</h3>
+    <p>In <code>ArmyCompositionScreen</code>:</p>
+
+    <pre><code>const [modalVisible, setModalVisible] = useState(false);</code></pre>
+
+    <p>The modal starts hidden because the state is <code>false</code>.</p>
+
+    <pre><code>&lt;AddUnitButton onPress={() =&gt; setModalVisible(true)} /&gt;</code></pre>
+
+    <p>When the user presses the button, the state changes to <code>true</code>, so the modal becomes visible.</p>
+
+    <pre><code>&lt;SelectUnitModal
+  visible={modalVisible}
+  onClose={() =&gt; setModalVisible(false)}
+/&gt;</code></pre>
+
+    <p>When the modal closes, the state changes back to <code>false</code>.</p>
+
+    <h3>Example: typed state</h3>
+    <p>In <code>AuthContext</code>:</p>
+
+    <pre><code>const [currentUser, setCurrentUser] = useState&lt;User | null&gt;(null);</code></pre>
+
+    <p>The TypeScript type <code>User | null</code> means <code>currentUser</code> can be a Firebase user or <code>null</code>. It starts as <code>null</code> because the app does not know yet whether someone is logged in.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> I use <code>useState</code> for values that change while the app is running, such as whether a modal is visible, whether the splash screen is showing, form errors, selected units, selected army, and the current Firebase user.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>4. useEffect</h2>
+
+    <h3>What useEffect does</h3>
+    <p><code>useEffect</code> runs side effects. A side effect is work that happens outside normal rendering, such as loading data, starting a Firebase listener, reading AsyncStorage, or setting a timer.</p>
+
+    <h3>How to write useEffect</h3>
+    <pre><code>useEffect(() =&gt; {
+  // side effect code here
+}, [dependencies]);</code></pre>
+
+    <p>The dependency array controls when the effect runs.</p>
+
+    <ul>
+      <li><code>[]</code>: run once when the component mounts.</li>
+      <li><code>[currentUser]</code>: run when <code>currentUser</code> changes.</li>
+      <li>No dependency array: run after every render. This is usually not wanted.</li>
+    </ul>
+
+    <h3>Example: splash timer</h3>
+    <p>In <code>App.tsx</code>:</p>
+
+    <pre><code>useEffect(() =&gt; {
+  const timer = setTimeout(() =&gt; {
+    setShowSplashScreen(false);
+  }, 2000);
+
+  return () =&gt; clearTimeout(timer);
+}, []);</code></pre>
+
+    <p>This effect runs once. It starts a timer. After two seconds, the timer hides the splash screen.</p>
+
+    <p>The return function is cleanup:</p>
+
+    <pre><code>return () =&gt; clearTimeout(timer);</code></pre>
+
+    <p>If the component unmounts before the timer finishes, React clears the timer.</p>
+
+    <h3>Example: Firebase auth listener</h3>
+    <p>In <code>AuthContext</code>:</p>
+
+    <pre><code>useEffect(() =&gt; {
+  const unsubscribe = onAuthStateChanged(auth, (user) =&gt; {
+    setCurrentUser(user);
+    setLoading(false);
+  });
+
+  return unsubscribe;
+}, []);</code></pre>
+
+    <p>This effect starts a Firebase listener once. Firebase calls the callback when the auth state changes. The returned <code>unsubscribe</code> function is cleanup, so React can stop the listener later.</p>
+
+    <h3>Example: Firestore listener with dependencies</h3>
+    <p>In <code>useLoadArmyCompositions</code>:</p>
+
+    <pre><code>useEffect(() =&gt; {
+  if (!currentUser) {
+    return;
+  }
+
+  const unsubscribe = subscribeToArmyCompositions(
+    database,
+    currentUser.uid,
+    (armyCompositions) =&gt; {
+      dispatch(armyCompositionsLoaded(armyCompositions));
+    },
+  );
+
+  return unsubscribe;
+}, [currentUser, dispatch]);</code></pre>
+
+    <p>This effect depends on <code>currentUser</code>. When a user logs in, the effect subscribes to that user's Firestore army compositions. When the user changes or the component unmounts, React calls the cleanup function.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> I use <code>useEffect</code> for side effects such as timers, loading saved theme data, loading armies from Firestore, and subscribing to Firebase Auth or Firestore updates. Cleanup functions prevent timers or listeners from staying active forever.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>5. Pressable, TouchableOpacity, and TouchableWithoutFeedback</h2>
+
+    <h3>Pressable</h3>
+    <p><code>Pressable</code> is a React Native component for handling press interactions. It is more flexible than older touchable components because it can react to pressed, hovered, focused, and disabled states.</p>
+
+    <h3>How to write Pressable</h3>
+    <pre><code>&lt;Pressable onPress={handlePress}&gt;
+  &lt;Text&gt;Press me&lt;/Text&gt;
+&lt;/Pressable&gt;</code></pre>
+
+    <h3>Example from your button components</h3>
+    <pre><code>const AddUnitButton = ({ onPress }: AddUnitButtonProps) =&gt; {
+  return (
+    &lt;Pressable
+      style={[styles.button, { backgroundColor: colors.button }]}
+      onPress={onPress}
+    &gt;
+      &lt;Text style={[styles.buttonText, { color: colors.buttonText }]}&gt;
+        Add Unit
+      &lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+};</code></pre>
+
+    <p>The button does not decide what should happen when it is pressed. It receives <code>onPress</code> as a prop from its parent. That makes the component reusable.</p>
+
+    <h3>Pressable with pressed state</h3>
+    <p>In <code>ArmyCompositionCard</code>, the trash icon changes color when pressed:</p>
+
+    <pre><code>&lt;Pressable style={styles.deleteButton} onPress={onDelete}&gt;
+  {({ pressed }) =&gt; (
+    &lt;Ionicons
+      name="trash-outline"
+      size={24}
+      color={pressed ? "#ff4d4d" : colors.text}
+    /&gt;
+  )}
+&lt;/Pressable&gt;</code></pre>
+
+    <p>Here, <code>Pressable</code> gives a <code>pressed</code> value. When the user is pressing, <code>pressed</code> is <code>true</code>. The icon color changes based on that value.</p>
+
+    <h3>TouchableOpacity</h3>
+    <p><code>TouchableOpacity</code> is an older React Native touch component. When pressed, it automatically lowers the opacity of its children, creating a fade effect.</p>
+
+    <h3>How to write TouchableOpacity</h3>
+    <pre><code>&lt;TouchableOpacity onPress={handlePress} activeOpacity={0.7}&gt;
+  &lt;Text&gt;Press me&lt;/Text&gt;
+&lt;/TouchableOpacity&gt;</code></pre>
+
+    <p><code>activeOpacity</code> controls how transparent the component becomes while pressed. A value like <code>0.7</code> means the component becomes 70% opaque.</p>
+
+    <div class="box warning">
+      <strong>Project note:</strong> Your project mostly uses <code>Pressable</code>, not <code>TouchableOpacity</code>. If asked, you can explain that <code>Pressable</code> is the more flexible modern option, while <code>TouchableOpacity</code> is useful when you only want a simple opacity feedback effect.
+    </div>
+
+    <h3>TouchableWithoutFeedback</h3>
+    <p><code>TouchableWithoutFeedback</code> detects a touch without showing visual feedback. Your project uses it to dismiss the keyboard when the user taps outside a form.</p>
+
+    <pre><code>&lt;TouchableWithoutFeedback onPress={Keyboard.dismiss}&gt;
+  &lt;KeyboardAvoidingView&gt;
+    ...
+  &lt;/KeyboardAvoidingView&gt;
+&lt;/TouchableWithoutFeedback&gt;</code></pre>
+
+    <p>When the user taps outside the input, <code>Keyboard.dismiss</code> runs and hides the keyboard.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The app uses <code>Pressable</code> for buttons and interactive cards because it handles tap interactions and can react to pressed state. <code>TouchableWithoutFeedback</code> is used around forms to dismiss the keyboard without adding a visual button effect.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>6. FlatList, renderItem, and keyExtractor</h2>
+
+    <h3>What FlatList does</h3>
+    <p><code>FlatList</code> renders scrollable lists efficiently. Instead of rendering every item at once, it renders what is needed for the visible area. This is better for performance when lists become large.</p>
+
+    <h3>Basic FlatList shape</h3>
+    <pre><code>&lt;FlatList
+  data={items}
+  keyExtractor={(item) =&gt; item.id}
+  renderItem={({ item }) =&gt; (
+    &lt;Text&gt;{item.name}&lt;/Text&gt;
+  )}
+/&gt;</code></pre>
+
+    <ul>
+      <li><code>data</code>: the array to display.</li>
+      <li><code>keyExtractor</code>: gives each item a stable unique key.</li>
+      <li><code>renderItem</code>: tells FlatList how to render one item.</li>
+    </ul>
+
+    <h3>renderItem</h3>
+    <p><code>renderItem</code> receives an object. The most important property is <code>item</code>.</p>
+
+    <pre><code>const renderArmyCompositionItem = ({ item }: { item: ArmyComposition }) =&gt; {
+  return (
+    &lt;ArmyCompositionCard
+      armyComposition={item}
+      onPress={() =&gt;
+        navigation.navigate("ArmyComposition", {
+          armyComposition: item,
+        })
+      }
+      onDelete={() =&gt; deleteComposition(item.id)}
+    /&gt;
+  );
+};</code></pre>
+
+    <p>Here, one <code>item</code> is one <code>ArmyComposition</code>. The function returns one <code>ArmyCompositionCard</code>.</p>
+
+    <h3>Using renderItem in FlatList</h3>
+    <pre><code>&lt;FlatList
+  data={armyCompositions}
+  keyExtractor={(item) =&gt; item.id.toString()}
+  renderItem={renderArmyCompositionItem}
+  contentContainerStyle={styles.list}
+/&gt;</code></pre>
+
+    <p>This means: for every army composition in <code>armyCompositions</code>, call <code>renderArmyCompositionItem</code> and display the returned card.</p>
+
+    <h3>keyExtractor</h3>
+    <p><code>keyExtractor</code> gives React a unique key for each row. React uses keys to track which list items changed, were added, or were removed.</p>
+
+    <pre><code>keyExtractor={(item) =&gt; item.id.toString()}</code></pre>
+
+    <p>The key should be stable and unique. In your app, using the database or UUID id is good because each army composition has its own id.</p>
+
+    <div class="box warning">
+      <strong>Important:</strong> Avoid using the array index as the key if the list can change order or items can be added/deleted. Index keys can make React confuse one row with another.
+    </div>
+
+    <h3>Example: selected units FlatList</h3>
+    <pre><code>&lt;FlatList
+  style={styles.unitList}
+  data={selectedUnits}
+  contentContainerStyle={styles.unitListContent}
+  keyExtractor={(item) =&gt; item.armyCompositionUnitId.toString()}
+  renderItem={renderSelectedUnitItem}
+/&gt;</code></pre>
+
+    <p>This uses <code>armyCompositionUnitId</code>, not just <code>unit.id</code>, because the same unit type can be added multiple times. Each selected copy needs its own unique key.</p>
+
+    <h3>Example: army selection FlatList</h3>
+    <pre><code>&lt;FlatList
+  data={armies}
+  keyExtractor={(item) =&gt; item.id.toString()}
+  renderItem={renderArmyItem}
+/&gt;</code></pre>
+
+    <p>This renders the selectable faction cards when creating an army composition.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> I use <code>FlatList</code> for lists because it is optimized for mobile scrolling. <code>renderItem</code> defines how each row looks, and <code>keyExtractor</code> gives React a stable id so it can update the list correctly.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>7. Modal</h2>
+
+    <h3>What Modal does</h3>
+    <p>A <code>Modal</code> displays content above the current screen. It is useful for temporary workflows where the user should not fully navigate away.</p>
+
+    <h3>Example from SelectUnitModal</h3>
+    <pre><code>&lt;Modal visible={visible} animationType="slide"&gt;
+  &lt;SafeAreaView&gt;
+    &lt;Pressable onPress={onClose}&gt;
+      &lt;Text&gt;Close&lt;/Text&gt;
+    &lt;/Pressable&gt;
+
+    &lt;FlatList
+      data={units}
+      renderItem={renderUnitItem}
+      keyExtractor={(item) =&gt; item.id.toString()}
+    /&gt;
+  &lt;/SafeAreaView&gt;
+&lt;/Modal&gt;</code></pre>
+
+    <p><code>visible</code> controls whether the modal is shown. <code>animationType="slide"</code> makes it slide into view.</p>
+
+    <h3>How this connects to state</h3>
+    <p>In <code>ArmyCompositionScreen</code>:</p>
+
+    <pre><code>const [modalVisible, setModalVisible] = useState(false);</code></pre>
+
+    <p>The modal receives that state as a prop:</p>
+
+    <pre><code>&lt;SelectUnitModal
+  visible={modalVisible}
+  onClose={() =&gt; setModalVisible(false)}
+  onAddUnit={addUnit}
+/&gt;</code></pre>
+
+    <p>Pressing the add unit button changes the state to <code>true</code>. Pressing close changes it back to <code>false</code>.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The unit picker is a modal because the user is temporarily choosing a unit while staying in the army composition screen. The parent screen controls visibility with state.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>8. Props</h2>
+
+    <h3>What props are</h3>
+    <p>Props are values passed from a parent component to a child component. They are how components receive data and callbacks.</p>
+
+    <p>Props flow downward:</p>
+
+    <div class="flow">Parent component
+  -> passes props
+  -> child component receives props
+  -> child component uses props to render or call callbacks</div>
+
+    <h3>Props example: AddUnitButton</h3>
+    <pre><code>type AddUnitButtonProps = {
+  onPress: () =&gt; void;
+};</code></pre>
+
+    <p>This type says the component needs one prop named <code>onPress</code>. That prop must be a function that returns nothing.</p>
+
+    <pre><code>const AddUnitButton = ({ onPress }: AddUnitButtonProps) =&gt; {
+  return (
+    &lt;Pressable onPress={onPress}&gt;
+      &lt;Text&gt;Add Unit&lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+};</code></pre>
+
+    <p>The parent decides what <code>onPress</code> does:</p>
+
+    <pre><code>&lt;AddUnitButton onPress={() =&gt; setModalVisible(true)} /&gt;</code></pre>
+
+    <p>So the child button is reusable. It only knows that it should call <code>onPress</code> when pressed.</p>
+
+    <h3>Props example: UnitCard</h3>
+    <pre><code>type UnitCardProps = {
+  unit: Unit;
+  buttonText: string;
+  onPress: () =&gt; void;
+};</code></pre>
+
+    <p>This component receives:</p>
+    <ul>
+      <li><code>unit</code>: the unit data to display.</li>
+      <li><code>buttonText</code>: the text on the button, such as <code>+</code> or <code>-</code>.</li>
+      <li><code>onPress</code>: what happens when the button is pressed.</li>
+    </ul>
+
+    <p>The same <code>UnitCard</code> can be reused for adding and removing units because behavior comes from props.</p>
+
+    <h3>Props example: Header</h3>
+    <pre><code>type HeaderProps = {
+  title: string;
+  canGoBack?: boolean;
+  onBackPress?: () =&gt; void;
+};</code></pre>
+
+    <p>The question mark means optional. <code>canGoBack</code> and <code>onBackPress</code> do not have to be passed every time.</p>
+
+    <pre><code>const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) =&gt; {
+  ...
+};</code></pre>
+
+    <p><code>canGoBack = false</code> gives a default value. If the parent does not pass <code>canGoBack</code>, it will be <code>false</code>.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> Props make components reusable. A child component receives data and callback functions from its parent, but the parent stays in control of what should happen.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>9. Navigation Params</h2>
+
+    <h3>What navigation params are</h3>
+    <p>Navigation params are data passed from one screen to another through React Navigation.</p>
+
+    <p>Props are passed from parent components to child components. Params are passed between screens through navigation.</p>
+
+    <h3>Typed params in BattleForgeStack</h3>
+    <pre><code>export type BattleForgeStackParamList = {
+  Home: undefined;
+  CreateArmyComposition: undefined;
+  ArmyComposition: { armyComposition: ArmyComposition };
+};</code></pre>
+
+    <p>This type says:</p>
+    <ul>
+      <li><code>Home</code> does not need params.</li>
+      <li><code>CreateArmyComposition</code> does not need params.</li>
+      <li><code>ArmyComposition</code> needs one param named <code>armyComposition</code>.</li>
+    </ul>
+
+    <h3>Passing params</h3>
+    <p>In <code>HomeScreen</code>, when the user presses an army composition card:</p>
+
+    <pre><code>navigation.navigate("ArmyComposition", {
+  armyComposition: item,
+});</code></pre>
+
+    <p>This opens the <code>ArmyComposition</code> screen and passes the selected army composition as route data.</p>
+
+    <h3>Receiving params</h3>
+    <p>In <code>ArmyCompositionScreen</code>:</p>
+
+    <pre><code>type ArmyCompositionRouteProp = RouteProp&lt;
+  BattleForgeStackParamList,
+  "ArmyComposition"
+&gt;;</code></pre>
+
+    <p>This creates a TypeScript type for the route of the <code>ArmyComposition</code> screen.</p>
+
+    <pre><code>const route = useRoute&lt;ArmyCompositionRouteProp&gt;();
+const { armyComposition } = route.params;</code></pre>
+
+    <p><code>useRoute</code> gives access to the current screen's route object. <code>route.params</code> contains the data that was passed during navigation.</p>
+
+    <h3>Props versus params</h3>
+    <ul>
+      <li><strong>Props:</strong> passed from parent component to child component.</li>
+      <li><strong>Params:</strong> passed from one screen to another through navigation.</li>
+    </ul>
+
+    <h3>Example difference</h3>
+    <pre><code>&lt;ArmyCompositionCard
+  armyComposition={item}
+  onPress={() =&gt; navigation.navigate("ArmyComposition", {
+    armyComposition: item,
+  })}
+/&gt;</code></pre>
+
+    <p>Here, <code>armyComposition={item}</code> is a prop passed to <code>ArmyCompositionCard</code>.</p>
+    <p>Inside <code>navigation.navigate</code>, <code>armyComposition: item</code> is a navigation param passed to the next screen.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> I use props to pass data and functions into reusable components. I use navigation params to pass data between screens, for example sending the selected army composition from Home to the detail screen.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>10. Wrapping and Providers</h2>
+
+    <h3>What wrapping means</h3>
+    <p>Wrapping means placing one component around another component.</p>
+
+    <pre><code>&lt;Parent&gt;
+  &lt;Child /&gt;
+&lt;/Parent&gt;</code></pre>
+
+    <p>Here, <code>Parent</code> wraps <code>Child</code>. In React, this often means the parent provides layout, behavior, or shared data to everything inside it.</p>
+
+    <p>Wrapping is not always visual. A wrapper can change layout, but a provider wrapper usually gives access to data or app services.</p>
+
+    <h3>The children prop</h3>
+    <p>When a component wraps other JSX, that inner JSX is received as <code>children</code>.</p>
+
+    <pre><code>type AuthProviderProps = {
+  children: ReactNode;
+};</code></pre>
+
+    <pre><code>export const AuthProvider = ({ children }: AuthProviderProps) =&gt; {
+  return (
+    &lt;AuthContext.Provider value={{ currentUser, loading }}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  );
+};</code></pre>
+
+    <p>The provider does not need to know exactly what its children are. It simply renders them inside the provider.</p>
+
+    <h3>Provider concept</h3>
+    <p>A provider is a wrapper component that makes something available to all components inside it.</p>
+
+    <div class="flow">Provider
+  -> supplies value/service/state
+  -> children inside provider can use it</div>
+
+    <p>For example, <code>AuthProvider</code> supplies authentication state. Components inside it can call <code>useAuth()</code>.</p>
+
+    <h3>Your App.tsx provider tree</h3>
+    <p>In <code>App.tsx</code>, the app is wrapped like this:</p>
+
+    <pre><code>&lt;Provider store={store}&gt;
+  &lt;PersistGate loading={null} persistor={persistor}&gt;
+    &lt;SafeAreaProvider&gt;
+      &lt;AuthProvider&gt;
+        &lt;ThemeProvider&gt;
+          &lt;AppContent /&gt;
+        &lt;/ThemeProvider&gt;
+      &lt;/AuthProvider&gt;
+    &lt;/SafeAreaProvider&gt;
+  &lt;/PersistGate&gt;
+&lt;/Provider&gt;</code></pre>
+
+    <p>This means <code>AppContent</code> is inside every provider. Because it is inside them, it can use Redux, persisted state, safe-area behavior, authentication context, and theme context.</p>
+
+    <h3>Redux Provider</h3>
+    <pre><code>&lt;Provider store={store}&gt;</code></pre>
+
+    <p>This <code>Provider</code> comes from <code>react-redux</code>. It makes the Redux store available to all child components.</p>
+
+    <p>Without this wrapper, hooks like these would not work:</p>
+
+    <pre><code>const dispatch = useAppDispatch();
+const armyCompositions = useAppSelector(selectArmyCompositions);</code></pre>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The Redux provider wraps the app so all screens and hooks can access the central Redux store.
+    </div>
+
+    <h3>PersistGate</h3>
+    <pre><code>&lt;PersistGate loading={null} persistor={persistor}&gt;</code></pre>
+
+    <p><code>PersistGate</code> comes from Redux Persist. It waits while persisted Redux state is loaded from AsyncStorage.</p>
+
+    <p>This matters because Redux Persist may have saved army composition state locally. <code>PersistGate</code> prevents the app UI from rendering before that state has been rehydrated.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> PersistGate delays rendering until persisted Redux data has been restored from local storage.
+    </div>
+
+    <h3>SafeAreaProvider</h3>
+    <pre><code>&lt;SafeAreaProvider&gt;</code></pre>
+
+    <p><code>SafeAreaProvider</code> gives the app information about safe screen areas. This helps content avoid notches, status bars, rounded corners, and bottom gesture areas.</p>
+
+    <p>Screens can then use <code>SafeAreaView</code>:</p>
+
+    <pre><code>&lt;SafeAreaView style={styles.container}&gt;
+  ...
+&lt;/SafeAreaView&gt;</code></pre>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> SafeAreaProvider makes safe-area information available so screens can avoid device-specific blocked areas.
+    </div>
+
+    <h3>AuthProvider</h3>
+    <pre><code>&lt;AuthProvider&gt;</code></pre>
+
+    <p><code>AuthProvider</code> is your own provider. It listens to Firebase Authentication and supplies:</p>
+
+    <ul>
+      <li><code>currentUser</code></li>
+      <li><code>loading</code></li>
+    </ul>
+
+    <p>Because <code>AppContent</code> is inside <code>AuthProvider</code>, it can do this:</p>
+
+    <pre><code>const { currentUser, loading } = useAuth();</code></pre>
+
+    <p>That lets <code>AppContent</code> decide whether to show the logged-in app or the authentication screens.</p>
+
+    <h3>ThemeProvider</h3>
+    <pre><code>&lt;ThemeProvider&gt;</code></pre>
+
+    <p><code>ThemeProvider</code> is also your own provider. It supplies:</p>
+
+    <ul>
+      <li><code>theme</code></li>
+      <li><code>toggleTheme</code></li>
+    </ul>
+
+    <p>Because screens and components are inside <code>ThemeProvider</code>, they can call:</p>
+
+    <pre><code>const { theme, toggleTheme } = useTheme();</code></pre>
+
+    <p>The drawer navigation also uses the theme, so the drawer needs to be rendered inside <code>ThemeProvider</code>.</p>
+
+    <h3>NavigationContainer</h3>
+    <p><code>NavigationContainer</code> is inside <code>AppContent</code>:</p>
+
+    <pre><code>return (
+  &lt;NavigationContainer&gt;
+    {currentUser ? &lt;BattleForgeInformationDrawerStack /&gt; : &lt;AuthStack /&gt;}
+  &lt;/NavigationContainer&gt;
+);</code></pre>
+
+    <p><code>NavigationContainer</code> manages navigation state. It must wrap the navigators, such as <code>AuthStack</code> and <code>BattleForgeInformationDrawerStack</code>.</p>
+
+    <p>It is rendered after the loading check, so the app does not show navigation until authentication, fonts, and the splash delay are ready.</p>
+
+    <h3>Why order matters</h3>
+    <p>Provider order matters when an inner component needs access to something from an outer provider.</p>
+
+    <p>For example, <code>AppContent</code> calls <code>useAuth()</code>, so <code>AppContent</code> must be inside <code>AuthProvider</code>.</p>
+
+    <pre><code>&lt;AuthProvider&gt;
+  &lt;AppContent /&gt;
+&lt;/AuthProvider&gt;</code></pre>
+
+    <p>If <code>AppContent</code> were outside <code>AuthProvider</code>, it would not receive the real auth context value.</p>
+
+    <p>Redux has the same idea. Components that use Redux hooks must be inside the Redux <code>Provider</code>.</p>
+
+    <h3>Provider scope</h3>
+    <p>A provider only affects components inside it.</p>
+
+    <div class="flow">Provider A
+  -> Component inside can use Provider A
+
+Component outside
+  -> cannot use Provider A's value</div>
+
+    <p>This is called provider scope. In your app, the providers wrap almost everything because the app needs Redux, auth, theme, and safe-area support globally.</p>
+
+    <h3>Wrapper components versus provider components</h3>
+    <ul>
+      <li><strong>Wrapper component:</strong> any component that surrounds children. It may provide layout, styling, behavior, or data.</li>
+      <li><strong>Provider component:</strong> a specific kind of wrapper that supplies shared data or services to its children.</li>
+    </ul>
+
+    <p>For example, <code>KeyboardAvoidingView</code> is a wrapper for layout behavior around forms. <code>AuthProvider</code> is a provider for authentication data.</p>
+
+    <div class="box defense">
+      <strong>Defense summary:</strong> The app uses wrapping to give child components access to global tools and state. The Redux Provider supplies the store, PersistGate restores persisted Redux state, SafeAreaProvider handles device safe areas, AuthProvider supplies Firebase auth state, ThemeProvider supplies theme state, and NavigationContainer manages screen navigation.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>11. Context and AsyncStorage</h2>
+
+    <h3>What Context is</h3>
+    <p>React Context is a way to share data with many components without manually passing props through every level of the component tree.</p>
+
+    <p>Normally, data passed through props works like this:</p>
+
+    <div class="flow">App
+  -> Screen
+  -> Form
+  -> Button</div>
+
+    <p>If every level needs to pass the same value just so a deeply nested component can use it, the code becomes messy. Context solves this by letting a provider put a value into a shared place, and any child component inside that provider can read it.</p>
+
+    <div class="flow">Provider gives value
+  -> any child inside provider can read value with useContext</div>
+
+    <h3>Where Context is used in this project</h3>
+    <p>Your project uses Context for two app-wide concerns:</p>
+
+    <ul>
+      <li><code>AuthContext</code>: stores the current Firebase user and loading state.</li>
+      <li><code>ThemeContext</code>: stores the selected light/dark theme and the function to toggle it.</li>
+    </ul>
+
+    <p>Both are good uses of Context because many screens need the same data.</p>
+
+    <h3>The Context pattern</h3>
+    <p>A typical Context setup has four parts:</p>
+
+    <ul>
+      <li>A type describing the context value.</li>
+      <li>A context object created with <code>createContext</code>.</li>
+      <li>A provider component that owns the real state.</li>
+      <li>A custom hook that makes reading the context easier.</li>
+    </ul>
+
+    <h3>AuthContext type</h3>
+    <p>In <code>src/contexts/AuthContext.tsx</code>:</p>
+
+    <pre><code>type AuthContextType = {
+  currentUser: User | null;
+  loading: boolean;
+};</code></pre>
+
+    <p>This says the authentication context provides two values:</p>
+
+    <ul>
+      <li><code>currentUser</code>: either a Firebase <code>User</code> object or <code>null</code>.</li>
+      <li><code>loading</code>: a boolean that says whether Firebase is still checking the saved login session.</li>
+    </ul>
+
+    <h3>Creating the context</h3>
+    <pre><code>export const AuthContext = createContext&lt;AuthContextType&gt;({
+  currentUser: null,
+  loading: true,
+});</code></pre>
+
+    <p><code>createContext</code> creates the shared context object. The value passed into <code>createContext</code> is the default value. Components normally receive the real value from the provider, but the default value gives TypeScript and React a safe fallback.</p>
+
+    <h3>The provider component</h3>
+    <pre><code>export const AuthProvider = ({ children }: AuthProviderProps) =&gt; {
+  const [currentUser, setCurrentUser] = useState&lt;User | null&gt;(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() =&gt; {
+    const unsubscribe = onAuthStateChanged(auth, (user) =&gt; {
+      setCurrentUser(user);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  return (
+    &lt;AuthContext.Provider value={{ currentUser, loading }}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  );
+};</code></pre>
+
+    <p>The provider owns the actual state. It watches Firebase Auth and puts the current values into:</p>
+
+    <pre><code>value={{ currentUser, loading }}</code></pre>
+
+    <p>Everything inside <code>AuthContext.Provider</code> can read those values.</p>
+
+    <h3>What children means</h3>
+    <pre><code>type AuthProviderProps = {
+  children: ReactNode;
+};</code></pre>
+
+    <p><code>children</code> means the content placed inside the provider component.</p>
+
+    <pre><code>&lt;AuthProvider&gt;
+  &lt;ThemeProvider&gt;
+    &lt;AppContent /&gt;
+  &lt;/ThemeProvider&gt;
+&lt;/AuthProvider&gt;</code></pre>
+
+    <p>Here, <code>ThemeProvider</code> and <code>AppContent</code> are inside <code>AuthProvider</code>, so they can access the auth context.</p>
+
+    <h3>Reading context with useContext</h3>
+    <p>The hook <code>useAuth</code> is in <code>src/hooks/useAuth.ts</code>:</p>
+
+    <pre><code>export const useAuth = () =&gt; {
+  return useContext(AuthContext);
+};</code></pre>
+
+    <p>This is a custom hook. Instead of writing this everywhere:</p>
+
+    <pre><code>const authContext = useContext(AuthContext);</code></pre>
+
+    <p>The app can write:</p>
+
+    <pre><code>const { currentUser, loading } = useAuth();</code></pre>
+
+    <p>This makes the code shorter and keeps context access consistent.</p>
+
+    <h3>ThemeContext type</h3>
+    <p>In <code>src/contexts/ThemeContext.tsx</code>:</p>
+
+    <pre><code>type Theme = "light" | "dark";
+
+type ThemeContextType = {
+  theme: Theme;
+  toggleTheme: () =&gt; void;
+};</code></pre>
+
+    <p><code>Theme</code> is a union type. It only allows <code>"light"</code> or <code>"dark"</code>. This prevents invalid theme values.</p>
+
+    <h3>Default context value</h3>
+    <pre><code>export const ThemeContext = createContext&lt;ThemeContextType&gt;({
+  theme: "dark",
+  toggleTheme: () =&gt; {},
+});</code></pre>
+
+    <p>The default <code>toggleTheme</code> is an empty function. It is only a fallback before the real provider value exists. The real <code>toggleTheme</code> comes from <code>ThemeProvider</code>.</p>
+
+    <h3>ThemeProvider</h3>
+    <pre><code>export const ThemeProvider = ({ children }: ThemeProviderProps) =&gt; {
+  const [theme, setTheme] = useState&lt;Theme&gt;("dark");
+
+  useEffect(() =&gt; {
+    const loadTheme = async () =&gt; {
+      const savedTheme = await AsyncStorage.getItem("theme");
+
+      if (savedTheme === "light" || savedTheme === "dark") {
+        setTheme(savedTheme);
+      }
+    };
+
+    loadTheme();
+  }, []);
+
+  const toggleTheme = async () =&gt; {
+    const newTheme = theme === "dark" ? "light" : "dark";
+
+    setTheme(newTheme);
+
+    await AsyncStorage.setItem("theme", newTheme);
+  };
+
+  return (
+    &lt;ThemeContext.Provider value={{ theme, toggleTheme }}&gt;
+      {children}
+    &lt;/ThemeContext.Provider&gt;
+  );
+};</code></pre>
+
+    <p>This provider stores the current theme in React state, loads the saved theme when the app starts, and saves the new theme when the user toggles it.</p>
+
+    <h3>How Context differs from Redux</h3>
+    <p>Context and Redux can both share data, but they are used for different types of state in this app.</p>
+
+    <ul>
+      <li><code>AuthContext</code> and <code>ThemeContext</code> handle small global values.</li>
+      <li>Redux handles the army composition feature state, which has more actions such as load, add, update, delete, and clear.</li>
+    </ul>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> The project uses Context for small global app values like authentication and theme. Redux is used for army compositions because that feature has more complex state changes.
+    </div>
+
+    <h3>What AsyncStorage is</h3>
+    <p><code>AsyncStorage</code> is local persistent storage on the device. It works like a small key-value storage system for the app.</p>
+
+    <p>It is called async because reading and writing storage takes time. The methods return promises, so the code uses <code>async</code> and <code>await</code>.</p>
+
+    <h3>AsyncStorage stores strings</h3>
+    <p>AsyncStorage stores string values. In this app, the theme is already a string, so it can be saved directly:</p>
+
+    <pre><code>await AsyncStorage.setItem("theme", newTheme);</code></pre>
+
+    <p>For objects or arrays, you normally convert them to JSON first:</p>
+
+    <pre><code>await AsyncStorage.setItem("userSettings", JSON.stringify(settings));</code></pre>
+
+    <p>And read them back with:</p>
+
+    <pre><code>const savedSettings = await AsyncStorage.getItem("userSettings");
+
+if (savedSettings) {
+  const settings = JSON.parse(savedSettings);
+}</code></pre>
+
+    <h3>Reading from AsyncStorage</h3>
+    <p>In <code>ThemeContext</code>:</p>
+
+    <pre><code>const savedTheme = await AsyncStorage.getItem("theme");</code></pre>
+
+    <p><code>getItem</code> reads a value by key. Here, the key is <code>"theme"</code>. If no value exists, it returns <code>null</code>.</p>
+
+    <pre><code>if (savedTheme === "light" || savedTheme === "dark") {
+  setTheme(savedTheme);
+}</code></pre>
+
+    <p>This check is important because AsyncStorage can technically contain any string. The app only accepts the two valid theme values.</p>
+
+    <h3>Why the async function is inside useEffect</h3>
+    <p>The effect is written like this:</p>
+
+    <pre><code>useEffect(() =&gt; {
+  const loadTheme = async () =&gt; {
+    const savedTheme = await AsyncStorage.getItem("theme");
+    ...
+  };
+
+  loadTheme();
+}, []);</code></pre>
+
+    <p>The <code>useEffect</code> callback itself should not be marked <code>async</code>, because an async function returns a promise. React expects the effect to return either nothing or a cleanup function. So the common pattern is to define an async function inside the effect and then call it.</p>
+
+    <h3>Writing to AsyncStorage</h3>
+    <pre><code>const toggleTheme = async () =&gt; {
+  const newTheme = theme === "dark" ? "light" : "dark";
+
+  setTheme(newTheme);
+
+  await AsyncStorage.setItem("theme", newTheme);
+};</code></pre>
+
+    <p>This updates the UI immediately with <code>setTheme(newTheme)</code>, then saves the choice for the next app start with <code>AsyncStorage.setItem</code>.</p>
+
+    <h3>AsyncStorage and Redux Persist</h3>
+    <p>AsyncStorage is also used indirectly in <code>src/store/index.ts</code>:</p>
+
+    <pre><code>const persistConfig = {
+  key: "root",
+  storage: AsyncStorage,
+};</code></pre>
+
+    <p>This tells Redux Persist to save Redux state into AsyncStorage. That is how persisted Redux data can survive app restarts.</p>
+
+    <h3>AsyncStorage versus Firestore</h3>
+    <ul>
+      <li><strong>AsyncStorage:</strong> local device storage, good for small app preferences or cached data.</li>
+      <li><strong>Firestore:</strong> remote cloud database, good for user data that should be saved outside the device and synchronized.</li>
+    </ul>
+
+    <p>The theme is stored in AsyncStorage because it is a local preference. Army compositions are stored in Firestore because they are user data connected to an account.</p>
+
+    <div class="box defense">
+      <strong>Defense answer:</strong> AsyncStorage is used for local persistence. In this app, it saves the theme preference directly and is also used by Redux Persist to save Redux state locally. Firestore is used for remote user data.
+    </div>
+  </section>
+
+  <section class="chapter">
+    <h2>12. Short Defense Answers</h2>
+
+    <h3>What is React Native?</h3>
+    <p>React Native is a framework that lets us build mobile apps with React components. The components render to native mobile UI instead of browser HTML.</p>
+
+    <h3>What is useState?</h3>
+    <p><code>useState</code> stores a value that can change. When the setter function changes the value, React re-renders the component.</p>
+
+    <h3>What is useEffect?</h3>
+    <p><code>useEffect</code> runs side effects such as timers, subscriptions, loading data, and reading storage. Its dependency array controls when it runs, and its return function is cleanup.</p>
+
+    <h3>Why use Pressable?</h3>
+    <p><code>Pressable</code> handles touch interactions and can respond to pressed state. The project uses it for buttons, cards, and icons.</p>
+
+    <h3>What is TouchableOpacity?</h3>
+    <p><code>TouchableOpacity</code> is a touch component that automatically lowers opacity when pressed. It is useful for simple visual press feedback, although this project mostly uses <code>Pressable</code>.</p>
+
+    <h3>Why use TouchableWithoutFeedback?</h3>
+    <p>The project uses it to detect taps outside forms and call <code>Keyboard.dismiss</code>, hiding the keyboard without showing visual feedback.</p>
+
+    <h3>Why use FlatList?</h3>
+    <p><code>FlatList</code> is optimized for scrollable lists. It uses <code>data</code>, <code>renderItem</code>, and <code>keyExtractor</code> to render list rows efficiently.</p>
+
+    <h3>What is renderItem?</h3>
+    <p><code>renderItem</code> is a function that receives one list item and returns the component that should be shown for that row.</p>
+
+    <h3>What is keyExtractor?</h3>
+    <p><code>keyExtractor</code> returns a stable unique key for each item. React uses keys to track list items correctly during updates.</p>
+
+    <h3>What are props?</h3>
+    <p>Props are values passed from a parent component to a child component. They can be normal data or callback functions.</p>
+
+    <h3>What are navigation params?</h3>
+    <p>Navigation params are data passed from one screen to another through React Navigation.</p>
+
+    <h3>What does wrapping mean in React?</h3>
+    <p>Wrapping means placing one component around another. A wrapper can provide layout, behavior, or shared data to its children.</p>
+
+    <h3>What is a provider?</h3>
+    <p>A provider is a wrapper component that makes a value or service available to all components inside it.</p>
+
+    <h3>Why does provider order matter?</h3>
+    <p>A component can only use a provider's value if it is rendered inside that provider. That is why <code>AppContent</code> is inside Redux, auth, theme, and safe-area providers.</p>
+
+    <h3>What is Context?</h3>
+    <p>Context shares data with all components inside a provider without passing props through every level. This app uses it for auth and theme.</p>
+
+    <h3>What is a Provider?</h3>
+    <p>A provider is the component that supplies the context value to its children. For example, <code>AuthProvider</code> supplies <code>currentUser</code> and <code>loading</code>.</p>
+
+    <h3>Why use custom hooks like useAuth and useTheme?</h3>
+    <p>They wrap <code>useContext</code> so components can read context in a clean and consistent way.</p>
+
+    <h3>What is AsyncStorage?</h3>
+    <p>AsyncStorage is local persistent key-value storage on the device. It stores strings and uses asynchronous methods such as <code>getItem</code> and <code>setItem</code>.</p>
+
+    <h3>Why not make useEffect async directly?</h3>
+    <p>An async function returns a promise, but React expects an effect to return nothing or a cleanup function. That is why the async function is defined inside the effect and then called.</p>
+  </section>
+</body>
+</html>
