@@ -8,6 +8,7 @@ import { useTheme } from "../../hooks/useTheme";
 import { UnitCardStyles as styles } from "../../styles/unitCardStyles";
 import { themeColors } from "../../styles/themeColors";
 
+// The same unit card is used for adding available units and removing selected units.
 type UnitCardProps = {
   unit: Unit;
   buttonText: string;
@@ -15,6 +16,7 @@ type UnitCardProps = {
 };
 
 const UnitCard = ({ unit, buttonText, onPress }: UnitCardProps) => {
+  // Theme values are applied at render time so cards update immediately after toggling.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
@@ -26,6 +28,7 @@ const UnitCard = ({ unit, buttonText, onPress }: UnitCardProps) => {
       ]}
     >
       <View style={styles.container}>
+        {/* Primary unit information is grouped together on the left side of the card. */}
         <Text style={[styles.name, { color: colors.text }]}>{unit.name}</Text>
 
         <Text style={[styles.stats, { color: colors.subText }]}>
@@ -37,6 +40,7 @@ const UnitCard = ({ unit, buttonText, onPress }: UnitCardProps) => {
         </Text>
       </View>
 
+      {/* Button text controls whether the action reads as add or remove. */}
       <Pressable
         style={[styles.button, { backgroundColor: colors.button }]}
         onPress={onPress}

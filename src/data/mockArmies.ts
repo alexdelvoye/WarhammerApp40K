@@ -1,11 +1,14 @@
 import { Army } from "../types/army";
 
+// Development seed data used to rebuild the shared Firestore armies collection.
 export const armies: Army[] = [
+  // Imperial Knights sample faction with large vehicle-focused units.
   {
     id: "1",
     name: "Imperial Knights",
     armyRule: "Code Chivalric",
     imageKey: "imperialKnights",
+    // Units are stored inside the army so the add-unit modal can filter by faction.
     units: [
       {
         id: "1",
@@ -106,11 +109,13 @@ export const armies: Army[] = [
     ],
   },
 
+  // Ultramarines sample faction with Space Marine infantry, characters, and walkers.
   {
     id: "2",
     name: "Ultramarines",
     armyRule: "Oath of Moment",
     imageKey: "ultramarines",
+    // Points and stat values are sample data for the coursework app.
     units: [
       {
         id: "4",
@@ -211,11 +216,13 @@ export const armies: Army[] = [
     ],
   },
 
+  // Necrons sample faction with reanimation-themed units.
   {
     id: "3",
     name: "Necrons",
     armyRule: "Reanimation Protocols",
     imageKey: "necrons",
+    // These unit objects follow the Unit type used by cards and composition totals.
     units: [
       {
         id: "7",

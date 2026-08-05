@@ -12,9 +12,11 @@ import { InformationHomeScreenStyles as styles } from "../styles/informationHome
 import { themeColors } from "../styles/themeColors";
 
 export default function InformationHomeScreen() {
+  // Typed navigation limits destinations to the Information stack screens.
   const navigation =
     useNavigation<StackNavigationProp<InformationStackParamList>>();
 
+  // Information cards use global theme colors.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
@@ -24,12 +26,14 @@ export default function InformationHomeScreen() {
       style={styles.background}
     >
       <SafeAreaView
+        // Top inset is already covered by the stack header.
         style={styles.container}
         edges={["left", "right", "bottom"]}
       >
         <Text style={styles.title}>INFORMATION</Text>
 
         <View style={styles.cardContainer}>
+          {/* Opens account settings, theme toggle, and logout. */}
           <Pressable
             style={[
               styles.card,
@@ -42,6 +46,7 @@ export default function InformationHomeScreen() {
             </Text>
           </Pressable>
 
+          {/* Opens static general game rules. */}
           <Pressable
             style={[
               styles.card,
@@ -54,6 +59,7 @@ export default function InformationHomeScreen() {
             </Text>
           </Pressable>
 
+          {/* Opens Firestore-loaded army rule summaries. */}
           <Pressable
             style={[
               styles.card,

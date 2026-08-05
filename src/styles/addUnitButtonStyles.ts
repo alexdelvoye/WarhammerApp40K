@@ -1,6 +1,8 @@
 import { StyleSheet } from "react-native";
 
+// Full-width action button shown below the selected-unit list.
 export const AddUnitButtonStyles = StyleSheet.create({
+  // Padding and radius match the other form/profile buttons.
   button: {
     backgroundColor: "#D9D9D9",
     paddingVertical: 12,
@@ -9,6 +11,7 @@ export const AddUnitButtonStyles = StyleSheet.create({
     alignItems: "center",
   },
 
+  // Bold text makes this screen-level action easy to scan.
   buttonText: {
     color: "black",
     fontSize: 16,

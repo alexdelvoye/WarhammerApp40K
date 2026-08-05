@@ -1,10 +1,13 @@
 import { StyleSheet } from "react-native";
 
+// Styles for the static army rules information screen.
 export const ArmyRulesScreenStyles = StyleSheet.create({
+  // Shared background image fills the screen.
   background: {
     flex: 1,
   },
 
+  // Transparent content area keeps background artwork visible.
   container: {
     flex: 1,
     backgroundColor: "transparent",
@@ -13,6 +16,7 @@ export const ArmyRulesScreenStyles = StyleSheet.create({
     paddingBottom: 16,
   },
 
+  // Main page title.
   title: {
     color: "white",
     fontSize: 28,
@@ -20,6 +24,7 @@ export const ArmyRulesScreenStyles = StyleSheet.create({
     marginBottom: 12,
   },
 
+  // Each rule entry is displayed as a compact card.
   card: {
     backgroundColor: "#1E1E1E",
     borderRadius: 10,
@@ -29,6 +34,7 @@ export const ArmyRulesScreenStyles = StyleSheet.create({
     marginBottom: 10,
   },
 
+  // Army/faction name inside a rule card.
   cardTitle: {
     color: "white",
     fontSize: 18,
@@ -36,6 +42,7 @@ export const ArmyRulesScreenStyles = StyleSheet.create({
     marginBottom: 10,
   },
 
+  // Small label that introduces the rule name.
   ruleLabel: {
     color: "#D9D9D9",
     fontSize: 14,
@@ -43,6 +50,7 @@ export const ArmyRulesScreenStyles = StyleSheet.create({
     marginBottom: 6,
   },
 
+  // Body text for rule explanations.
   cardText: {
     color: "#B0B0B0",
     fontSize: 14,

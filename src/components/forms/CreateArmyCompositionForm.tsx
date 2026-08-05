@@ -9,6 +9,7 @@ import { useTheme } from "../../hooks/useTheme";
 import { CreateArmyCompositionScreenStyles as styles } from "../../styles/createArmyCompositionScreenStyles";
 import { themeColors } from "../../styles/themeColors";
 
+// The create screen passes the submit action and injects army-selection UI as children.
 type CreateArmyCompositionFormProps = {
   createArmyComposition: (armyCompositionName: string) => void;
   children: React.ReactNode;
@@ -18,6 +19,7 @@ const CreateArmyCompositionForm = ({
   createArmyComposition,
   children,
 }: CreateArmyCompositionFormProps) => {
+  // Theme colors keep the form readable on the shared background image.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 

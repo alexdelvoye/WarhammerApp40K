@@ -9,11 +9,13 @@ import { useTheme } from "../../hooks/useTheme";
 import { ProfileScreenStyles as styles } from "../../styles/profileScreenStyles";
 import { themeColors } from "../../styles/themeColors";
 
+// ProfileScreen supplies the Firebase password update action.
 type ChangePasswordFormProps = {
   changePassword: (currentPassword: string, newPassword: string) => void;
 };
 
 const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
+  // Reuse profile styles so account forms have a consistent layout.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
@@ -36,6 +38,7 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
       >
         {(props) => (
           <View>
+            {/* Firebase needs the current password before accepting sensitive changes. */}
             <TextInput
               style={[
                 styles.input,
@@ -59,6 +62,7 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
               </Text>
             )}
 
+            {/* New password follows the same minimum-length rule as registration. */}
             <TextInput
               style={[
                 styles.input,
@@ -80,6 +84,7 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
               <Text style={styles.errorText}>{props.errors.newPassword}</Text>
             )}
 
+            {/* Confirmation prevents accidental password typos. */}
             <TextInput
               style={[
                 styles.input,
@@ -104,6 +109,7 @@ const ChangePasswordForm = ({ changePassword }: ChangePasswordFormProps) => {
                 </Text>
               )}
 
+            {/* Formik handles validation before calling the profile update callback. */}
             <Pressable
               style={[styles.button, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}

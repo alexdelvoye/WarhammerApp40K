@@ -10,11 +10,13 @@ import { useTheme } from "../../hooks/useTheme";
 import { RegisterScreenStyles as styles } from "../../styles/registerScreenStyles";
 import { themeColors } from "../../styles/themeColors";
 
+// RegisterScreen performs the Firebase registration after this form validates values.
 type RegisterFormProps = {
   handleRegister: (email: string, password: string) => void;
 };
 
 const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
+  // Form controls use the same color palette as the current app theme.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
@@ -28,11 +30,13 @@ const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
         }}
         validationSchema={registerValidationSchema}
         onSubmit={(values) => {
+          // Confirm password is only for validation, so it is not passed to Firebase.
           handleRegister(values.email, values.password);
         }}
       >
         {(props) => (
           <View>
+            {/* Email is normalized by disabling automatic capitalization. */}
             <TextInput
               style={[
                 styles.input,
@@ -56,6 +60,7 @@ const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
                 : ""}
             </Text>
 
+            {/* Password is hidden while typing to protect the credential. */}
             <TextInput
               style={[
                 styles.input,
@@ -79,6 +84,7 @@ const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
                 : ""}
             </Text>
 
+            {/* Confirmation field is compared with password by the Yup schema. */}
             <TextInput
               style={[
                 styles.input,
@@ -102,6 +108,7 @@ const RegisterForm = ({ handleRegister }: RegisterFormProps) => {
                 : ""}
             </Text>
 
+            {/* Pressing register submits through Formik's validation flow. */}
             <Pressable
               style={[styles.button, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}

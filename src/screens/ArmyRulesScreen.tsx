@@ -11,13 +11,16 @@ import { ArmyRulesScreenStyles as styles } from "../styles/armyRulesScreenStyles
 import { themeColors } from "../styles/themeColors";
 
 export default function ArmyRulesScreen() {
+  // Rules are read from the shared Firestore army documents.
   const { armies } = useArmies();
 
+  // Theme colors keep the information cards consistent with the rest of the app.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
   const renderArmyRuleItem = ({ item }: { item: Army }) => {
     return (
+      // Each army is rendered as one compact rule card.
       <View
         style={[
           styles.card,
@@ -28,6 +31,7 @@ export default function ArmyRulesScreen() {
           {item.name}
         </Text>
 
+        {/* Label separates the rule category from the actual rule text. */}
         <Text style={[styles.ruleLabel, { color: colors.button }]}>
           Army Rule
         </Text>
@@ -45,12 +49,14 @@ export default function ArmyRulesScreen() {
       style={styles.background}
     >
       <SafeAreaView
+        // Top safe area is handled by the shared custom header.
         style={styles.container}
         edges={["left", "right", "bottom"]}
       >
         <Text style={styles.title}>ARMY RULES</Text>
 
         <FlatList
+          // FlatList keeps the screen efficient if more armies are seeded later.
           data={armies}
           keyExtractor={(item) => item.id}
           renderItem={renderArmyRuleItem}

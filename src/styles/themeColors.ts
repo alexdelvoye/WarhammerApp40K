@@ -1,4 +1,6 @@
+// Central palette used by screens and reusable components.
 export const themeColors = {
+  // Dark theme is the default visual style for the Warhammer-inspired UI.
   dark: {
     background: "#111",
     card: "#1E1E1E",
@@ -9,6 +11,7 @@ export const themeColors = {
     buttonText: "black",
   },
 
+  // Light theme keeps the same semantic color names with brighter values.
   light: {
     background: "#F2F2F2",
     card: "white",

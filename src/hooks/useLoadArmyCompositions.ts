@@ -7,8 +7,11 @@ import { useAppDispatch } from "../store/hooks";
 
 import { useAuth } from "./useAuth";
 
+// Global sync hook that mirrors the logged-in user's Firestore compositions into Redux.
 export function useLoadArmyCompositions() {
+  // Dispatch writes incoming snapshots into the persisted Redux store.
   const dispatch = useAppDispatch();
+  // The current user's uid determines which Firestore subcollection to listen to.
   const { currentUser } = useAuth();
 
   useEffect(() => {

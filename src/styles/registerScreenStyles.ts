@@ -1,14 +1,18 @@
 import { StyleSheet } from "react-native";
 
+// Register screen and RegisterForm share this stylesheet.
 export const RegisterScreenStyles = StyleSheet.create({
+  // Background artwork fills the register screen.
   background: {
     flex: 1,
   },
 
+  // Keeps registration inputs visible above the keyboard.
   keyboardAvoidingView: {
     flex: 1,
   },
 
+  // Centers the registration form vertically.
   container: {
     flex: 1,
     backgroundColor: "transparent",
@@ -16,6 +20,7 @@ export const RegisterScreenStyles = StyleSheet.create({
     justifyContent: "center",
   },
 
+  // Register page heading.
   title: {
     color: "white",
     fontSize: 28,
@@ -23,6 +28,7 @@ export const RegisterScreenStyles = StyleSheet.create({
     marginBottom: 16,
   },
 
+  // Form input styling with theme overrides added by the component.
   input: {
     backgroundColor: "#1E1E1E",
     color: "white",
@@ -34,6 +40,7 @@ export const RegisterScreenStyles = StyleSheet.create({
     fontSize: 16,
   },
 
+  // Main submit button.
   button: {
     backgroundColor: "#D9D9D9",
     paddingVertical: 12,
@@ -43,18 +50,21 @@ export const RegisterScreenStyles = StyleSheet.create({
     alignItems: "center",
   },
 
+  // Submit button label.
   buttonText: {
     color: "black",
     fontSize: 16,
     fontWeight: "bold",
   },
 
+  // Reserved height prevents layout jumping when validation errors appear.
   errorText: {
     color: "#ff6b6b",
     marginTop: 6,
     minHeight: 18,
   },
 
+  // Link back to the login screen.
   loginText: {
     color: "#D9D9D9",
     marginTop: 16,

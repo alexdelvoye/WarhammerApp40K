@@ -9,11 +9,13 @@ import { useTheme } from "../../hooks/useTheme";
 import { ProfileScreenStyles as styles } from "../../styles/profileScreenStyles";
 import { themeColors } from "../../styles/themeColors";
 
+// ProfileScreen provides the account-update action after this form validates.
 type ChangeEmailFormProps = {
   changeEmail: (currentPassword: string, newEmail: string) => void;
 };
 
 const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
+  // Form fields match the current theme while reusing Profile screen styles.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
@@ -35,6 +37,7 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
       >
         {(props) => (
           <View>
+            {/* New email is collected first because it is the main user goal. */}
             <TextInput
               style={[
                 styles.input,
@@ -57,6 +60,7 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
               <Text style={styles.errorText}>{props.errors.newEmail}</Text>
             )}
 
+            {/* Current password proves the user is allowed to change the account email. */}
             <TextInput
               style={[
                 styles.input,
@@ -80,6 +84,7 @@ const ChangeEmailForm = ({ changeEmail }: ChangeEmailFormProps) => {
               </Text>
             )}
 
+            {/* Submit asks Firebase to send a verification email for the new address. */}
             <Pressable
               style={[styles.button, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}

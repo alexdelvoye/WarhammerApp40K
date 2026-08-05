@@ -11,6 +11,7 @@ import UnitCard from "../cards/UnitCard";
 import { SelectUnitModalStyles as styles } from "../../styles/selectUnitModalStyles";
 import { themeColors } from "../../styles/themeColors";
 
+// ArmyCompositionScreen controls visibility and supplies units for the selected army.
 type SelectUnitModalProps = {
   visible: boolean;
   units: Unit[];
@@ -28,6 +29,7 @@ const SelectUnitModal = ({
   onClose,
   onAddUnit,
 }: SelectUnitModalProps) => {
+  // Modal colors are themed independently because the modal renders as its own layer.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
@@ -47,6 +49,7 @@ const SelectUnitModal = ({
       <SafeAreaView
         style={[styles.container, { backgroundColor: colors.background }]}
       >
+        {/* Closing returns to the composition detail screen without changing units. */}
         <Pressable onPress={onClose}>
           <Text style={[styles.closeText, { color: colors.text }]}>Close</Text>
         </Pressable>

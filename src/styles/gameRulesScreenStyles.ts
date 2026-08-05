@@ -1,10 +1,13 @@
 import { StyleSheet } from "react-native";
 
+// Styles for the general game rules information screen.
 export const GameRulesScreenStyles = StyleSheet.create({
+  // Shared background image fills the screen.
   background: {
     flex: 1,
   },
 
+  // Transparent content layer with standard page padding.
   container: {
     flex: 1,
     backgroundColor: "transparent",
@@ -13,6 +16,7 @@ export const GameRulesScreenStyles = StyleSheet.create({
     paddingBottom: 16,
   },
 
+  // Main page title.
   title: {
     color: "white",
     fontSize: 28,
@@ -20,6 +24,7 @@ export const GameRulesScreenStyles = StyleSheet.create({
     marginBottom: 12,
   },
 
+  // Rule cards group each section of information.
   card: {
     backgroundColor: "#1E1E1E",
     borderRadius: 10,
@@ -29,6 +34,7 @@ export const GameRulesScreenStyles = StyleSheet.create({
     marginBottom: 10,
   },
 
+  // Heading inside each information card.
   cardTitle: {
     color: "white",
     fontSize: 18,
@@ -36,6 +42,7 @@ export const GameRulesScreenStyles = StyleSheet.create({
     marginBottom: 8,
   },
 
+  // Body copy uses line height for readability on mobile.
   cardText: {
     color: "#B0B0B0",
     fontSize: 14,

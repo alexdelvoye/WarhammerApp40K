@@ -10,11 +10,13 @@ import { useTheme } from "../../hooks/useTheme";
 import { LoginScreenStyles as styles } from "../../styles/loginScreenStyles";
 import { themeColors } from "../../styles/themeColors";
 
+// LoginScreen provides the Firebase login callback; this form only collects values.
 type LoginFormProps = {
   handleLogin: (email: string, password: string) => void;
 };
 
 const LoginForm = ({ handleLogin }: LoginFormProps) => {
+  // Inputs and button colors follow the global app theme.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
@@ -24,11 +26,13 @@ const LoginForm = ({ handleLogin }: LoginFormProps) => {
         initialValues={{ email: "", password: "" }}
         validationSchema={loginValidationSchema}
         onSubmit={(values) => {
+          // The screen handles Firebase errors, keeping this form focused on input.
           handleLogin(values.email, values.password);
         }}
       >
         {(props) => (
           <View>
+            {/* Controlled email field writes directly into Formik state. */}
             <TextInput
               style={[
                 styles.input,
@@ -52,6 +56,7 @@ const LoginForm = ({ handleLogin }: LoginFormProps) => {
                 : ""}
             </Text>
 
+            {/* Password input is hidden by secureTextEntry before submission. */}
             <TextInput
               style={[
                 styles.input,
@@ -75,6 +80,7 @@ const LoginForm = ({ handleLogin }: LoginFormProps) => {
                 : ""}
             </Text>
 
+            {/* Formik validates first, then calls onSubmit when the form is valid. */}
             <Pressable
               style={[styles.button, { backgroundColor: colors.button }]}
               onPress={() => props.handleSubmit()}

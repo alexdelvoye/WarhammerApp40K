@@ -8,9 +8,11 @@ import { GameRulesScreenStyles as styles } from "../styles/gameRulesScreenStyles
 import { themeColors } from "../styles/themeColors";
 
 export default function GameRulesScreen() {
+  // Static rules still use the global theme for card and text colors.
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
+  // Shared card style avoids repeating themed card colors for every rule block.
   const cardStyle = [
     styles.card,
     { backgroundColor: colors.card, borderColor: colors.border },
@@ -22,12 +24,15 @@ export default function GameRulesScreen() {
       style={styles.background}
     >
       <SafeAreaView
+        // The custom header owns the top safe area.
         style={styles.container}
         edges={["left", "right", "bottom"]}
       >
+        {/* ScrollView is enough here because the rule content is small and static. */}
         <ScrollView>
           <Text style={styles.title}>GAME RULES</Text>
 
+          {/* Each View is one short rules section for quick mobile reading. */}
           <View style={cardStyle}>
             <Text style={[styles.cardTitle, { color: colors.text }]}>
               Battle Round

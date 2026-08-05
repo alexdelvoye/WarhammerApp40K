@@ -659,3 +659,243 @@ The project keeps app image imports centralized in `src/assets/images` to avoid 
 ### Why are comments added?
 
 The comments explain the code for readers who are not frontend developers. They focus on what the code does and why it exists, which is useful for maintainability and project defense.
+
+## 24. Runtime Dependencies
+
+The app depends on Expo and React Native for the mobile runtime, Firebase for backend services, Redux for shared client state, and React Navigation for app navigation.
+
+Important runtime packages:
+
+- `expo`: development runtime and platform tooling
+- `react-native`: native mobile UI framework
+- `@react-navigation/native`, `@react-navigation/stack`, `@react-navigation/drawer`: navigation
+- `firebase`: Authentication and Firestore SDK
+- `@reduxjs/toolkit`, `react-redux`, `redux-persist`: global state and persistence
+- `@react-native-async-storage/async-storage`: local persistence for Redux Persist and theme preference
+- `formik`, `yup`: form state and validation
+- `react-native-uuid`: unique ids for compositions and selected unit copies
+- `expo-font`: loading the custom font
+
+Development packages:
+
+- `typescript`: static type checking
+- `eslint`, `eslint-config-expo`: linting
+- `prettier`, `eslint-plugin-prettier`, `eslint-config-prettier`: formatting support
+
+## 25. Fresh Clone Setup
+
+From a fresh clone, the expected setup is:
+
+```bash
+npm install
+npm start
+```
+
+Then choose a target from the Expo terminal:
+
+- Android emulator
+- iOS simulator
+- Expo Go on a physical device
+- Web browser
+
+The project also exposes direct scripts:
+
+```bash
+npm run android
+npm run ios
+npm run web
+```
+
+Before presenting or submitting the project, run:
+
+```bash
+npm run lint
+npx tsc --noEmit
+```
+
+## 26. Firebase Configuration Details
+
+Firebase is initialized in:
+
+```text
+src/config/firebase.ts
+```
+
+The file exports:
+
+- `auth`: used by the authentication service and auth context
+- `database`: used by the Firestore service and data-loading hooks
+
+The app expects these Firebase products:
+
+- Authentication with email/password provider enabled
+- Firestore database enabled
+
+The app reads from and writes to two main Firestore areas:
+
+```text
+armies/{armyId}
+users/{userId}/armyCompositions/{armyCompositionId}
+```
+
+The `armies` collection is shared data. Every logged-in user sees the same armies.
+
+The `users/{userId}/armyCompositions` subcollection is private user data from the app's perspective. Every composition is stored beneath the authenticated Firebase user's uid.
+
+## 27. Firestore Document Examples
+
+Example army document:
+
+```json
+{
+  "id": "2",
+  "name": "Ultramarines",
+  "armyRule": "Oath of Moment",
+  "imageKey": "ultramarines",
+  "units": [
+    {
+      "id": "4",
+      "name": "Intercessor Squad",
+      "movement": 6,
+      "toughness": 4,
+      "save": 3,
+      "wounds": 2,
+      "leadership": 6,
+      "objectControl": 2,
+      "ability": "Objective Secured",
+      "points": 80
+    }
+  ]
+}
+```
+
+Example army composition document:
+
+```json
+{
+  "id": "generated-uuid",
+  "name": "Demo List",
+  "army": {
+    "id": "2",
+    "name": "Ultramarines",
+    "armyRule": "Oath of Moment",
+    "imageKey": "ultramarines",
+    "units": []
+  },
+  "units": [],
+  "totalPoints": 0
+}
+```
+
+When units are added, they are stored as selected units. A selected unit has the normal unit fields plus:
+
+```text
+armyCompositionUnitId
+```
+
+That id is generated on selection and identifies one specific copy inside the composition.
+
+## 28. Image Key Mapping
+
+Firestore stores simple image keys instead of image paths.
+
+Example:
+
+```text
+imageKey: "ultramarines"
+```
+
+The app converts that key to a local image through:
+
+```text
+src/utils/armyImages.ts
+```
+
+This approach is important in React Native because local images are usually loaded with static `require` calls. Firestore can store small stable strings, while the app remains responsible for bundling and loading actual image files.
+
+When adding a new army, update all of these places:
+
+- Add the army document in Firestore or `src/data/mockArmies.ts`
+- Add the local image file in `src/assets/images`
+- Add the new key to `src/utils/armyImages.ts`
+- Make sure the Firestore `imageKey` matches the TypeScript key
+
+## 29. Error Handling Behavior
+
+The app keeps error handling simple and user-facing.
+
+Authentication screens show login/register errors through local screen state. Profile update actions show a short success or failure message. The create composition workflow shows validation messages when the composition name or army selection is missing.
+
+Firestore write functions are awaited by hooks. If a Firestore write fails, the current implementation does not yet have a rollback system for optimistic Redux updates. That is acceptable for the current project scope, but it is a good improvement point to mention honestly during a defense.
+
+## 30. Known Limitations
+
+The current version is intentionally scoped for a coursework/demo app.
+
+Known limitations:
+
+- No automated test suite is included yet.
+- Army data is sample project data, not a complete official Warhammer 40K data source.
+- There is no offline conflict-resolution strategy beyond Redux Persist's local cache.
+- Firestore security rules are not stored in this repository.
+- There is no admin UI for managing armies and units.
+- Unit selection does not currently enforce a hard 2000 point limit; it warns when the total is above the limit.
+- The same unit can be added multiple times, which is supported by design.
+
+## 31. Suggested Future Improvements
+
+Possible future improvements:
+
+- Add unit tests for hooks and reducers.
+- Add integration tests for login, create composition, and add unit workflows.
+- Add a Firestore rules file to the repository.
+- Move Firebase config values to environment-specific config if the app grows beyond the demo stage.
+- Add loading and error states around Firestore writes.
+- Add an admin-only army data management screen.
+- Add sorting or filtering for unit selection.
+- Add more armies, units, and rule details.
+- Add hard validation rules for matched-play army limits.
+
+## 32. Troubleshooting
+
+### The app starts but no armies appear
+
+Check that the Firestore `armies` collection exists and contains documents with the expected fields. If the collection is empty, temporarily use the seed helper with `src/data/mockArmies.ts`.
+
+### Login or registration fails
+
+Check that Firebase Authentication is enabled and that the email/password provider is turned on in the Firebase console.
+
+### Email update says verification email sent but the app still shows the old email
+
+This is expected. The app uses Firebase `verifyBeforeUpdateEmail`, so Firebase waits until the user verifies the new email address.
+
+### A local image does not appear
+
+Check that the army's Firestore `imageKey` matches one of the keys in `src/utils/armyImages.ts`, and that the referenced image exists under `src/assets/images`.
+
+### Navigation types fail during TypeScript checking
+
+Check the relevant stack param list:
+
+- `src/navigation/BattleForgeStack.tsx`
+- `src/navigation/InformationStack.tsx`
+- `src/navigation/BattleForgeInformationDrawerStack.tsx`
+
+Route parameters must match these TypeScript definitions.
+
+## 33. Submission Checklist
+
+Before submitting or demoing:
+
+- Run `npm install` after pulling the latest code.
+- Run `npm run lint`.
+- Run `npx tsc --noEmit`.
+- Confirm Firebase Authentication works with a test account.
+- Confirm the Firestore `armies` collection is populated.
+- Create a new composition.
+- Add and remove at least one unit.
+- Confirm total points update correctly.
+- Confirm the over-2000 warning appears.
+- Confirm logout returns to the login screen.
+- Confirm theme switching persists after restarting the app.

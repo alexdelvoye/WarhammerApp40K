@@ -9,6 +9,7 @@ import { BattleForgeInformationDrawerStackParamList } from "../../navigation/Bat
 
 import { HeaderStyles as styles } from "../../styles/headerStyles";
 
+// Header can behave as a drawer opener or a back button depending on the screen.
 type HeaderProps = {
   title: string;
   canGoBack?: boolean;
@@ -16,6 +17,7 @@ type HeaderProps = {
 };
 
 const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) => {
+  // The header needs drawer access because top-level screens open the side menu.
   const navigation =
     useNavigation<
       DrawerNavigationProp<BattleForgeInformationDrawerStackParamList>
@@ -41,6 +43,7 @@ const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) => {
       >
         <View style={styles.header}>
           <Pressable style={styles.navigationButton} onPress={handleMenuPress}>
+            {/* Icon changes depending on whether this screen can go back. */}
             {canGoBack ? (
               <Ionicons name="arrow-back" size={24} color="white" />
             ) : (
@@ -53,8 +56,10 @@ const Header = ({ title, canGoBack = false, onBackPress }: HeaderProps) => {
             style={styles.icon}
           />
 
+          {/* Title text uses the custom loaded MedievalSharp font. */}
           <Text style={styles.title}>{title}</Text>
 
+          {/* Placeholder balances the left nav button so the title stays visually centered. */}
           <View style={styles.placeholder} />
         </View>
       </ImageBackground>
